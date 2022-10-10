@@ -19,11 +19,19 @@ class Player:
 
     def set_birth_date(self, birth_date: str) -> None:
         # format and transform birth_date
+        # print(birth_date)
         birth_date_list = birth_date.split("/")
+        if len(birth_date_list[0]) < 2:
+            birth_date_list[0] = "0" + birth_date_list[0]
+        if len(birth_date_list[1]) < 2:
+            birth_date_list[1] = "0" + birth_date_list[1]
+        # print(birth_date_list)
         birth_date_invert_list = reversed(birth_date_list)
+        # print(birth_date_invert_list)
         birth_date_iso = "-".join(birth_date_invert_list)
+        # print(birth_date_iso)
         birth_date_obj = date.fromisoformat(birth_date_iso)
-        # print(birth_date, type(birth_date))
+        # print(birth_date_obj, type(birth_date_obj))
         self._birth_date = birth_date_obj
 
     def set_classification(self, classification) -> None:
@@ -46,7 +54,8 @@ class Player:
 
 
 if __name__ == "__main__":
-    joueur = Player("BONNOT", "Jean", "01/06/2022", "M")
+    birth_date = ['13/8/2002', '11/11/2012', '24/2/2011']
+    joueur = Player("BONNOT", "Jean", birth_date[0], "M")
     print(joueur.get_player)
     print(joueur.get_player["name"])
     print([key for key in joueur.get_player])
