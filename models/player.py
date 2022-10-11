@@ -16,6 +16,7 @@ class Player:
         self.set_birth_date(birth_date)
         self._gender = gender.strip()[0].capitalize()
         self._classification = classification
+        self._points = 0
 
     def set_birth_date(self, birth_date: str) -> None:
         # format and transform birth_date
@@ -37,13 +38,17 @@ class Player:
     def set_classification(self, classification) -> None:
         self._classification = classification
 
+    def add_point(self, point) -> None:
+        self._points += point
+
     @ property
     def get_player(self) -> dict:
         player = {"name": self._name,
                   "surname": self._surname,
                   "birth_date": self._birth_date,
                   "gender": self._gender,
-                  "classification": self._classification}
+                  "classification": self._classification,
+                  "points": self._points}
         return player
 
     def __str__(self) -> str:
