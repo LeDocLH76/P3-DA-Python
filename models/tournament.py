@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Tournament:
     def __init__(self, name, place, date, time_ctrl, description, round=4):
         self._name = name
@@ -31,6 +34,15 @@ s'est déroulé à: {self._place} et à réunis {len(self._players)} participant
     def get_round(self):
         return self._rounds
 
+    @property
+    def get_matchs_already_played(self):
+        matchs_played: List[Match] = []
+        for round in self._rounds:
+            round: Round = round
+            for match in round.get_round._matchs:
+                matchs_played.append(match)
+        return matchs_played
+
 
 if __name__ == "__main__":
     from player import Player
@@ -57,3 +69,4 @@ if __name__ == "__main__":
     print(tournament.get_tournament)
     print(tournament.get_round)
     print(tournament.get_players)
+    print(tournament.get_matchs_already_played)

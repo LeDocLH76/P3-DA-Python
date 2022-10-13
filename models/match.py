@@ -1,3 +1,7 @@
+from typing import List
+from models.player import Player
+
+
 class Match:
     def __init__(self,
                  player1,
@@ -20,8 +24,8 @@ class Match:
         return match
 
     @property
-    def get_players(self):
-        players = [self._player1, self._player2]
+    def get_players(self) -> List[Player]:
+        players: List[Player] = [self._player1, self._player2]
         return players
 
     @property

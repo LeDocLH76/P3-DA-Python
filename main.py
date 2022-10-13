@@ -32,6 +32,9 @@ nom = ["Martin", "Bernard", "Thomas", "Petit", "Robert",
        "Simon", "Michel", "Lefebvre", "Leroy", "Roux",
        "David", "Bertrand", "Morel", "Fournier", "Girard"]
 
+# nom = ["Martin", "Bernard", "Martin", "Bernard", "Martin",
+#        "Bernard", "Martin", "Bernard", "Martin", "Bernard"]
+
 random.shuffle(nom)
 # print(nom)
 
@@ -99,9 +102,13 @@ for i in range(len(list_1)):
 
 # Création de la listes des instances de Match pour le round_1
 round_1_matches_list: List[Match] = []
-print("Les match du premier tour sont:")
+
+# print("Les match du premier tour sont:")
+
 for player_1, player_2 in matches_list:
-    print(f"{player_1}\ncontre\n{player_2}\n")
+
+    # print(f"{player_1}\ncontre\n{player_2}\n")
+
     match = Match(player_1, player_2)
     round_1_matches_list.append(match)
 
@@ -116,7 +123,9 @@ tournament.add_round(round_1)
 # Entrée des points par match pour round_1
 # ******************************
 score = [1.0, 0.5, 0.0]
-print("Résultat du round-1")
+
+# print("Résultat du round-1")
+
 for match in round_1_matches_list:
     score1 = random.choice(score)
     score2 = 1 - score1
@@ -125,18 +134,64 @@ for match in round_1_matches_list:
     match.set_score(score1, score2)
     player_1.add_point(score1)
     player_2.add_point(score2)
-    print(f"{player_1}\nNombre de points: \
-{player_1.get_player['points']}")
-    print(f"{player_2}\nNombre de points: \
-{player_2.get_player['points']}")
+
+#     print(f"{player_1}\nNombre de points: \
+# {player_1.get_player['points']}")
+#     print(f"{player_2}\nNombre de points: \
+# {player_2.get_player['points']}")
 
 # ******************************
 # Début du/des autres rounds
 # ******************************
 players_obj = tournament.get_players
+# Trie les joueurs par points puis par classement si égalité de points
 players_obj = sorted(players_obj, key=lambda x: x.get_player["classification"])
 players_obj = sorted(
     players_obj, key=lambda x: x.get_player["points"], reverse=True)
 # for player in players_obj:
 #     print(player.get_player["name"], player.get_player["points"],
 #           player.get_player["classification"])
+
+# Créé une liste des matchs interdit: si les joueurs se sont déja rencontrés
+match_already_played = tournament.get_matchs_already_played
+print()
+# print(match_already_played[0].get_players[0])
+# print(match_already_played[0].get_players[1])
+forbiden_pairs: List[tuple[Player, Player]] = []
+for match in match_already_played:
+    pair = (match.get_players[0].get_player["name"],
+            match.get_players[1].get_player["name"])
+    forbiden_pairs.append(pair)
+print(forbiden_pairs)
+print()
+
+player_free: List[Player] = []
+for player in players_obj:
+    player_to_add = (player, True)
+    print(player_to_add)
+
+index = 0
+trouve = False
+while trouve is False or index < len(player_free):
+    if player_free[i][1] is True:
+        print[player_free[i].get_player["name"]]
+        trouve = True
+    else:
+        index += 1
+
+
+# # Compose les paires de joueurs pour le round
+# pairs_player_list: List[tuple[Player, Player]] = []
+# for i in range(0, len(players_obj), 2):
+#     pair = (players_obj[i].get_player["name"],
+#             players_obj[i+1].get_player["name"])
+#     pairs_player_list.append(pair)
+# print(pairs_player_list)
+# print()
+
+# # Recherche si les joueurs se sont déja rencontrés
+# for pair in pairs_player_list:
+#     for forbiden_pair in forbiden_pairs:
+#         inverted_pair = (pair[1], pair[0])
+#         if pair == forbiden_pair or inverted_pair == forbiden_pair:
+#             print("Alerte, les joueurs se sont déja rencontrés!")
