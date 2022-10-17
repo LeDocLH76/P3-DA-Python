@@ -22,11 +22,6 @@ class Tournament:
         self._players.append(player)
 
     @property
-    def get_tournament(self):
-        return f"Le tournois: {self._name} en date du {self._date}\n\
-s'est déroulé à: {self._place} et à réunis {len(self._players)} participants."
-
-    @property
     def get_players(self):
         return self._players
 
@@ -42,6 +37,10 @@ s'est déroulé à: {self._place} et à réunis {len(self._players)} participant
             for match in round.get_round._matchs:
                 matchs_played.append(match)
         return matchs_played
+
+    def __str__(self):
+        return f"Le tournois: {self._name} en date du {self._date}\n\
+s'est déroulé à: {self._place} et à réunis {len(self._players)} participants."
 
 
 if __name__ == "__main__":
@@ -66,7 +65,7 @@ if __name__ == "__main__":
     round1.add_match(match1)
     round1.add_match(match2)
     tournament.add_round(round1)
-    print(tournament.get_tournament)
+    print(tournament)
     print(tournament.get_round)
     print(tournament.get_players)
     print(tournament.get_matchs_already_played)
