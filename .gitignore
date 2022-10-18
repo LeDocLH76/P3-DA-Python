@@ -1,5 +1,6 @@
 env
 .vscode
+_*
 __*
 chess_*
 !__init__.py
