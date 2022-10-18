@@ -1,29 +1,30 @@
 from typing import List
 
-from tinydb import Query, TinyDB
+from tinydb import Query, TinyDB, where
 
 from models.match import Match
+from models.player import Player
 from models.round import Round
 
 
 class Tournament:
     def __init__(self, name, place, date, time_ctrl, description, round=4):
-        self._name = name
-        self._place = place
+        self._name: str = name
+        self._place: str = place
         self.set_date(date)
-        self._round = round
-        self._time_ctrl = time_ctrl
-        self._description = description
-        self._rounds = []
-        self._players = []
+        self._round: int = round
+        self._time_ctrl: str = time_ctrl
+        self._description: str = description
+        self._rounds: List[Round] = []
+        self._players: List[Player] = []
 
-    def set_date(self, date):
+    def set_date(self, date: str):
         self._date = date
 
-    def add_round(self, round):
+    def add_round(self, round: Round):
         self._rounds.append(round)
 
-    def add_player(self, player):
+    def add_player(self, player: Player):
         self._players.append(player)
 
     def save_db(self):
@@ -34,8 +35,7 @@ class Tournament:
             "round": self._round,
             "time_ctrl": self._time_ctrl,
             "description": self._description,
-            "rounds": {},
-            "players": {}
+            "rounds": []
         }
         db = TinyDB('chess_tournament')
         tournaments_table = db.table("tournaments")
@@ -47,6 +47,28 @@ class Tournament:
         else:
             print("Cet enregistrement est déja présent en base!")
 
+    def update_round_db(self):
+        rounds = []
+        for round in self._rounds:
+            matchs_to_add = []
+            for match in round.get_round:
+                match_to_add: dict[dict, dict, int | None, int | None] = {
+                    "player_1": match.get_players[0].get_player,
+                    "player_2": match.get_players[1].get_player,
+                    "score_player_1": match.get_scores[0],
+                    "score_player_2": match.get_scores[1]}
+                matchs_to_add.append(match_to_add)
+                # print(match_to_add)
+            rounds.append(matchs_to_add)
+        # print(rounds)
+
+        db = TinyDB('chess_tournament')
+        tournaments_table = db.table("tournaments")
+
+        tournaments_table.update({"rounds": rounds},
+                                 (where("name") == self._name)
+                                 & (where("date") == self._date))
+
     @property
     def get_players(self):
         return self._players
@@ -56,11 +78,11 @@ class Tournament:
         return self._rounds
 
     @property
-    def get_matchs_already_played(self):
+    def get_matchs_already_played(self) -> List[Match]:
         matchs_played: List[Match] = []
         for round in self._rounds:
             round: Round = round
-            for match in round.get_round._matchs:
+            for match in round.get_round:
                 matchs_played.append(match)
         return matchs_played
 

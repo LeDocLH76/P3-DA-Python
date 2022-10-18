@@ -1,5 +1,7 @@
 import random
 from typing import List
+
+from tinydb import TinyDB
 from models.player import Player
 from models.match import Match
 from models.round import Round
@@ -61,12 +63,20 @@ for i in range(8):
 # ******************************
 # Début tournois
 # ******************************
+# Ligne à supprimer !!!
+#
+db = TinyDB('chess_tournament')
+db.drop_tables()
+# ******************************
+
 # Création du tournoi
 tournament = Tournament("Tournoi privé", "Le Havre",
                         "11/10/2022", "rapid", "Mon premier tournoi d'échec")
+tournament.save_db()
 # Ajout des joueurs
 for player in players_obj:
     tournament.add_player(player)
+    player.save_db()
 
 # Mélange des joueurs dans la liste
 random.shuffle(players_obj)
@@ -112,6 +122,7 @@ for match in round_1_matches_list:
 
 # Ajoute le Round au tournoi
 tournament.add_round(round_1)
+tournament.update_round_db
 
 # ******************************
 # Entrée des points par match pour round_1
@@ -127,7 +138,9 @@ for match in round_1_matches_list:
     player_2: Player = match.get_players[1]
     match.set_score(score1, score2)
     player_1.add_point(score1)
+    player_1.update_points_db(score1)
     player_2.add_point(score2)
+    player_2.update_points_db(score2)
 
     print(f"{player_1}\nNombre de points: \
 {player_1.get_player['points']}")
@@ -135,6 +148,7 @@ for match in round_1_matches_list:
 {player_2.get_player['points']}")
     print()
 
+tournament.update_round_db()
 # ******************************
 # Début du/des autres rounds
 # ******************************

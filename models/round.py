@@ -1,7 +1,12 @@
+from typing import List
+
+from models.match import Match
+
+
 class Round:
     def __init__(self, name):
         self._name = name
-        self._matchs = []
+        self._matchs: List[Match] = []
 
     def add_match(self, match):
         self._matchs.append(match)
@@ -13,5 +18,5 @@ class Round:
         self._date_end = end
 
     @property
-    def get_round(self):
-        return self
+    def get_round(self) -> List[Match]:
+        return self._matchs
