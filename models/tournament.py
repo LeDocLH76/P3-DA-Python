@@ -1,5 +1,7 @@
 from typing import List
 
+from tinydb import Query, TinyDB
+
 from models.match import Match
 from models.round import Round
 
@@ -9,7 +11,7 @@ class Tournament:
         self._name = name
         self._place = place
         self.set_date(date)
-        self.round = round
+        self._round = round
         self._time_ctrl = time_ctrl
         self._description = description
         self._rounds = []
@@ -23,6 +25,27 @@ class Tournament:
 
     def add_player(self, player):
         self._players.append(player)
+
+    def save_db(self):
+        tournament_json = {
+            "name": self._name,
+            "place": self._place,
+            "date": self._date,
+            "round": self._round,
+            "time_ctrl": self._time_ctrl,
+            "description": self._description,
+            "rounds": {},
+            "players": {}
+        }
+        db = TinyDB('chess_tournament')
+        tournaments_table = db.table("tournaments")
+
+        tournament = Query()
+        if not tournaments_table.search((tournament.name == self._name)
+                                        & (tournament.date == self._date)):
+            tournaments_table.insert(tournament_json)
+        else:
+            print("Cet enregistrement est déja présent en base!")
 
     @property
     def get_players(self):
