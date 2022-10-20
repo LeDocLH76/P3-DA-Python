@@ -20,3 +20,7 @@ class Round:
     @property
     def get_round(self) -> List[Match]:
         return self._matchs
+
+    @property
+    def get_name(self) -> str:
+        return self._name
