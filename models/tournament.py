@@ -49,22 +49,23 @@ class Tournament:
 
     def update_round_db(self):
         rounds = []
-        for index_round, round in enumerate(self._rounds):
+        for round in self._rounds:
 
             round_name = round.get_name
             round_to_add = {"name": round_name}
-
-            for index_match, match in enumerate(round.get_round):
+            matchs = []
+            for match in round.get_matchs:
                 match_to_add = {
                     "player_1": match.get_players[0].get_player,
                     "player_2": match.get_players[1].get_player,
                     "score_player_1": match.get_scores[0],
                     "score_player_2": match.get_scores[1]}
-                round_to_add.update({f"match_{index_match + 1}": match_to_add})
+                matchs.append(match_to_add)
+            round_to_add.update({"matchs": matchs})
 
-                # print(match_to_add)
-            round_to_add.update({f"round_{index_round + 1}": round_to_add})
-        rounds.append(round_to_add)
+            # print(match_to_add)
+
+            rounds.append(round_to_add)
         # print(rounds)
 
         db = TinyDB('chess_tournament')
@@ -87,10 +88,11 @@ class Tournament:
         matchs_played: List[Match] = []
         for round in self._rounds:
             round: Round = round
-            for match in round.get_round:
+            for match in round.get_matchs:
                 matchs_played.append(match)
         return matchs_played
 
     def __str__(self):
         return f"Le tournois: {self._name} en date du {self._date}\n\
-s'est déroulé à: {self._place} et à réunis {len(self._players)} participants."
+s'est déroulé à: {self._place} et à réunis {len(self._players)} participants.\n\
+Le time control est {self._time_ctrl} la description est {self._description}."

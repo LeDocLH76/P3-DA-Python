@@ -85,5 +85,5 @@ class Player:
     def __str__(self) -> str:
         classification = (self._classification if
                           self._classification is not None else "N/A")
-        return f"{self._surname} {self._name}\nNé le: \
+        return f"{self._surname} {self._name} Né le: \
 {self._birth_date} Classé: {classification}"

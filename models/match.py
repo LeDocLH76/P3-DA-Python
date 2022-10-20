@@ -18,8 +18,8 @@ class Match:
         self._score_player2 = score_player2
 
     @property
-    def get_match(self) -> tuple[list[Player], list[Player]]:
-        match: tuple[list[Player], list[Player]] = (
+    def get_match(self) -> tuple[list[Player, int], list[Player, int]]:
+        match: tuple[list[Player, int], list[Player, int]] = (
             [self._player1, self._score_player1],
             [self._player2, self._score_player2])
         return match

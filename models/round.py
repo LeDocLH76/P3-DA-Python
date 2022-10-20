@@ -18,7 +18,7 @@ class Round:
         self._date_end = end
 
     @property
-    def get_round(self) -> List[Match]:
+    def get_matchs(self) -> List[Match]:
         return self._matchs
 
     @property
