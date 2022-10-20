@@ -168,9 +168,14 @@ print()
 # print(match_already_played[0].get_players[1])
 forbiden_pairs: List[tuple[Player, Player]] = []
 for match in match_already_played:
+    # "name est à remplacer pas une instance de joueur!!!"
     pair = (match.get_players[0].get_player["name"],
             match.get_players[1].get_player["name"])
+    inverted_pair = (match.get_players[1].get_player["name"],
+                     match.get_players[0].get_player["name"])
+
     forbiden_pairs.append(pair)
+    forbiden_pairs.append(inverted_pair)
 print("Associations interdites")
 print(forbiden_pairs)
 print()
@@ -188,7 +193,7 @@ for player in players_obj:
 print()
 
 
-def find_player_free(players_free: List[list[Player, bool]]):
+def find_player_free(players_free: List[list[Player, bool]]) -> Player | None:
     index = 0
     find = False
     while find is False or index < len(players_free):
@@ -199,6 +204,7 @@ def find_player_free(players_free: List[list[Player, bool]]):
             return players_free[i]
         else:
             index += 1
+    return None
 
 
 odd_players_list = False
@@ -214,10 +220,3 @@ if len(players_free) % 2 != 0:
 #     pairs_player_list.append(pair)
 # print(pairs_player_list)
 # print()
-
-# # Recherche si les joueurs se sont déja rencontrés
-# for pair in pairs_player_list:
-#     for forbiden_pair in forbiden_pairs:
-#         inverted_pair = (pair[1], pair[0])
-#         if pair == forbiden_pair or inverted_pair == forbiden_pair:
-#             print("Alerte, les joueurs se sont déja rencontrés!")

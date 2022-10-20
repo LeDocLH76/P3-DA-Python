@@ -38,7 +38,7 @@ class Tournament:
             "rounds": []
         }
         db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournaments")
+        tournaments_table = db.table("tournament")
 
         tournament = Query()
         if not tournaments_table.search((tournament.name == self._name)
@@ -63,7 +63,7 @@ class Tournament:
         # print(rounds)
 
         db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournaments")
+        tournaments_table = db.table("tournament")
 
         tournaments_table.update({"rounds": rounds},
                                  (where("name") == self._name)
