@@ -175,7 +175,6 @@ for match in match_already_played:
                      match.get_players[0].get_player["name"])
 
     forbiden_pairs.append(pair)
-    forbiden_pairs.append(inverted_pair)
 print("Associations interdites")
 print(forbiden_pairs)
 print()

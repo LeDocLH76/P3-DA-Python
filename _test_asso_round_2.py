@@ -1,6 +1,10 @@
 
 # Les joueurs sont classés par ordre points/classement
-joueurs_libres = [
+import random
+from typing import List
+
+
+joueurs_libres: List[list] = [
     ["a", True],
     ["b", True],
     ["c", True],
@@ -10,6 +14,7 @@ joueurs_libres = [
     ["g", True],
     ["h", True],
     ["i", True]]
+
 
 # Paires de joueurs tour2
 asso_interdites = [
@@ -45,12 +50,13 @@ asso_interdites = [
 #     ("f", "g")]
 
 
-asso_interdites = set(asso_interdites)
+# asso_interdites = set(asso_interdites)
 
 pairs = []
 
 
-def find_player_free(joueurs_libres) -> list | None:
+def find_player_free(
+        joueurs_libres: list[list[str | bool]]) -> list[str | bool] | None:
     index = 0
     find = False
     while find is False and index < len(joueurs_libres):
@@ -65,52 +71,69 @@ def find_player_free(joueurs_libres) -> list | None:
 
 
 def main():
-    joueurs_refuse = []
-    passage = 1
-    while True:
-        joueur = find_player_free(joueurs_libres)
-        if passage <= 2:
-            if passage == 1:
-                joueur_1 = joueur
-                passage = 2
-            else:
-                if joueur is None:
-                    print(
-                        f"Le joueur {joueur_1[0]} n'est pas associé, \
+    for round in range(3):
+        # Libère tous les joueurs
+        for joueur in joueurs_libres:
+            joueur[1] = True
+        # Simule un nouveau classement suite au round précedent
+        random.shuffle(joueurs_libres)
+        print(f"Round_{round + 1}")
+        joueurs_refuse = []
+        passage = 1
+        while True:
+            joueur = find_player_free(joueurs_libres)
+            if passage <= 2:
+                if passage == 1:
+                    joueur_1 = joueur
+                    passage = 2
+                else:
+                    if joueur is None:
+                        print(
+                            f"Le joueur {joueur_1[0]} n'est pas associé, \
 il faut lui donner 0.5 points")
-                    break
-                joueur_2 = joueur
+                        # Sortie du while
+                        break
+                    joueur_2 = joueur
 
-                # Interdit ???
-                asso_ok = True
-                if (joueur_1[0], joueur_2[0]) in asso_interdites:
-                    asso_ok = False
-                if (joueur_2[0], joueur_1[0]) in asso_interdites:
-                    asso_ok = False
-
-                if asso_ok is False:
-                    print(f"Alerte association interdite \
+                    # Paire interdite ???
+                    if (((joueur_1[0], joueur_2[0]) in asso_interdites)
+                            or
+                            ((joueur_2[0], joueur_1[0]) in asso_interdites)):
+                        print(f"Alerte association interdite \
 {joueur_1[0]} {joueur_2[0]}")
-                    joueurs_refuse.append(joueur)
-                    # Si il existe encore un joueur libre
-                    libre = False
-                    for joueur_libre in joueurs_libres:
-                        if joueur_libre[1] is True:
-                            libre = True
-                    # Tente une autre association
-                    if libre is True:
-                        continue
-                    # Si non associe les 2 joueurs quand même
-                pair = (joueur_1[0], joueur_2[0])
-                pairs.append(pair)
-                if len(joueurs_refuse) > 0:
-                    for joueur in joueurs_refuse:
-                        index = joueurs_libres.index(joueur)
-                        joueurs_libres[index][1] = True
-                    joueurs_refuse = []
-                passage = 1
-                print(pair)
-    print(pairs)
+                        joueurs_refuse.append(joueur)
+                        libre = False
+                        # Cherche si il existe encore un joueur libre
+                        for joueur_libre in joueurs_libres:
+                            if joueur_libre[1] is True:
+                                libre = True
+                        # Si oui tente une autre association
+                        if libre is True:
+                            # Retour au while
+                            continue
+                        # Si non associe les 2 joueurs quand même
+                        print(
+                            "Association contrainte *************************")
+                        # Sortir le joueur_2 des joueurs refusés
+                        joueurs_refuse = [
+                            joueur for joueur
+                            in joueurs_refuse
+                            if joueur != joueur_2]
+                    pair = (joueur_1[0], joueur_2[0])
+                    pairs.append(pair)
+                    # Si des associations ont été refusées
+                    if len(joueurs_refuse) > 0:
+                        # On libére les joueurs refusés
+                        for joueur in joueurs_refuse:
+                            index = joueurs_libres.index(joueur)
+                            joueurs_libres[index][1] = True
+                        # Et on vide la liste
+                        joueurs_refuse = []
+                    passage = 1
+                    print(pair)
+                    # Retour au while
+        asso_interdites.extend(pairs)
+        # Boucle 3 fois
 
 
 if __name__ == "__main__":
