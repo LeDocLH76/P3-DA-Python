@@ -50,7 +50,6 @@ class Tournament:
     def update_round_db(self):
         rounds = []
         for round in self._rounds:
-
             round_name = round.get_name
             round_to_add = {"name": round_name}
             matchs = []
@@ -62,9 +61,6 @@ class Tournament:
                     "score_player_2": match.get_scores[1]}
                 matchs.append(match_to_add)
             round_to_add.update({"matchs": matchs})
-
-            # print(match_to_add)
-
             rounds.append(round_to_add)
         # print(rounds)
 
@@ -94,5 +90,6 @@ class Tournament:
 
     def __str__(self):
         return f"Le tournois: {self._name} en date du {self._date}\n\
-s'est déroulé à: {self._place} et à réunis {len(self._players)} participants.\n\
+s'est déroulé à: {self._place} \
+et à réunis {len(self._players)} participants.\n\
 Le time control est {self._time_ctrl} la description est {self._description}."

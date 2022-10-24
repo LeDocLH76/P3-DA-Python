@@ -1,9 +1,8 @@
 
-# Les joueurs sont classés par ordre points/classement
 import random
 from typing import List
 
-
+# Les joueurs sont classés par ordre points/classement
 joueurs_libres: List[list] = [
     ["a", True],
     ["b", True],
@@ -15,44 +14,12 @@ joueurs_libres: List[list] = [
     ["h", True],
     ["i", True]]
 
-
-# Paires de joueurs tour2
+# Paires de joueurs interdite pour le tour2
 asso_interdites = [
     ("a", "b"),
     ("g", "e"),
     ("d", "c"),
     ("f", "h")]
-
-# Paires de joueurs tour3
-# asso_interdites = [
-#     ("a", "b"),
-#     ("g", "e"),
-#     ("d", "c"),
-#     ("f", "h"),
-#     ("a", "c"),
-#     ("b", "d"),
-#     ("e", "f"),
-#     ("g", "h")]
-
-# Paires de joueurs tour4
-# asso_interdites = [
-#     ("a", "b"),
-#     ("g", "e"),
-#     ("d", "c"),
-#     ("f", "h"),
-#     ("a", "c"),
-#     ("b", "d"),
-#     ("e", "f"),
-#     ("g", "h"),
-#     ("a", "d"),
-#     ("b", "c"),
-#     ("e", "h"),
-#     ("f", "g")]
-
-
-# asso_interdites = set(asso_interdites)
-
-pairs = []
 
 
 def find_player_free(
@@ -75,6 +42,8 @@ def main():
         # Libère tous les joueurs
         for joueur in joueurs_libres:
             joueur[1] = True
+        # Liste de paires pour ce round
+        pairs = []
         # Simule un nouveau classement suite au round précedent
         random.shuffle(joueurs_libres)
         print(f"Round_{round + 1}")
@@ -84,6 +53,8 @@ def main():
             joueur = find_player_free(joueurs_libres)
             if passage <= 2:
                 if passage == 1:
+                    if joueur is None:
+                        break
                     joueur_1 = joueur
                     passage = 2
                 else:
@@ -119,6 +90,7 @@ il faut lui donner 0.5 points")
                             joueur for joueur
                             in joueurs_refuse
                             if joueur != joueur_2]
+
                     pair = (joueur_1[0], joueur_2[0])
                     pairs.append(pair)
                     # Si des associations ont été refusées
@@ -132,6 +104,7 @@ il faut lui donner 0.5 points")
                     passage = 1
                     print(pair)
                     # Retour au while
+        # Ajoute les paires de ce tour à la liste des paires interdites
         asso_interdites.extend(pairs)
         # Boucle 3 fois
 

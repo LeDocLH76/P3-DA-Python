@@ -48,7 +48,7 @@ for player_db in players_table:
 
 # regénération des tournées et rounds
 players_obj = tournament.get_players
-for index, round_db in enumerate(tournament_db["rounds"]):
+for round_db in tournament_db["rounds"]:
     round_name = round_db["name"]
     round = Round(round_name)
     # regénération des matchs
