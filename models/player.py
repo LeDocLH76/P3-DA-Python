@@ -1,6 +1,5 @@
 
-# from datetime import date
-from tinydb import TinyDB, Query, where
+from tinydb import TinyDB, where
 
 
 class Player:
@@ -17,9 +16,24 @@ class Player:
         self.set_birth_date(birth_date)
         self._gender = gender.strip()[0].capitalize()
         self._classification = classification
-        # Points doit changer de place > players[[player_id, points]]
-        self._points = 0
-        # Ajouter player_id venant de la db
+        self.set_id_save_db()
+
+    @classmethod
+    def add_player_from_db(cls,
+                           name: str,
+                           surname: str,
+                           birth_date: str,
+                           gender: str,
+                           classification,
+                           id):
+        player = cls.__new__(cls)
+        player._name = name
+        player._surname = surname
+        player._birth_date = birth_date
+        player._gender = gender
+        player._classification = classification
+        player._id = id
+        return player
 
     def set_birth_date(self, birth_date: str) -> None:
         # format and transform birth_date
@@ -43,23 +57,6 @@ class Player:
 
     def set_classification(self, classification) -> None:
         self._classification = classification
-
-    # A revoir car plus self mais tournament players player_id
-    def add_point(self, point) -> None:
-        self._points += point
-
-    def save_db(self) -> None:
-        db = TinyDB('chess_tournament')
-        players_table = db.table("players")
-        player = Query()
-        if not players_table.search((player.name == self._name)
-                                    & (player.surname == self._surname)
-                                    & (player.birth_date == self._birth_date)):
-            players_table.insert(self.get_player)
-        else:
-            print("Cet enregistrement est déja présent en base!")
-
-    def update_classification_db(self, classification):
         db = TinyDB('chess_tournament')
         players_table = db.table("players")
         players_table.update({"classification": classification},
@@ -67,14 +64,17 @@ class Player:
                              & (where("surname") == self._surname)
                              & (where("birth_date") == self._birth_date))
 
-    # A revoir car plus self  mais tournament players player_id points
-    def update_points_db(self, points):
+    def set_id_save_db(self) -> None:
         db = TinyDB('chess_tournament')
         players_table = db.table("players")
-        players_table.update({"points": points},
-                             (where("name") == self._name)
-                             & (where("surname") == self._surname)
-                             & (where("birth_date") == self._birth_date))
+        print("Sauve le joueur en Db et recupère sont id")
+        print(f"Player = {self.get_player}")
+        self._id = players_table.insert(self.get_player)
+        print(f"Id du joueur ={self._id}")
+
+    @ property
+    def get_id(self) -> int:
+        return self._id
 
     @ property
     def get_player(self) -> dict:
@@ -83,8 +83,7 @@ class Player:
                   "surname": self._surname,
                   "birth_date": self._birth_date,
                   "gender": self._gender,
-                  "classification": self._classification,
-                  "points": self._points}
+                  "classification": self._classification}
         return player
 
     def __str__(self) -> str:

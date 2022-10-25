@@ -1,9 +1,8 @@
 from typing import List
 
-from tinydb import Query, TinyDB, where
+from tinydb import TinyDB, where
 
 from models.match import Match
-from models.player import Player
 from models.round import Round
 
 
@@ -16,39 +15,40 @@ class Tournament:
         self._time_ctrl: str = time_ctrl
         self._description: str = description
         self._rounds: List[Round] = []
-        self._players: List[Player] = []
+        self._players = {}
+        self.set_id_save_db()
+
+    @classmethod
+    def add_tournament_from_db(cls,
+                               name,
+                               place,
+                               date,
+                               time_ctrl,
+                               description,
+                               players,
+                               round=4):
+        tournament = cls.__new__(cls)
+        tournament._name = name
+        tournament._place = place
+        tournament._date = date
+        tournament._time_ctrl = time_ctrl
+        tournament._description = description
+        tournament._players = players
+        tournament._round = round
+        return tournament
+
+    def update_player_point_from_db(self, player_id, points):
+        self._players[str(player_id)] = points
+
+    def add_rounds_from_bd(self, rounds):
+        self._rounds = rounds
 
     def set_date(self, date: str):
         self._date = date
 
-    def add_round(self, round: Round):
-        self._rounds.append(round)
-
-    def add_player(self, player: Player):
-        self._players.append(player)
-
-    def save_db(self):
-        tournament_json = {
-            "name": self._name,
-            "place": self._place,
-            "date": self._date,
-            "round": self._round,
-            "time_ctrl": self._time_ctrl,
-            "description": self._description,
-            "rounds": [],
-            "players":[]
-        }
-        db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournament")
-
-        tournament = Query()
-        if not tournaments_table.search((tournament.name == self._name)
-                                        & (tournament.date == self._date)):
-            tournaments_table.insert(tournament_json)
-        else:
-            print("Cet enregistrement est déja présent en base!")
-
-    def update_round_db(self):
+    def update_round(self, round: Round = None):
+        if round is not None:
+            self._rounds.append(round)
         rounds = []
         for round in self._rounds:
             round_name = round.get_name
@@ -63,21 +63,52 @@ class Tournament:
                 matchs.append(match_to_add)
             round_to_add.update({"matchs": matchs})
             rounds.append(round_to_add)
-        # print(rounds)
-
         db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournament")
-
+        tournaments_table = db.table("tournaments")
         tournaments_table.update({"rounds": rounds},
                                  (where("name") == self._name)
                                  & (where("date") == self._date))
+
+    def add_player(self, player_id: int):
+        self._players[str(player_id)] = 0
+        db = TinyDB('chess_tournament')
+        tournaments_table = db.table("tournaments")
+        tournaments_table.update({"players": self._players},
+                                 (where("name") == self._name)
+                                 & (where("date") == self._date))
+
+    def update_player_point(self, player_id, points):
+        self._players[str(player_id)] = self._players[str(player_id)] + points
+        db = TinyDB('chess_tournament')
+        tournaments_table = db.table("tournaments")
+        tournaments_table.update({"players": self._players},
+                                 (where("name") == self._name)
+                                 & (where("date") == self._date))
+
+    def set_id_save_db(self):
+        tournament_json = {
+            "name": self._name,
+            "place": self._place,
+            "date": self._date,
+            "round": self._round,
+            "time_ctrl": self._time_ctrl,
+            "description": self._description,
+            "rounds": self._rounds,
+            "players": self._players
+        }
+        db = TinyDB('chess_tournament')
+        tournaments_table = db.table("tournaments")
+        self._id = tournaments_table.insert(tournament_json)
+
+    def get_points(self, player_id):
+        return self._players[str(player_id)]
 
     @property
     def get_players(self):
         return self._players
 
     @property
-    def get_round(self):
+    def get_rounds(self):
         return self._rounds
 
     @property

@@ -50,33 +50,28 @@ for i in range(20):
 
 # print(date)
 
-
-players_obj: List[Player] = []
-for i in range(8):
-    genre = "F" if prenom[i] in prenom_f else "M"
-    player = Player(nom[i], prenom[i], date[i], genre, i+1)
-    # print(players[i].get_player)
-    players_obj.append(player)
-
-# print(players_obj)
-
-# ******************************
-# Début tournois
-# ******************************
-# Ligne à supprimer !!!
-#
 db = TinyDB('chess_tournament')
-db.drop_tables()
+# db.drop_tables()
+
+
+# ******************************
+# Début tournoi
 # ******************************
 
 # Création du tournoi
 tournament = Tournament("Tournoi privé", "Le Havre",
-                        "11/10/2022", "rapid", "Mon premier tournoi d'échec")
-tournament.save_db()
+                        "13/10/2022", "rapid", "Mon troisième tournoi d'échec")
+
+# Création des joueurs
+players_obj: List[Player] = []
+for i in range(8):
+    genre = "F" if prenom[i] in prenom_f else "M"
+    player = Player(nom[i], prenom[i], date[i], genre, i+1)
+    players_obj.append(player)
+
 # Ajout des joueurs
 for player in players_obj:
-    tournament.add_player(player)
-    player.save_db()
+    tournament.add_player(player.get_id)
 
 # Mélange des joueurs dans la liste
 random.shuffle(players_obj)
@@ -97,7 +92,7 @@ list_2 = players_obj[list_1_length:]
 # Si le nombre de joueurs est impair,
 # le dernier ne peut-être apparié et reçois 1/2 point pour ne pas jouer
 if len(list_2) > len(list_1):
-    list_2[-1].add_point(0.5)
+    tournament.update_player_point(list_2[-1].get_id, 0.5)
 
 # Association des joueurs pour le round-1
 matches_list: List[tuple[Player, Player]] = []
@@ -121,8 +116,7 @@ for match in round_x_matches_list:
     round_1.add_match(match)
 
 # Ajoute le Round au tournoi
-tournament.add_round(round_1)
-tournament.update_round_db()
+tournament.update_round(round_1)
 
 # ******************************
 # Entrée des points par match pour round_1
@@ -137,18 +131,16 @@ for match in round_x_matches_list:
     player_1: Player = match.get_players[0]
     player_2: Player = match.get_players[1]
     match.set_score(score1, score2)
-    player_1.add_point(score1)
-    player_1.update_points_db(score1)
-    player_2.add_point(score2)
-    player_2.update_points_db(score2)
+    tournament.update_player_point(player_1.get_id, score1)
+    tournament.update_player_point(player_2.get_id, score2)
 
     print(f"{player_1}\nNombre de points: \
-{player_1.get_player['points']}")
+{tournament.get_points(player_1.get_id)}")
     print(f"{player_2}\nNombre de points: \
-{player_2.get_player['points']}")
+{tournament.get_points(player_2.get_id)}")
     print()
 
-tournament.update_round_db()
+tournament.update_round()
 # ******************************
 # Début du/des autres rounds
 # ******************************
@@ -190,9 +182,6 @@ def find_player_free(players_free: List[list[Player | bool]]) -> Player | None:
 # ***********************
 
 
-players_obj = tournament.get_players
-# print(f"Liste de joueurs {players_obj}")
-
 for round_x in range(3):
     print(f"Round_{round_x + 2}")
 
@@ -211,9 +200,9 @@ for round_x in range(3):
     players_obj = sorted(
         players_obj, key=lambda x: x.get_player["classification"])
     players_obj = sorted(
-        players_obj, key=lambda x: x.get_player["points"], reverse=True)
+        players_obj, key=lambda x: tournament.get_points(x.get_id), reverse=True)
     for player in players_obj:
-        print(player.get_player["name"], player.get_player["points"],
+        print(player.get_player["name"], tournament.get_points(player.get_id),
               player.get_player["classification"])
 
     matches_list = []
@@ -234,7 +223,7 @@ for round_x in range(3):
                         f"Le joueur {player_1[0]} n'est pas associé, \
 il faut lui donner 0.5 points")
                     player: Player = player_1[0]
-                    player.add_point(0.5)
+                    tournament.update_player_point(player.get_id, 0.5)
                     # Sortie du while
                     break
                 player_2 = player_free
@@ -301,8 +290,7 @@ il faut lui donner 0.5 points")
         round_x_obj.add_match(match)
 
     # Ajoute le Round au tournoi
-    tournament.add_round(round_x_obj)
-    tournament.update_round_db()
+    tournament.update_round(round_x_obj)
 
     # ******************************
     # Entrée des points par match pour round_x
@@ -317,17 +305,15 @@ il faut lui donner 0.5 points")
         player_1: Player = match.get_players[0]
         player_2: Player = match.get_players[1]
         match.set_score(score1, score2)
-        player_1.add_point(score1)
-        player_1.update_points_db(score1)
-        player_2.add_point(score2)
-        player_2.update_points_db(score2)
+        tournament.update_player_point(player_1.get_id, score1)
+        tournament.update_player_point(player_2.get_id, score2)
 
         print(f"{player_1}\nNombre de points: \
-    {player_1.get_player['points']}")
+    {tournament.get_points(player_1.get_id)}")
         print(f"{player_2}\nNombre de points: \
-    {player_2.get_player['points']}")
+    {tournament.get_points(player_2.get_id)}")
         print()
 
-    tournament.update_round_db()
+    tournament.update_round()
 
     # Boucle 3 fois

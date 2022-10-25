@@ -24,8 +24,12 @@ players_table.insert(player_2.get_player)
 player = Query()
 print(players_table.search(player.classification == 2))
 
-# retourne le premier qui match
-print(players_table.get(where("classification") == 2))
+# retourne le premier qui match et recupere sont id
+player = players_table.get(where("classification") == 2)
+print(player)
+player_id = player.doc_id
+print(player_id)
+
 
 # met à jour ceux qui match
 players_table.update({"points": 1},

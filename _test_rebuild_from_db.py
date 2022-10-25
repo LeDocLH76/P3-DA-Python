@@ -1,59 +1,57 @@
-from tinydb import TinyDB, where
-from models.match import Match
+from tinydb import TinyDB
 from models.player import Player
+from models.match import Match
 from models.round import Round
-
 from models.tournament import Tournament
 
 db = TinyDB('chess_tournament')
-tournament_to_rebuild = "Tournoi privé"
+tournament_to_rebuild = 2
+
 # regénération du tournoi
-tournaments_table = db.table("tournament")
-tournament_db = tournaments_table.get(where("name") == tournament_to_rebuild)
-# print(tournament_db["name"])
-# print(tournament_db["place"])
-# print(tournament_db["date"])
-# print(tournament_db["round"])
-# print(tournament_db["time_ctrl"])
-# print(tournament_db["description"])
-tournament = Tournament(
+tournaments_table = db.table("tournaments")
+tournament_db = tournaments_table.get(doc_id=tournament_to_rebuild)
+tournament: Tournament = Tournament.add_tournament_from_db(
     tournament_db["name"],
     tournament_db["place"],
     tournament_db["date"],
     tournament_db["time_ctrl"],
     tournament_db["description"],
-    tournament_db["round"])
-
-# print(tournament)
+    tournament_db["players"],
+    tournament_db["round"],
+)
 
 # regénération des joueurs
-# Changer la source des joueurs > Dans un tournoi
+players_obj = []
+tournament_players_db = tournament_db["players"]
 players_table = db.table("players")
-for player_db in players_table:
-    # print(player_db["name"])
-    # print(player_db["surname"])
-    # print(player_db["birth_date"])
-    # print(player_db["gender"])
-    # print(player_db["classification"])
-    # print(player_db["points"])
-    birth_date: str = (player_db["birth_date"])
-    birth_date_fr = "/".join(reversed(birth_date.split("-")))
-    player = Player(
-        player_db["name"],
-        player_db["surname"],
-        birth_date_fr,
-        player_db["gender"],
-        player_db["classification"])
-    tournament.add_player(player)
-    player.add_point(player_db["points"])
+# Crée la liste des key des joueurs
+players_id = [key for key in tournament_players_db]
+# Crée la liste des points des joueurs
+points = [tournament_players_db[key] for key in tournament_players_db]
+# Pour chaque key dans tournament_players_db
+for player_id, points in zip(players_id, points):
+    # Recupère les datas du joueur doc_id = key dans la table players
+    player_info = players_table.get(doc_id=player_id)
+# Crée le player
+    player_obj: Player = Player.add_player_from_db(
+        player_info["name"],
+        player_info["surname"],
+        player_info["birth_date"],
+        player_info["gender"],
+        player_info["classification"],
+        player_id)
+# L'ajoute au tournoi avec ses points
+    tournament.update_player_point_from_db(player_id, points)
+# Ajoute l'instance de ce joueur à la liste pour ce tournoi
+    players_obj.append(player_obj)
 
 # regénération des tournées et rounds
-players_obj = tournament.get_players
-for round_db in tournament_db["rounds"]:
-    round_name = round_db["name"]
-    round = Round(round_name)
+rounds = []
+for round_item in tournament_db["rounds"]:
+    round_name = round_item["name"]
+    round_obj = Round(round_name)
     # regénération des matchs
-    for match_db in round_db["matchs"]:
+    for match_db in round_item["matchs"]:
         # Recherche l'instance du joueur 1 dans la liste
         player_1 = [
             player for player in players_obj
@@ -78,12 +76,12 @@ for round_db in tournament_db["rounds"]:
         player_2 = player_2[0]
 
         match = Match(player_1, player_2, score_player_1, score_player_2)
-        round.add_match(match)
-    tournament.add_round(round)
-
+        round_obj.add_match(match)
+    rounds.append(round_obj)
+tournament.add_rounds_from_bd(rounds)
 
 print(tournament)
-for round_item in tournament.get_round:
+for round_item in tournament.get_rounds:
     print(f"Le round {round_item.get_name} est composé des matchs:")
     for match in round_item.get_matchs:
         print(f"{match.get_match[0][0]} contre {match.get_match[1][0]} \
