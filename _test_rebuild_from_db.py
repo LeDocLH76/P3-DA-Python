@@ -27,6 +27,7 @@ tournament = Tournament(
 # print(tournament)
 
 # regénération des joueurs
+# Changer la source des joueurs > Dans un tournoi
 players_table = db.table("players")
 for player_db in players_table:
     # print(player_db["name"])

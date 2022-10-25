@@ -35,7 +35,8 @@ class Tournament:
             "round": self._round,
             "time_ctrl": self._time_ctrl,
             "description": self._description,
-            "rounds": []
+            "rounds": [],
+            "players":[]
         }
         db = TinyDB('chess_tournament')
         tournaments_table = db.table("tournament")

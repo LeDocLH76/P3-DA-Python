@@ -17,7 +17,9 @@ class Player:
         self.set_birth_date(birth_date)
         self._gender = gender.strip()[0].capitalize()
         self._classification = classification
+        # Points doit changer de place > players[[player_id, points]]
         self._points = 0
+        # Ajouter player_id venant de la db
 
     def set_birth_date(self, birth_date: str) -> None:
         # format and transform birth_date
@@ -42,6 +44,7 @@ class Player:
     def set_classification(self, classification) -> None:
         self._classification = classification
 
+    # A revoir car plus self mais tournament players player_id
     def add_point(self, point) -> None:
         self._points += point
 
@@ -64,6 +67,7 @@ class Player:
                              & (where("surname") == self._surname)
                              & (where("birth_date") == self._birth_date))
 
+    # A revoir car plus self  mais tournament players player_id points
     def update_points_db(self, points):
         db = TinyDB('chess_tournament')
         players_table = db.table("players")
@@ -74,6 +78,7 @@ class Player:
 
     @ property
     def get_player(self) -> dict:
+        # Points n'est plus ici
         player = {"name": self._name,
                   "surname": self._surname,
                   "birth_date": self._birth_date,
