@@ -51,8 +51,9 @@ class Tournament:
             self._rounds.append(round)
         rounds = []
         for round in self._rounds:
-            round_name = round.get_name
-            round_to_add = {"name": round_name}
+            round_to_add = {"name": round.get_name}
+            round_to_add["date_begin"] = round.get_begin
+            round_to_add["date_end"] = round.get_end
             matchs = []
             for match in round.get_matchs:
                 match_to_add = {
@@ -123,5 +124,5 @@ class Tournament:
     def __str__(self):
         return f"Le tournois: {self._name} en date du {self._date}\n\
 s'est déroulé à: {self._place} \
-et à réunis {len(self._players)} participants.\n\
+et à réuni {len(self._players)} participants.\n\
 Le time control est {self._time_ctrl} la description est {self._description}."

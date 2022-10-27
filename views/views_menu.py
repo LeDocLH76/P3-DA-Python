@@ -1,11 +1,11 @@
 
 import re
-from views.views_utility import clear_screen, input_filter
+from views import views_utility
 
 
 def root_menu():
     while True:
-        clear_screen()
+        views_utility.clear_screen()
         print("Menu principal")
         print("1. Voir les tournois enregistrés")
         print("2. Voir tous les joueurs enregistrés")
@@ -16,7 +16,7 @@ def root_menu():
         print("7. Quitter le programme")
         print("Entrer votre choix")
         response = input()
-        response = input_filter(response)
+        response = views_utility.input_filter(response)
         if response == "1":
             return 1
         if response == "2":
@@ -35,16 +35,16 @@ def root_menu():
 
 def players_menu():
     while True:
-        clear_screen()
-        print("Menu principal")
+        views_utility.clear_screen()
+        print("Menu joueurs")
         print("1. Entrer un joueur")
         print("2. Modifier un joueur")
         print("3. Supprimer un joueur")
         print("4. Voir les joueurs")
-        print("5. Commencer un tournoi")
+        print("5. Quitter")
         print("Entrer votre choix")
         response = input()
-        response = input_filter(response)
+        response = views_utility.input_filter(response)
         if response == "1":
             return 1
         if response == "2":
@@ -54,18 +54,15 @@ def players_menu():
         if response == "4":
             return 4
         if response == "5":
-            print("La liste des joueurs ne pourra plus être modifiée!")
-            print("Continuer? O/N")
-            continue_ = input()
-            continue_ = input_filter(continue_)
-            if continue_ == "O":
-                return 5
+            return 5
+        if response == "6":
+            return 6
 
 
 def tournament_choice(count):
     while True:
         response = re.findall(
-            '[0-9]', input_filter(
+            '[0-9]', views_utility.input_filter(
                 input("Veuillez choisir un numéro de la liste --> ")))
         if len(response) > 0 and int(response[0]) <= count:
             return int(response[0])
@@ -78,7 +75,7 @@ def sort_choice():
     while True:
         print("Entrer votre choix")
         response = input()
-        response = input_filter(response)
+        response = views_utility.input_filter(response)
         if response == "1":
             return 1
         if response == "2":
@@ -92,7 +89,7 @@ def result_type():
     while True:
         print("Entrer votre choix")
         response = input()
-        response = input_filter(response)
+        response = views_utility.input_filter(response)
         if response == "1":
             return 1
         if response == "2":

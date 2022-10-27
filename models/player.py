@@ -1,5 +1,5 @@
 
-from tinydb import TinyDB, where
+from tinydb import Query, TinyDB, where
 
 
 class Player:
@@ -69,7 +69,22 @@ class Player:
         players_table = db.table("players")
         print("Sauve le joueur en Db et recupère sont id")
         print(f"Player = {self.get_player}")
-        self._id = players_table.insert(self.get_player)
+
+        # Vérifie si le joueur est déja enregistré
+        player = Query()
+        if not players_table.search(
+            (player.name == self._name)
+            & (player.surname == self._surname)
+                & (player.birth_date == self._birth_date)):
+            self._id = players_table.insert(self.get_player)
+        else:
+            print("Cet enregistrement est déja présent en base!")
+            # Find player_id on Db, put it in self
+            player_db = players_table.get(
+                (where("name") == self._name)
+                & (where("surname") == self._surname)
+                & (where("birth_date") == self._birth_date))
+            self._id = player_db.doc_id
         print(f"Id du joueur ={self._id}")
 
     @ property

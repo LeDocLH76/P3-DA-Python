@@ -5,7 +5,7 @@ from models.round import Round
 from models.tournament import Tournament
 
 db = TinyDB('chess_tournament')
-tournament_to_rebuild = 2
+tournament_to_rebuild = 1
 
 # regénération du tournoi
 tournaments_table = db.table("tournaments")
@@ -49,7 +49,9 @@ for player_id, points in zip(players_id, points):
 rounds = []
 for round_item in tournament_db["rounds"]:
     round_name = round_item["name"]
-    round_obj = Round(round_name)
+    date_begin = round_item["date_begin"]
+    date_end = round_item["date_end"]
+    round_obj = Round.add_round_from_db(round_name, date_begin, date_end)
     # regénération des matchs
     for match_db in round_item["matchs"]:
         # Recherche l'instance du joueur 1 dans la liste
@@ -81,8 +83,14 @@ for round_item in tournament_db["rounds"]:
 tournament.add_rounds_from_bd(rounds)
 
 print(tournament)
+print()
+print("Voici les infos du tournoi:")
 for round_item in tournament.get_rounds:
-    print(f"Le round {round_item.get_name} est composé des matchs:")
+    print(f"Le round {round_item.get_name}")
+    print(f"Début :{round_item.get_begin}")
+    print(f"fin :{round_item.get_end}")
+    print("Il est composé des matchs:")
     for match in round_item.get_matchs:
         print(f"{match.get_match[0][0]} contre {match.get_match[1][0]} \
 score: {match.get_match[0][1]}/{match.get_match[1][1]}")
+    print()

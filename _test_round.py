@@ -1,3 +1,4 @@
+import time
 from models.player import Player
 from models.match import Match
 from models.round import Round
@@ -13,8 +14,12 @@ match2.set_score(0, 1)
 round1 = Round("Round-1")
 round1.add_match(match1)
 round1.add_match(match2)
+# Fin du round
+time.sleep(2)
+round1.set_end(time.time())
 print(match1.get_players[0], match1.get_scores[0])
 print(match1.get_players[1], match1.get_scores[1])
 print(match2.get_players[0], match1.get_scores[0])
 print(match2.get_players[1], match1.get_scores[1])
 print(round1.get_matchs)
+print(round1)

@@ -1,4 +1,5 @@
 import random
+import time
 from typing import List
 
 from tinydb import TinyDB
@@ -60,7 +61,7 @@ db = TinyDB('chess_tournament')
 
 # Création du tournoi
 tournament = Tournament("Tournoi privé", "Le Havre",
-                        "13/10/2022", "rapid", "Mon troisième tournoi d'échec")
+                        "03/10/2022", "rapid", "Mon troisième tournoi d'échec")
 
 # Création des joueurs
 players_obj: List[Player] = []
@@ -102,6 +103,7 @@ for i in range(len(list_1)):
 # Création de la listes des instances de Match pour le round_1
 round_x_matches_list: List[Match] = []
 
+print()
 print("Les match du premier tour sont:")
 
 for player_1, player_2 in matches_list:
@@ -115,6 +117,12 @@ for player_1, player_2 in matches_list:
 for match in round_x_matches_list:
     round_1.add_match(match)
 
+# Fin du round
+time.sleep(2)
+round_1.set_end(time.time())
+print(round_1)
+print()
+
 # Ajoute le Round au tournoi
 tournament.update_round(round_1)
 
@@ -124,6 +132,7 @@ tournament.update_round(round_1)
 score = [1.0, 0.5, 0.0]
 
 print("Résultat du round-1")
+print()
 
 for match in round_x_matches_list:
     score1 = random.choice(score)
@@ -156,9 +165,9 @@ for match in match_already_played:
     pair = (match.get_players[0],
             match.get_players[1])
     forbiden_pairs.append(pair)
-print("Associations interdites")
-print(forbiden_pairs)
-print()
+# print("Associations interdites")
+# print(forbiden_pairs)
+# print()
 
 # A ce stade:
 # forbiden_pair est une liste de tuples d'instance de joueur
@@ -183,7 +192,7 @@ def find_player_free(players_free: List[list[Player | bool]]) -> Player | None:
 
 
 for round_x in range(3):
-    print(f"Round_{round_x + 2}")
+    print(f"début du round {round_x + 2}")
 
     # Créé un nouveau round
     round_x_obj = Round(f"Round_{round_x + 2}")
@@ -194,13 +203,17 @@ for round_x in range(3):
     for player in players_obj:
         player_to_add = [player, True]
         players_free.append(player_to_add)
-    print(f"Liste de joueurs libre {players_free}")
+    # print(f"Liste de joueurs libre {players_free}")
 
     # Trie les joueurs par points puis par classement si égalité de points
     players_obj = sorted(
-        players_obj, key=lambda x: x.get_player["classification"])
+        players_obj,
+        key=lambda x: x.get_player["classification"])
     players_obj = sorted(
-        players_obj, key=lambda x: tournament.get_points(x.get_id), reverse=True)
+        players_obj,
+        key=lambda x: tournament.get_points(x.get_id),
+        reverse=True)
+    print("Joueurs triés pour le prochain tour")
     for player in players_obj:
         print(player.get_player["name"], tournament.get_points(player.get_id),
               player.get_player["classification"])
@@ -275,8 +288,9 @@ il faut lui donner 0.5 points")
     # Ajouter le round
     # Création de la listes des instances de Match pour le round_1
     round_x_matches_list: List[Match] = []
-
-    print(f"Les match du tour {round_x + 2} sont:")
+    print()
+    print(f"Les match du tour {round_x_obj.get_name} sont:")
+    print()
 
     for player_1, player_2 in matches_list:
 
@@ -289,6 +303,12 @@ il faut lui donner 0.5 points")
     for match in round_x_matches_list:
         round_x_obj.add_match(match)
 
+    # Fin du round
+    time.sleep(2)
+    round_x_obj.set_end(time.time())
+    print(round_x_obj)
+    print()
+
     # Ajoute le Round au tournoi
     tournament.update_round(round_x_obj)
 
@@ -297,7 +317,8 @@ il faut lui donner 0.5 points")
     # ******************************
     score = [1.0, 0.5, 0.0]
 
-    print(f"Résultat du round-{round_x + 2}")
+    print(f"Résultat du round-{round_x_obj.get_name}")
+    print()
 
     for match in round_x_matches_list:
         score1 = random.choice(score)

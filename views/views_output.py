@@ -1,38 +1,31 @@
-
+import pyfiglet
 from operator import itemgetter
 from tinydb import TinyDB
+
 from views import views_utility
-from views.views_utility import clear_screen
 
 
 def splash_screen():
-    clear_screen()
-    print(
-        """
+    views_utility.clear_screen()
 
-        Bienvenue au tournoi d'échec
-
-
-        Entrée pour continuer""")
+    text = pyfiglet.figlet_format("Bienvenue  au  tournoi  d' echecs")
+    print(text)
+    print("Entrée pour continuer")
     input()
 
 
 def bye_screen():
-    clear_screen()
-    print(
-        """
-
-        Merci d'avoir utilisé ce programme.
-
-
-        Entrée pour quitter""")
+    views_utility.clear_screen()
+    text = pyfiglet.figlet_format("Au revoir")
+    print(text)
+    print("Merci d'avoir utilisé ce programme.\nEntrée pour quitter")
     input()
 
 
 def tournament_list():
     db = TinyDB('chess_tournament')
     tournaments_table = db.table("tournaments")
-    clear_screen()
+    views_utility.clear_screen()
     for document in tournaments_table:
         print(document.doc_id, document["name"],
               document["date"], document["description"])
@@ -52,7 +45,7 @@ def players_list(sort_type):
 
 
 def print_players(sorted_players):
-    clear_screen()
+    views_utility.clear_screen()
     for sorted_player in sorted_players:
         print(f"{sorted_player['name']} {sorted_player['surname']} \
 {sorted_player['gender']} né le: {sorted_player['birth_date']} classé: \

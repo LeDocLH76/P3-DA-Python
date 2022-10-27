@@ -1,3 +1,4 @@
+import time
 from tinydb import TinyDB
 
 from models.player import Player
@@ -25,8 +26,6 @@ match2.set_score(0, 1)
 round1 = Round("Round-1")
 round1.add_match(match1)
 round1.add_match(match2)
-tournament.add_round(round1)
-# print(tournament)
-# print(tournament.get_round)
-# print(tournament.get_players)
-# print(tournament.get_matchs_already_played)
+round1.set_end(time.time())
+tournament.update_round(round1)
+print(tournament)
