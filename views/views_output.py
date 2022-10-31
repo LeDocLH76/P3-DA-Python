@@ -1,8 +1,8 @@
 import pyfiglet
-from operator import itemgetter
-from tinydb import TinyDB
 
 from views import views_utility
+from models.db_manager_players import Db_manager_player
+from models.db_manager_tournaments import Db_manager_tournament
 
 
 def splash_screen():
@@ -22,25 +22,14 @@ def bye_screen():
     input()
 
 
-def tournament_list():
-    db = TinyDB('chess_tournament')
-    tournaments_table = db.table("tournaments")
-    views_utility.clear_screen()
-    for document in tournaments_table:
-        print(document.doc_id, document["name"],
-              document["date"], document["description"])
-    return tournaments_table.__len__()
-
-
 def players_list(sort_type):
-    db = TinyDB('chess_tournament')
-    players_table = db.table("players")
-    players_document = players_table.all()
+    db_player = Db_manager_player()
+    players_document = db_player.get_all()
     players = []
     for player_document in players_document:
-        player = build_players_list(player_document)
+        player = views_utility.build_players_list(player_document)
         players.append(player)
-    sorted_players = sort_players_by_type(sort_type, players)
+    sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
 
 
@@ -52,45 +41,33 @@ def print_players(sorted_players):
 {sorted_player['classification']}")
 
 
-def sort_players_by_type(sort_type, players):
-    if sort_type == 1:
-        sorted_players = sorted(players, key=itemgetter('name', 'surname'))
-    else:
-        sorted_players = sorted(players, key=itemgetter(
-            'classification', 'name', 'surname'))
-    return sorted_players
+def tournament_list():
+    tournament_bd = Db_manager_tournament()
+    tournaments_list = tournament_bd.get_all()
+    views_utility.clear_screen()
+    for tournament in tournaments_list:
+        print(tournament["id"], tournament["name"],
+              tournament["date"], tournament["description"])
+    return len(tournaments_list)
 
 
-def build_players_list(player_document):
-    player = {}
-    player["name"] = player_document["name"]
-    player["surname"] = player_document["surname"]
-    player["gender"] = player_document["gender"]
-    player["birth_date"] = views_utility.transform_date(
-        player_document["birth_date"])
-    player["classification"] = player_document["classification"]
-    return player
-
-
-def tournament_results(tournament_id, result_type):
-    db = TinyDB('chess_tournament')
-    tournaments_table = db.table("tournaments")
-    tournament = tournaments_table.get(doc_id=tournament_id)
-    rounds = tournament.get("rounds")
+def tournament_results(tournament_id: int, result_type):
+    tournament_db = Db_manager_tournament()
+    rounds = tournament_db.get_rounds_by_id(tournament_id)
     # print(rounds)
     for round in rounds:
         if result_type == 1:
             print(round["name"])
-        matchs = round.get("matchs")
+        matchs = round["matchs"]
         for match in matchs:
-            player1 = match.get("player_1")
+            player1 = match["player_1"]
             space1 = ""
             for i in range(20 - len(player1["name"])):
                 space1 += " "
             space2 = ""
             for i in range(20 - len(player1["surname"])):
                 space2 += " "
-            player2 = match.get("player_2")
+            player2 = match["player_2"]
             space3 = ""
             for i in range(20 - len(player2["name"])):
                 space3 += " "
@@ -106,16 +83,14 @@ score: {match["score_player_1"]} / {match["score_player_2"]}')
             print()
 
 
-def tournament_players(tournament_id, sort_type):
-    db = TinyDB('chess_tournament')
-    tournaments_table = db.table("tournaments")
-    players_table = db.table("players")
-    tournament = tournaments_table.get(doc_id=tournament_id)
-    tournament_players = tournament.get('players')
+def tournament_players(tournament_id: int, sort_type: int):
+    db_player = Db_manager_player()
+    db_tournament = Db_manager_tournament()
+    tournament_players = db_tournament.get_players_by_id(tournament_id)
     players = []
     for tournament_player in tournament_players:
-        player_document = players_table.get(doc_id=int(tournament_player))
-        player = build_players_list(player_document)
+        player_document = db_player.get_by_id(int(tournament_player))
+        player = views_utility.build_players_list(player_document)
         players.append(player)
-    sorted_players = sort_players_by_type(sort_type, players)
+    sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)

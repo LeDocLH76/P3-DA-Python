@@ -7,7 +7,7 @@ from models.round import Round
 from models.tournament import Tournament
 
 db = TinyDB('chess_tournament')
-db.drop_tables()
+# db.drop_tables()
 
 tournament = Tournament("T1", "Ici", "10/10/2022",
                         "Rapid", "Mon premier tournois")

@@ -60,8 +60,11 @@ db = TinyDB('chess_tournament')
 # ******************************
 
 # Création du tournoi
-tournament = Tournament("Tournoi privé", "Le Havre",
-                        "03/10/2022", "rapid", "Mon troisième tournoi d'échec")
+tournament = Tournament("Tournoi privé",
+                        "Le Havre",
+                        "05/10/2022",
+                        "rapid",
+                        "Mon cinquième tournoi d'échecs")
 
 # Création des joueurs
 players_obj: List[Player] = []

@@ -1,5 +1,5 @@
 
-from tinydb import Query, TinyDB, where
+from models.db_manager_players import Db_manager_player
 
 
 class Player:
@@ -57,35 +57,13 @@ class Player:
 
     def set_classification(self, classification) -> None:
         self._classification = classification
-        db = TinyDB('chess_tournament')
-        players_table = db.table("players")
-        players_table.update({"classification": classification},
-                             (where("name") == self._name)
-                             & (where("surname") == self._surname)
-                             & (where("birth_date") == self._birth_date))
+        player_bd = Db_manager_player()
+        player_bd.update_classification_by_id(self._id, classification)
 
     def set_id_save_db(self) -> None:
-        db = TinyDB('chess_tournament')
-        players_table = db.table("players")
+        player_db = Db_manager_player()
         print("Sauve le joueur en Db et recupère sont id")
-        print(f"Player = {self.get_player}")
-
-        # Vérifie si le joueur est déja enregistré
-        player = Query()
-        if not players_table.search(
-            (player.name == self._name)
-            & (player.surname == self._surname)
-                & (player.birth_date == self._birth_date)):
-            self._id = players_table.insert(self.get_player)
-        else:
-            print("Cet enregistrement est déja présent en base!")
-            # Find player_id on Db, put it in self
-            player_db = players_table.get(
-                (where("name") == self._name)
-                & (where("surname") == self._surname)
-                & (where("birth_date") == self._birth_date))
-            self._id = player_db.doc_id
-        print(f"Id du joueur ={self._id}")
+        self._id = player_db.add_one(self.get_player)
 
     @ property
     def get_id(self) -> int:

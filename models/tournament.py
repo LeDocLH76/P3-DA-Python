@@ -1,9 +1,8 @@
 from typing import List
 
-from tinydb import TinyDB, where
-
 from models.match import Match
 from models.round import Round
+from models.db_manager_tournaments import Db_manager_tournament
 
 
 class Tournament:
@@ -64,30 +63,25 @@ class Tournament:
                 matchs.append(match_to_add)
             round_to_add.update({"matchs": matchs})
             rounds.append(round_to_add)
-        db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournaments")
-        tournaments_table.update({"rounds": rounds},
-                                 (where("name") == self._name)
-                                 & (where("date") == self._date))
+        tournament_db = Db_manager_tournament()
+        tournament_db.update_rounds_by_name_and_date(
+            self._name, self._date, rounds)
 
     def add_player(self, player_id: int):
         self._players[str(player_id)] = 0
-        db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournaments")
-        tournaments_table.update({"players": self._players},
-                                 (where("name") == self._name)
-                                 & (where("date") == self._date))
+        self.save_players()
 
     def update_player_point(self, player_id, points):
         self._players[str(player_id)] = self._players[str(player_id)] + points
-        db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournaments")
-        tournaments_table.update({"players": self._players},
-                                 (where("name") == self._name)
-                                 & (where("date") == self._date))
+        self.save_players()
+
+    def save_players(self):
+        tournament_db = Db_manager_tournament()
+        tournament_db.update_players_by_name_and_date(
+            self._name, self._date, self._players)
 
     def set_id_save_db(self):
-        tournament_json = {
+        tournament_dict = {
             "name": self._name,
             "place": self._place,
             "date": self._date,
@@ -97,9 +91,8 @@ class Tournament:
             "rounds": self._rounds,
             "players": self._players
         }
-        db = TinyDB('chess_tournament')
-        tournaments_table = db.table("tournaments")
-        self._id = tournaments_table.insert(tournament_json)
+        tournament_db = Db_manager_tournament()
+        self._id = tournament_db.add_one(tournament_dict)
 
     def get_points(self, player_id):
         return self._players[str(player_id)]

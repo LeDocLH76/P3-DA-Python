@@ -1,4 +1,5 @@
 import os
+from operator import itemgetter
 
 
 def clear_screen():
@@ -16,3 +17,22 @@ def transform_date(date: str):
     date_list.reverse()
     date_fr = "/".join(date_list)
     return date_fr
+
+
+def sort_players_by_type(sort_type, players):
+    if sort_type == 1:
+        sorted_players = sorted(players, key=itemgetter('name', 'surname'))
+    else:
+        sorted_players = sorted(players, key=itemgetter(
+            'classification', 'name', 'surname'))
+    return sorted_players
+
+
+def build_players_list(player_document):
+    player = {}
+    player["name"] = player_document["name"]
+    player["surname"] = player_document["surname"]
+    player["gender"] = player_document["gender"]
+    player["birth_date"] = transform_date(player_document["birth_date"])
+    player["classification"] = player_document["classification"]
+    return player

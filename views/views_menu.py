@@ -64,7 +64,9 @@ def tournament_choice(count):
         response = re.findall(
             '[0-9]', views_utility.input_filter(
                 input("Veuillez choisir un numéro de la liste --> ")))
-        if len(response) > 0 and int(response[0]) <= count:
+        if (len(response) > 0
+            and int(response[0]) <= count
+                and int(response[0]) > 0):
             return int(response[0])
 
 
