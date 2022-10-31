@@ -3,7 +3,17 @@ from models.db_manager_players import Db_manager_player
 
 
 class Player:
-    """ Player definition """
+    """ Player definition
+
+    Attributes:
+        name (str): Player's name
+        surname (str): Player's surname
+        birth_date (str): Player' birth date like dd/mm/yyyy
+        gender (str): Player's gender only M of F
+        classification (None or int): Player's classification
+        id (int): Player's id on database
+
+    """
 
     def __init__(self,
                  name: str,
@@ -24,8 +34,19 @@ class Player:
                            surname: str,
                            birth_date: str,
                            gender: str,
-                           classification,
-                           id):
+                           classification: None | int,
+                           id: int):
+        """Alternative __init__ for create Player from database
+
+        Args:
+        name (str): Player's name
+        surname (str): Player's surname
+        birth_date (str): Player' birth date like dd/mm/yyyy
+        gender (str): Player's gender only M of F
+        classification (None or int): Player's classification
+        id (int): Player's id on database
+
+        """
         player = cls.__new__(cls)
         player._name = name
         player._surname = surname
@@ -36,42 +57,58 @@ class Player:
         return player
 
     def set_birth_date(self, birth_date: str) -> None:
-        # format and transform birth_date
-        # print(birth_date)
+        """Transform birth_date from dd/mm/yyyy to iso format yyyy-mm-dd
+
+        Args:
+            birth_date (str): date string like dd/mm/yyyy
+
+        """
         birth_date_list = birth_date.split("/")
         if len(birth_date_list[0]) < 2:
             birth_date_list[0] = "0" + birth_date_list[0]
         if len(birth_date_list[1]) < 2:
             birth_date_list[1] = "0" + birth_date_list[1]
-        # print(birth_date_list)
         birth_date_invert_list = reversed(birth_date_list)
-        # print(birth_date_invert_list)
         birth_date_iso = "-".join(birth_date_invert_list)
-        # print(birth_date_iso)
-        # **************************
-        # non compatible avec tinydb
-        # birth_date_obj = date.fromisoformat(birth_date_iso)
-        # print(birth_date_obj, type(birth_date_obj))
-        # **************************
         self._birth_date = birth_date_iso
 
-    def set_classification(self, classification) -> None:
+    def set_classification(self, classification: int) -> None:
+        """Set Player's classification
+
+        Args:
+            classification (int): Player's classification to set
+
+        """
         self._classification = classification
         player_bd = Db_manager_player()
         player_bd.update_classification_by_id(self._id, classification)
 
     def set_id_save_db(self) -> None:
+        """Save Player from get_player on database and get is id
+
+        """
         player_db = Db_manager_player()
-        print("Sauve le joueur en Db et recupère sont id")
         self._id = player_db.add_one(self.get_player)
 
     @ property
     def get_id(self) -> int:
+        """Property Player's id
+
+        Return:
+            int: Player's id on database
+
+        """
         return self._id
 
     @ property
     def get_player(self) -> dict:
-        # Points n'est plus ici
+        """Property Player's datas
+
+        Return:
+            dict: name, surname, birth_date, gender, \
+classification of the Player
+
+        """
         player = {"name": self._name,
                   "surname": self._surname,
                   "birth_date": self._birth_date,
@@ -80,6 +117,12 @@ class Player:
         return player
 
     def __str__(self) -> str:
+        """Human readable Player for dev only
+
+        Return:
+            str: Player
+
+        """
         classification = (self._classification if
                           self._classification is not None else "N/A")
         return f"{self._surname} {self._name} Né le: \
