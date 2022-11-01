@@ -22,7 +22,7 @@ class Round:
 
     @classmethod
     def add_round_from_db(cls, name, date_begin, date_end):
-        """Alternative __init__ for create Round from database
+        """Alternative __init__ to create Round from database
 
         Args:
             name (str): Round's name

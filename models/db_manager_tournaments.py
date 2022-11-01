@@ -22,6 +22,18 @@ class Db_manager_tournament:
         player_list: list[int] = tournament.get('players')
         return player_list
 
+    def get_one(self, tournament_id):
+        tournament_db = self.tournaments_table.get(doc_id=tournament_id)
+        tournament = {}
+        tournament["name"] = tournament_db["name"]
+        tournament["place"] = tournament_db["place"]
+        tournament["date"] = tournament_db["date"]
+        tournament["time_ctrl"] = tournament_db["time_ctrl"]
+        tournament["description"] = tournament_db["description"]
+        tournament["players"] = tournament_db["players"]
+        tournament["round"] = tournament_db["round"]
+        return tournament
+
     def get_rounds_by_id(self, tournament_id: int):
         tournament = self.tournaments_table.get(doc_id=tournament_id)
         rounds_list = tournament.get('rounds')

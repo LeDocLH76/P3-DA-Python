@@ -36,7 +36,7 @@ class Player:
                            gender: str,
                            classification: None | int,
                            id: int):
-        """Alternative __init__ for create Player from database
+        """Alternative __init__ to create Player from database
 
         Args:
         name (str): Player's name
