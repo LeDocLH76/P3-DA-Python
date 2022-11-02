@@ -1,5 +1,5 @@
 
-from views import views_menu, views_output
+from views import views_input, views_menu, views_output
 
 
 def begin():
@@ -10,41 +10,40 @@ def begin():
         res_root_menu = views_menu.root_menu()
         # Voir les tournois enregistrés
         if res_root_menu == 1:
-            print("Choix 1")
             views_output.tournament_list()
-            input()
+            input("Entrée pour continuer")
         # Voir tous les joueurs enregistrés
         if res_root_menu == 2:
-            print("Choix 2")
             sort_type = views_menu.sort_choice()
             views_output.players_list(sort_type)
-            input()
+            input("Entrée pour continuer")
         # Voir les résultats d'un tournoi
         if res_root_menu == 3:
-            print("Choix 3")
-            count = views_output.tournament_list()
-            tournament_id = views_menu.tournament_choice(count)
+            tournament_quantity = views_output.tournament_list()
+            tournament_id = views_menu.tournament_choice(tournament_quantity)
             result_type = views_menu.result_type()
             views_output.tournament_results(tournament_id, result_type)
-            input()
+            input("Entrée pour continuer")
         # Voir les joueurs d'un tournoi
         if res_root_menu == 4:
-            print("Choix 4")
-            count = views_output.tournament_list()
-            tournament_id = views_menu.tournament_choice(count)
+            tournament_quantity = views_output.tournament_list()
+            tournament_id = views_menu.tournament_choice(tournament_quantity)
             sort_type = views_menu.sort_choice()
             views_output.tournament_players(tournament_id, sort_type)
-            input()
-        # Reprendre un tournoi en cours
+            input("Entrée pour continuer")
+        # Gestion des joueurs
         if res_root_menu == 5:
-            print("Choix 5")
-            input()
-        # Débuter un nouveau tournoi
+            views_menu.players_action_choice()
+        # Reprendre un tournoi en cours
         if res_root_menu == 6:
             print("Choix 6")
-            input()
-        # Quitter le programme
+            input("Entrée pour continuer")
+        # Débuter un nouveau tournoi
         if res_root_menu == 7:
+            print("Choix 7")
+            input("Entrée pour continuer")
+        # Quitter le programme
+        if res_root_menu == 8:
             views_output.bye_screen()
             break
 
