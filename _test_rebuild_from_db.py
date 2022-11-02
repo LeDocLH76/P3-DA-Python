@@ -43,20 +43,28 @@ for player_id, points in zip(players_id, points):
         player_info["classification"],
         player_id)
     # L'ajoute au tournoi avec ses points
-    tournament.update_player_point_from_db(player_id, points)
+    tournament._players[str(player_id)] = points
     # Ajoute l'instance de ce joueur à la liste pour ce tournoi
     players_obj.append(player_obj_to_add)
 
-# regénération des tournées et rounds
+# regénération des tournées et matchs
 rounds_list = []
 rounds_db_list = manager_tournament_obj.get_rounds_by_id(tournament_to_rebuild)
 for round_item in rounds_db_list:
-    round_name = round_item["name"]
-    date_begin = round_item["date_begin"]
-    date_end = round_item["date_end"]
-    # crée le round
-    round_obj_to_add = Round.add_round_from_db(
-        round_name, date_begin, date_end)
+    # Teste si le match est clos
+    if round_item["date_end"] is not None:
+        round_obj_to_add = Round.add_round_from_db(
+            round_item["name"],
+            round_item["date_begin"],
+            round_item["date_end"]
+        )
+    else:
+        # Round is not close
+        round_obj_to_add = Round.add_round_from_db(
+            round_item["name"],
+            round_item["date_begin"]
+        )
+
     # regénération des matchs du round
     for match_db in round_item["matchs"]:
         # Recherche l'instance du joueur 1 dans la liste
@@ -86,7 +94,7 @@ for round_item in rounds_db_list:
         match = Match(player_1, player_2, score_player_1, score_player_2)
         round_obj_to_add.add_match(match)
     rounds_list.append(round_obj_to_add)
-tournament.add_rounds_from_bd(rounds_list)
+tournament._rounds = rounds_list
 
 print(tournament)
 print()

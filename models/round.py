@@ -21,7 +21,7 @@ class Round:
         self.set_begin()
 
     @classmethod
-    def add_round_from_db(cls, name, date_begin, date_end):
+    def add_round_from_db(cls, name, date_begin, date_end=None):
         """Alternative __init__ to create Round from database
 
         Args:
@@ -34,7 +34,8 @@ class Round:
         round = cls.__new__(cls)
         round._name = name
         round._date_begin = date_begin
-        round._date_end = date_end
+        if date_end is not None:
+            round._date_end = date_end
         round._matchs = []
         return round
 

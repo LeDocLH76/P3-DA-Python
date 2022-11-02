@@ -1,6 +1,8 @@
 from typing import List
+from models.db_manager_players import Db_manager_player
 
 from models.match import Match
+from models.player import Player
 from models.round import Round
 from models.db_manager_tournaments import Db_manager_tournament
 
@@ -66,26 +68,107 @@ class Tournament:
         tournament._round = round
         return tournament
 
-    def update_player_point_from_db(self, player_id, points) -> None:
-        """Update player's points from database
+    @classmethod
+    def add_tournament_from_db_2(cls, tournament_id: int):
+        """Alternative __init__ to create Tournament from database
 
         Args:
-            player_id (int): Key for players dict, \
-                it's the player's id on database.
-            points (int): Value for players dict, \
-                player's points for this tournament.
+            tournament_id (int): Tournament's id to rebuild
 
+        Return:
+            object: Tournament
         """
-        self._players[str(player_id)] = points
 
-    def add_rounds_from_bd(self, rounds) -> None:
-        """Add round from database
+        manager_tournament_obj = Db_manager_tournament()
+        tournament_db = manager_tournament_obj.get_one(tournament_id)
+        # Create tournament
+        tournament = cls.__new__(cls)
+        tournament._name = tournament_db["name"]
+        tournament._place = tournament_db["place"]
+        tournament._date = tournament_db["date"]
+        tournament._time_ctrl = tournament_db["time_ctrl"]
+        tournament._description = tournament_db["description"]
+        tournament._players = tournament_db["players"]
+        tournament._id = tournament_id
+        tournament._round = tournament_db["round"]
 
-        Args:
-            rounds (list): Round list for this tournament
+        # Create tournament's players
+        manager_player_obj = Db_manager_player()
+        players_obj = []
+        tournament_players_db = manager_tournament_obj.get_players_by_id(
+            tournament_id)
+        # Extract players_id from key
+        players_id = [key for key in tournament_players_db]
+        # Extract points from value
+        points = [tournament_players_db[key] for key in tournament_players_db]
+        for player_id, points in zip(players_id, points):
+            # Find data of one player
+            player_info = manager_player_obj.get_by_id(player_id)
+            # Create one player
+            player_obj_to_add: Player = Player.add_player_from_db(
+                player_info["name"],
+                player_info["surname"],
+                player_info["birth_date"],
+                player_info["gender"],
+                player_info["classification"],
+                player_id)
+            # Add one player to list of players in tournament with is points
+            tournament._players[str(player_id)] = points
+            # Add player to players for this tournament
+            players_obj.append(player_obj_to_add)
 
-        """
-        self._rounds = rounds
+        # Create rounds and matchs
+        rounds_list = []
+        rounds_db_list = manager_tournament_obj.get_rounds_by_id(tournament_id)
+        for round_item in rounds_db_list:
+            # Create one round
+            # Round is close ?
+            if round_item["date_end"] is not None:
+                round_obj_to_add = Round.add_round_from_db(
+                    round_item["name"],
+                    round_item["date_begin"],
+                    round_item["date_end"]
+                )
+            else:
+                # Round is not close
+                round_obj_to_add = Round.add_round_from_db(
+                    round_item["name"],
+                    round_item["date_begin"]
+                )
+            # Create matchs
+            for match_db in round_item["matchs"]:
+                # Find player1 in list
+                players_obj: List[Player]
+                player_1 = [
+                    player for player in players_obj
+                    if (player.get_player["name"]
+                        == match_db["player_1"]["name"])
+                    and (player.get_player["surname"]
+                         == match_db["player_1"]["surname"])
+                    and (player.get_player["birth_date"]
+                         == match_db["player_1"]["birth_date"])]
+                score_player_1 = match_db["score_player_1"]
+                player_1 = player_1[0]
+                # Find player2 in list
+                player_2 = [
+                    player for player in players_obj
+                    if (player.get_player["name"]
+                        == match_db["player_2"]["name"])
+                    and (player.get_player["surname"]
+                         == match_db["player_2"]["surname"])
+                    and (player.get_player["birth_date"]
+                         == match_db["player_2"]["birth_date"])]
+                score_player_2 = match_db["score_player_2"]
+                player_2 = player_2[0]
+                # Create one match
+                match = Match(player_1, player_2,
+                              score_player_1, score_player_2)
+                # Add one match to the list
+                round_obj_to_add.add_match(match)
+            # Add one round to the list
+            rounds_list.append(round_obj_to_add)
+        tournament._rounds = rounds_list
+        return tournament
 
     def set_date(self, date: str) -> None:
         """Set tournament's date
