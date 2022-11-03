@@ -1,5 +1,6 @@
 
-from views import views_input, views_menu, views_output
+from controlers.players_manager import players_manager
+from views import views_menu, views_output
 
 
 def begin():
@@ -33,7 +34,7 @@ def begin():
             input("Entrée pour continuer")
         # Gestion des joueurs
         if res_root_menu == 5:
-            views_menu.players_action_choice()
+            players_manager()
         # Reprendre un tournoi en cours
         if res_root_menu == 6:
             print("Choix 6")

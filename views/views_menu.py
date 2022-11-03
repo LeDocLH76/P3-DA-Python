@@ -1,7 +1,7 @@
 
 import re
 
-from views import views_input, views_utility
+from views import views_utility
 
 
 def root_menu():
@@ -45,34 +45,45 @@ def players_action_choice():
         print("2. Modifier un joueur")
         print("3. Supprimer un joueur")
         print("4. Voir les joueurs")
-        print("5. Quitter")
+        print("5. Retour au menu principal")
         print("Entrer votre choix")
         response = input()
         response = views_utility.input_filter(response)
         if response == "1":
-            player = views_input.new_player()
-            # verifier db et ajouter
-            print(player)
-            input("Entrée pour continuer")
+            return 1
         if response == "2":
             print("action 2")
+            return 2
         if response == "3":
             print("action 3")
-        if response == 4:
+            return 3
+        if response == "4":
             print("action 4")
+            return 4
         if response == "5":
-            break
+            return 5
 
 
-def tournament_choice(count):
+def tournament_choice(tournament_quantity):
     while True:
         response = re.findall(
             '[0-9]', views_utility.input_filter(
                 input("Veuillez choisir un numéro de la liste --> ")))
         if (len(response) > 0
-            and int(response[0]) <= count
+            and int(response[0]) <= tournament_quantity
                 and int(response[0]) > 0):
             return int(response[0])
+
+
+def player_choice():
+    player_id = None
+    while player_id is None:
+        response = input(
+            "Veuillez choisir un numéro de la liste, ou Q pour annuler --> ")
+        if response[0].upper() == "Q":
+            return 0
+        player_id = views_utility.player_id_regex(response)
+    return int(player_id.group())
 
 
 def sort_choice():

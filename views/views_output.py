@@ -36,9 +36,15 @@ def players_list(sort_type):
 def print_players(sorted_players):
     views_utility.clear_screen()
     for sorted_player in sorted_players:
-        print(f"{sorted_player['name']} {sorted_player['surname']} \
-{sorted_player['gender']} né le: {sorted_player['birth_date']} classé: \
-{sorted_player['classification']}")
+        print(f"{sorted_player['id']} {sorted_player['name']} \
+{sorted_player['surname']} {sorted_player['gender']} né le: \
+{sorted_player['birth_date']} classé: {sorted_player['classification']}")
+
+
+def print_player(player):
+    print(f"{player.doc_id} {player['name']} \
+{player['surname']} {player['gender']} né le: \
+{player['birth_date']}")
 
 
 def tournament_list():
@@ -94,3 +100,15 @@ def tournament_players(tournament_id: int, sort_type: int):
         players.append(player)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
+
+
+def input_error():
+    print("Erreur de saisie")
+
+
+def forbiden_delete():
+    print("Ne peut pas être modifié ou supprimé")
+
+
+def confirm_delete():
+    print("Voulez-vous definitivement supprimer ce joueur ?")

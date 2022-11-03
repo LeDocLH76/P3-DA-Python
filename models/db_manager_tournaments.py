@@ -22,6 +22,15 @@ class Db_manager_tournament:
         player_list: list[int] = tournament.get('players')
         return player_list
 
+    def get_players_all(self) -> list[int]:
+        tournaments_list = self.get_all()
+        players_set = set()
+        for tournament in tournaments_list:
+            players = self.get_one(tournament["id"])["players"]
+            players_set.update(players)
+            players_set = {int(item) for item in players_set}
+        return players_set
+
     def get_one(self, tournament_id):
         tournament_db = self.tournaments_table.get(doc_id=tournament_id)
         tournament = {}
@@ -49,7 +58,8 @@ class Db_manager_tournament:
         tournament_id = self.tournaments_table.insert(tournament_dict)
         return tournament_id
 
-    def update_rounds_by_name_and_date(self, tournament_name, tournament_date, rounds_dict):
+    def update_rounds_by_name_and_date(
+            self, tournament_name, tournament_date, rounds_dict):
         self.tournaments_table.update({"rounds": rounds_dict},
                                       (where("name") == tournament_name)
                                       & (where("date") == tournament_date))

@@ -1,12 +1,8 @@
-from tinydb import TinyDB
 from models.player import Player
-
-db = TinyDB('chess_tournament')
-# db.drop_tables()
 
 
 birth_date = ['13/8/2002', '11/11/2012', '24/2/2011']
-joueur = Player("BONNOT", "Jean", birth_date[1], "M")
+joueur = Player("BONNOT", "Jean", birth_date[2], "M")
 # joueur2 = Player("QUIROUL", "Pierre", birth_date[1], "M")
 # print(joueur.get_player)
 # print(joueur.get_player["name"])

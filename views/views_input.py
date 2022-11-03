@@ -1,9 +1,9 @@
+from utility.transform_date import transform_date_fr_to_iso
 from views import views_utility
 
 
 def new_player():
-    views_utility.clear_screen()
-    print("Entrer les informations du nouveau joueur")
+    print("Entrer les informations du joueur")
     name = input("Nom ").upper()
     if len(name) > 20:
         name = name[:20]
@@ -16,6 +16,12 @@ def new_player():
         birth_date = input("Date de naissance > jj/mm/aaaa ")
         birth_date = views_utility.date_regex(birth_date)
     birth_date = birth_date.group()
+    birth_date = transform_date_fr_to_iso(birth_date)
+
+    gender_list = ["M", "F"]
+    gender = ""
+    while gender not in gender_list:
+        gender = input("Genre > M ou F ").upper()
 
     classification = None
     while classification is None:
@@ -31,6 +37,15 @@ def new_player():
         "name": name,
         "surname": surname,
         "birth_date": birth_date,
+        "gender": gender,
         "classification": classification
     }
     return player
+
+
+def y_or_n():
+    response_list = ["O", "N"]
+    response = ""
+    while response not in response_list:
+        response = input("Entrer votre choix O ou N --> ").upper()
+    return 1 if response == "O" else 0
