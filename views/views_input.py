@@ -1,4 +1,3 @@
-from utility.transform_date import transform_date_fr_to_iso
 from views import views_utility
 
 
@@ -16,7 +15,6 @@ def new_player():
         birth_date = input("Date de naissance > jj/mm/aaaa ")
         birth_date = views_utility.date_regex(birth_date)
     birth_date = birth_date.group()
-    birth_date = transform_date_fr_to_iso(birth_date)
 
     gender_list = ["M", "F"]
     gender = ""
@@ -49,3 +47,7 @@ def y_or_n():
     while response not in response_list:
         response = input("Entrer votre choix O ou N --> ").upper()
     return 1 if response == "O" else 0
+
+
+def wait_for_enter():
+    input("Entrer pour continuer")

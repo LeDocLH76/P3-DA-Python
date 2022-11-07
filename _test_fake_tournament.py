@@ -49,11 +49,22 @@ for i in range(20):
     date_to_add = f"{day}/{month}/{year}"
     date.append(date_to_add)
 
-# print(date)
+
+def create_players(players_quantity):
+    from models.db_manager_players import Db_manager_player
+    manager_player = Db_manager_player()
+    # Création des joueurs
+    players_obj: List[Player] = []
+    for i in range(players_quantity):
+        genre = "F" if prenom[i] in prenom_f else "M"
+        player = Player(nom[i], prenom[i], date[i], genre, i+1)
+        manager_player.add_one(player)
+        players_obj.append(player)
+    return players_obj
+
 
 db = TinyDB('chess_tournament')
 # db.drop_tables()
-
 
 # ******************************
 # Début tournoi
@@ -62,16 +73,12 @@ db = TinyDB('chess_tournament')
 # Création du tournoi
 tournament = Tournament("Tournoi privé",
                         "Le Havre",
-                        "05/10/2022",
+                        "04/11/2022",
                         "rapid",
-                        "Mon cinquième tournoi d'échecs")
+                        "Mon quatrième tournoi d'échecs")
 
-# Création des joueurs
-players_obj: List[Player] = []
-for i in range(8):
-    genre = "F" if prenom[i] in prenom_f else "M"
-    player = Player(nom[i], prenom[i], date[i], genre, i+1)
-    players_obj.append(player)
+
+players_obj = create_players(8)
 
 # Ajout des joueurs
 for player in players_obj:

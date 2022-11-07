@@ -27,7 +27,6 @@ class Player:
         self.set_birth_date(birth_date)
         self._gender = gender.strip()[0].capitalize()
         self._classification = classification
-        self.set_id_save_db()
 
     @classmethod
     def add_player_from_db(cls,
@@ -77,12 +76,11 @@ class Player:
         player_bd = Db_manager_player()
         player_bd.update_classification_by_id(self._id, classification)
 
-    def set_id_save_db(self) -> None:
-        """Save Player from get_player on database and get is id
-
+    def set_id(self, player_id) -> None:
+        """Set Player's id
         """
-        player_db = Db_manager_player()
-        self._id = player_db.add_one(self.get_player)
+        self._id = player_id
+        print("Dev id = ", self._id)
 
     @ property
     def get_id(self) -> int:
