@@ -3,7 +3,7 @@ from models.db_manager_tournaments import Db_manager_tournament
 from views import views_input, views_menu, views_output, views_utility
 
 
-def players_manager():
+def players_controler():
     while True:
         action = views_menu.players_action_choice()
         if action == 1:
