@@ -7,6 +7,7 @@ class Db_manager_player:
         self.players_table = db.table("players")
 
     def get_all(self):
+        self.players_table.clear_cache()
         return self.players_table.all()
 
     def get_by_id(self, player_id: int):
