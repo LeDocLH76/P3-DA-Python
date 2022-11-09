@@ -13,7 +13,7 @@ class Db_manager_player:
     def get_by_id(self, player_id: int):
         return self.players_table.get(doc_id=player_id)
 
-    def add_one(self, player_obj, player_id: int | None = None) -> int:
+    def add_one(self, player_obj, player_id: int | None = None) -> bool | int:
         from models.player import Player
         player_obj: Player = player_obj
         player_dict = player_obj.get_player
@@ -22,7 +22,7 @@ class Db_manager_player:
             list_to_update = [player_id]
             self.players_table.update(
                 player_dict, doc_ids=list_to_update)
-            return player_id
+            return True
         # add player
         player = Query()
         # player exist ?
@@ -33,8 +33,14 @@ class Db_manager_player:
             # Create player in db and get id
             player_id = self.players_table.insert(player_dict)
             player_obj.set_id(player_id)
+            return True
         else:
-            player_id = player_obj.get_id
+            # Player already exist, find is id and return it
+            player_db = self.players_table.get(
+                (player.name == player_dict["name"])
+                & (player.surname == player_dict["surname"])
+                & (player.birth_date == player_dict["birth_date"]))
+            player_id = player_db.doc_id
         return player_id
 
     def delete_one(self, player_id):

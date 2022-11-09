@@ -1,5 +1,6 @@
 
 from controlers.players_controler import players_controler
+from controlers.tournament_ctrl import tournament_controler
 from views import views_input, views_menu, views_output
 
 
@@ -38,10 +39,12 @@ def begin():
         # Reprendre un tournoi en cours
         if res_root_menu == 6:
             print("Choix 6")
+
             views_input.wait_for_enter()
         # Débuter un nouveau tournoi
         if res_root_menu == 7:
             print("Choix 7")
+            tournament_controler()
             views_input.wait_for_enter()
         # Quitter le programme
         if res_root_menu == 8:

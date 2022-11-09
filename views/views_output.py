@@ -3,6 +3,7 @@ import pyfiglet
 from views import views_utility
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
+from utility.constant import ROUND_QUANTITY
 
 
 def splash_screen():
@@ -57,6 +58,15 @@ def tournament_list():
     return len(tournaments_list)
 
 
+def tournament_data(tournament_dict):
+    print(
+        f'Le tournoi "{tournament_dict["name"]}" se déroule le {tournament_dict["date"]} à \
+{tournament_dict["place"]}.')
+    print(
+        f'Le controle du temps est "{tournament_dict["time_ctrl"]}" et il est prévu {ROUND_QUANTITY} rounds.')
+    print(tournament_dict["description"])
+
+
 def tournament_results(tournament_id: int, result_type):
     tournament_db = Db_manager_tournament()
     rounds = tournament_db.get_rounds_by_id(tournament_id)
@@ -100,6 +110,10 @@ def tournament_players(tournament_id: int, sort_type: int):
         players.append(player)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
+
+
+def player_exist(player_id):
+    print(f"Ce joueur est déja enregistré sous le numéro: {player_id}")
 
 
 def input_error():

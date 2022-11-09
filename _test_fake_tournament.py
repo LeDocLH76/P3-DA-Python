@@ -58,7 +58,10 @@ def create_players(players_quantity):
     for i in range(players_quantity):
         genre = "F" if prenom[i] in prenom_f else "M"
         player = Player(nom[i], prenom[i], date[i], genre, i+1)
-        manager_player.add_one(player)
+        reponse = manager_player.add_one(player)
+        if reponse is not True:
+            print("Le joueur existe déja")
+            player.set_id(reponse)
         players_obj.append(player)
     return players_obj
 
@@ -73,10 +76,14 @@ db = TinyDB('chess_tournament')
 # Création du tournoi
 tournament = Tournament("Tournoi privé",
                         "Le Havre",
-                        "04/11/2022",
+                        "03/11/2022",
                         "rapid",
-                        "Mon quatrième tournoi d'échecs")
+                        "Mon troisième tournoi d'échecs")
 
+reponse = tournament.save_db()
+if reponse is not True:
+    print("Le tournoi existe déja")
+    tournament.set_id(reponse)
 
 players_obj = create_players(8)
 

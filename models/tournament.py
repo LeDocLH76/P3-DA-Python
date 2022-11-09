@@ -32,7 +32,7 @@ class Tournament:
         self._description: str = description
         self._rounds: List[Round] = []
         self._players = {}
-        self.set_id_save_db()
+        self._status = False
 
     @classmethod
     def add_tournament_from_db(cls,
@@ -237,35 +237,24 @@ class Tournament:
         tournament_db.update_players_by_name_and_date(
             self._name, self._date, self._players)
 
-    def set_id_save_db(self) -> None:
-        """Save tournament in database and get id on database
+    def save_db(self) -> bool | int:
+        """Save tournament in database and get is id
 
         Args:
-            name (str): Tournament's name
-            place (srt): Tournament's place
-            date (str): Tournament's date
-            round (int): Number of round for the tournament
-            time_ctrl (str): Bullet, blitz, rapid, only one of them
-            description (str): General description
-            rounds (list): List of Round object
-            players (dict): Key = player's id on database, \
+            self:   name (str): Tournament's name
+                    place (srt): Tournament's place
+                    date (str): Tournament's date
+                    round (int): Number of round for the tournament
+                    time_ctrl (str): Bullet, Blitz, Rapid, only one of them
+                    description (str): General description
+                    rounds (list): List of Round object
+                    players (dict): Key = player's id on database, \
 value = player's points for this tournament
-
         """
-        tournament_dict = {
-            "name": self._name,
-            "place": self._place,
-            "date": self._date,
-            "round": self._round,
-            "time_ctrl": self._time_ctrl,
-            "description": self._description,
-            "rounds": self._rounds,
-            "players": self._players
-        }
         tournament_db = Db_manager_tournament()
-        self._id = tournament_db.add_one(tournament_dict)
+        return tournament_db.add_one(self)
 
-    def get_points(self, player_id) -> int:
+    def get_points(self, player_id: int) -> int:
         """Get points for a player
 
         Args:
@@ -276,6 +265,35 @@ value = player's points for this tournament
 
         """
         return self._players[str(player_id)]
+
+    def set_status(self, new_status: bool) -> None:
+        self._status = new_status
+
+    def set_id(self, tournament_id) -> None:
+        self._id = tournament_id
+
+    @property
+    def get_id(self) -> int:
+        return self._id
+
+    @property
+    def get_tournament(self) -> dict:
+        tournament_dict = {
+            "name": self._name,
+            "place": self._place,
+            "date": self._date,
+            "round": self._round,
+            "time_ctrl": self._time_ctrl,
+            "description": self._description,
+            "rounds": self._rounds,
+            "players": self._players,
+            "status": self._status
+        }
+        return tournament_dict
+
+    @property
+    def get_status(self) -> bool:
+        return self._status
 
     @property
     def get_players(self) -> dict:

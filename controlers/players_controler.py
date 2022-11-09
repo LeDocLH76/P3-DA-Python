@@ -9,6 +9,7 @@ def players_controler():
         action = views_menu.players_action_choice()
         if action == 1:
             # Add a player in database
+            manager_player_obj = Db_manager_player()
             views_utility.clear_screen()
             player_dict = views_input.new_player()
             player_obj = Player(
@@ -17,8 +18,10 @@ def players_controler():
                 player_dict["birth_date"],
                 player_dict["gender"],
                 player_dict["classification"])
-            manager_player_obj = Db_manager_player()
-            manager_player_obj.add_one(player_obj)
+            response = manager_player_obj.add_one(player_obj)
+            if response is not True:
+                views_output.player_exist(response)
+                views_input.wait_for_enter()
 
         if action == 2:
             # Update a player in database
@@ -48,8 +51,11 @@ def players_controler():
                     player_dict["birth_date"],
                     player_dict["gender"],
                     player_dict["classification"])
-                manager_player_obj.add_one(
+                response = manager_player_obj.add_one(
                     player_obj, player_to_update)
+                if response is not True:
+                    views_output.player_exist(response)
+                    views_input.wait_for_enter()
             else:
                 # Not in database
                 views_output.input_error()

@@ -87,6 +87,7 @@ def player_choice():
 
 
 def sort_choice():
+    views_utility.clear_screen()
     print("Type de tri")
     print("1. Alphabetique")
     print("2. Par classement")
@@ -101,6 +102,7 @@ def sort_choice():
 
 
 def result_type():
+    views_utility.clear_screen()
     print("Type de liste")
     print("1. Les rounds du tournoi")
     print("2. Les matchs du tournoi")

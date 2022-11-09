@@ -80,7 +80,6 @@ class Player:
         """Set Player's id
         """
         self._id = player_id
-        print("Dev id = ", self._id)
 
     @ property
     def get_id(self) -> int:

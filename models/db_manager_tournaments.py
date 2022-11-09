@@ -1,4 +1,4 @@
-from tinydb import TinyDB, where
+from tinydb import Query, TinyDB, where
 
 
 class Db_manager_tournament:
@@ -54,8 +54,25 @@ class Db_manager_tournament:
                                       (where("name") == tournament_name)
                                       & (where("date") == tournament_date))
 
-    def add_one(self, tournament_dict):
-        tournament_id = self.tournaments_table.insert(tournament_dict)
+    def add_one(self, tournament_obj) -> bool | int:
+        from models.tournament import Tournament
+        tournament_obj: Tournament = tournament_obj
+        tournament_dict = tournament_obj.get_tournament
+        tournament = Query()
+        # tournament exist ?
+        if not self.tournaments_table.search(
+            (tournament.name == tournament_dict["name"])
+                & (tournament.date == tournament_dict["date"])):
+            # Create tournament in db and get id
+            tournament_id = self.tournaments_table.insert(tournament_dict)
+            tournament_obj.set_id(tournament_id)
+            return True
+        else:
+            # Tournament already exist, find is id and return it
+            tournament_db = self.tournaments_table.get(
+                (tournament.name == tournament_dict["name"])
+                & (tournament.date == tournament_dict["date"]))
+            tournament_id = tournament_db.doc_id
         return tournament_id
 
     def update_rounds_by_name_and_date(
