@@ -3,7 +3,7 @@ import pyfiglet
 from views import views_utility
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
-from utility.constant import (
+from utils.constant import (
     PLAYER_NAME_LENGTH,
     PLAYER_SURNAME_LENGTH,
     ROUND_QUANTITY)
@@ -31,14 +31,13 @@ def players_list(sort_type):
     players_document = db_player.get_all()
     players = []
     for player_document in players_document:
-        player = views_utility.build_players_list(player_document)
+        player = views_utility.build_players_dict(player_document)
         players.append(player)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
 
 
 def print_players(sorted_players):
-    views_utility.clear_screen()
     for sorted_player in sorted_players:
         print(f"{sorted_player['id']} {sorted_player['name']} \
 {sorted_player['surname']} {sorted_player['gender']} né le: \
@@ -49,6 +48,18 @@ def print_player(player):
     print(f"{player.doc_id} {player['name']} \
 {player['surname']} {player['gender']} né le: \
 {player['birth_date']}")
+
+
+def player_exist(player_id):
+    print(f"Ce joueur est déja enregistré sous le numéro: {player_id}")
+
+
+def new_player():
+    print("Entrer le numéro du joueur à ajouter au tournoi.")
+
+
+def player_not_exist():
+    print("Si le joueur n'est pas enregistré, vous pouvez l'ajouter?")
 
 
 def tournament_list():
@@ -110,14 +121,23 @@ def tournament_players(tournament_id: int, sort_type: int):
     players = []
     for tournament_player in tournament_players:
         player_document = db_player.get_by_id(int(tournament_player))
-        player = views_utility.build_players_list(player_document)
+        player = views_utility.build_players_dict(player_document)
         players.append(player)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
 
 
-def player_exist(player_id):
-    print(f"Ce joueur est déja enregistré sous le numéro: {player_id}")
+def tournament_verify_before():
+    print("Veuillez vérifier que le tournoi n'existe pas dèja")
+    print("Céer un nouveau ?")
+
+
+def tournament_exist(tournament_id):
+    print(f"Ce tournoi est déja enregistré sous le numéro: {tournament_id}")
+
+
+def adjust_round_quantity():
+    print("Souhaitez-vous changer le nombre de round?")
 
 
 def input_error():

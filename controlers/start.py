@@ -22,14 +22,14 @@ def begin():
         # Voir les résultats d'un tournoi
         if res_root_menu == 3:
             tournament_quantity = views_output.tournament_list()
-            tournament_id = views_menu.tournament_choice(tournament_quantity)
+            tournament_id = views_input.tournament_choice(tournament_quantity)
             result_type = views_menu.result_type()
             views_output.tournament_results(tournament_id, result_type)
             views_input.wait_for_enter()
         # Voir les joueurs d'un tournoi
         if res_root_menu == 4:
             tournament_quantity = views_output.tournament_list()
-            tournament_id = views_menu.tournament_choice(tournament_quantity)
+            tournament_id = views_input.tournament_choice(tournament_quantity)
             sort_type = views_menu.sort_choice()
             views_output.tournament_players(tournament_id, sort_type)
             views_input.wait_for_enter()
@@ -44,7 +44,7 @@ def begin():
         # Débuter un nouveau tournoi
         if res_root_menu == 7:
             print("Choix 7")
-            tournament_controler()
+            tournament_controler(False)
             views_input.wait_for_enter()
         # Quitter le programme
         if res_root_menu == 8:

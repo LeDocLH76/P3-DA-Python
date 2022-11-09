@@ -1,6 +1,6 @@
 
 from models.db_manager_players import Db_manager_player
-from utility.transform_date import transform_date_fr_to_iso
+from utils.transform_date import date_fr2iso
 
 
 class Player:
@@ -63,7 +63,7 @@ class Player:
             birth_date (str): date string like dd/mm/yyyy
 
         """
-        self._birth_date = transform_date_fr_to_iso(birth_date)
+        self._birth_date = date_fr2iso(birth_date)
 
     def set_classification(self, classification: int) -> None:
         """Set Player's classification

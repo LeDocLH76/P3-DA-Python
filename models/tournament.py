@@ -179,6 +179,15 @@ class Tournament:
         """
         self._date = date
 
+    def set_status(self, new_status: bool) -> None:
+        self._status = new_status
+
+    def set_round(self, new_round_quantity) -> None:
+        self._round = new_round_quantity
+
+    def set_id(self, tournament_id) -> None:
+        self._id = tournament_id
+
     def update_round(self, round: Round = None) -> None:
         """Add a round in the list and update rounds in database
 
@@ -265,12 +274,6 @@ value = player's points for this tournament
 
         """
         return self._players[str(player_id)]
-
-    def set_status(self, new_status: bool) -> None:
-        self._status = new_status
-
-    def set_id(self, tournament_id) -> None:
-        self._id = tournament_id
 
     @property
     def get_id(self) -> int:

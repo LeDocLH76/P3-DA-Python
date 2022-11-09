@@ -1,6 +1,5 @@
 
-import re
-
+from utils.constant import ORDER_ALPHA, ORDER_CLASSIFICATION
 from views import views_utility
 
 
@@ -45,7 +44,7 @@ def players_action_choice():
         print("2. Modifier un joueur")
         print("3. Supprimer un joueur")
         print("4. Voir les joueurs")
-        print("5. Retour au menu principal")
+        print("5. Retour au menu précédent")
         print("Entrer votre choix")
         response = input()
         response = views_utility.input_filter(response)
@@ -64,28 +63,6 @@ def players_action_choice():
             return 5
 
 
-def tournament_choice(tournament_quantity):
-    while True:
-        response = re.findall(
-            '[0-9]', views_utility.input_filter(
-                input("Veuillez choisir un numéro de la liste --> ")))
-        if (len(response) > 0
-            and int(response[0]) <= tournament_quantity
-                and int(response[0]) > 0):
-            return int(response[0])
-
-
-def player_choice():
-    player_id = None
-    while player_id is None:
-        response = input(
-            "Veuillez choisir un numéro de la liste, ou Q pour annuler --> ")
-        if response[0].upper() == "Q":
-            return 0
-        player_id = views_utility.player_id_regex(response)
-    return int(player_id.group())
-
-
 def sort_choice():
     views_utility.clear_screen()
     print("Type de tri")
@@ -96,9 +73,9 @@ def sort_choice():
         response = input()
         response = views_utility.input_filter(response)
         if response == "1":
-            return 1
+            return ORDER_ALPHA
         if response == "2":
-            return 2
+            return ORDER_CLASSIFICATION
 
 
 def result_type():

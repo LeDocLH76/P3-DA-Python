@@ -1,5 +1,6 @@
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
+from utils.constant import ORDER_ALPHA
 from views import views_input, views_menu, views_output, views_utility
 
 
@@ -21,14 +22,13 @@ def players_controler():
             response = manager_player_obj.add_one(player_obj)
             if response is not True:
                 views_output.player_exist(response)
-                views_input.wait_for_enter()
+            views_input.wait_for_enter()
 
         if action == 2:
             # Update a player in database
-            order_alpha = 1
-            views_output.players_list(order_alpha)
-            player_to_update = views_menu.player_choice()
-            if player_to_update == 0:
+            views_output.players_list(ORDER_ALPHA)
+            player_to_update = views_input.player_choice()
+            if player_to_update is False:
                 continue
             manager_player_obj = Db_manager_player()
             player_db = manager_player_obj.get_by_id(player_to_update)
@@ -63,9 +63,9 @@ def players_controler():
 
         if action == 3:
             # Delete a player in database
-            views_output.players_list(1)
-            player_to_delete = views_menu.player_choice()
-            if player_to_delete == 0:
+            views_output.players_list(ORDER_ALPHA)
+            player_to_delete = views_input.player_choice()
+            if player_to_delete is False:
                 continue
             manager_player_obj = Db_manager_player()
             player_db = manager_player_obj.get_by_id(player_to_delete)
@@ -83,7 +83,7 @@ def players_controler():
                 views_output.confirm_delete()
                 views_output.print_player(player_db)
                 response = views_input.y_or_n()
-                if response == 0:
+                if response is False:
                     continue
                 else:
                     manager_player_obj = Db_manager_player()
