@@ -3,7 +3,10 @@ import pyfiglet
 from views import views_utility
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
-from utility.constant import ROUND_QUANTITY
+from utility.constant import (
+    PLAYER_NAME_LENGTH,
+    PLAYER_SURNAME_LENGTH,
+    ROUND_QUANTITY)
 
 
 def splash_screen():
@@ -60,10 +63,11 @@ def tournament_list():
 
 def tournament_data(tournament_dict):
     print(
-        f'Le tournoi "{tournament_dict["name"]}" se déroule le {tournament_dict["date"]} à \
-{tournament_dict["place"]}.')
+        f'Le tournoi "{tournament_dict["name"]}" se déroule le \
+{tournament_dict["date"]} à {tournament_dict["place"]}.')
     print(
-        f'Le controle du temps est "{tournament_dict["time_ctrl"]}" et il est prévu {ROUND_QUANTITY} rounds.')
+        f'Le controle du temps est "{tournament_dict["time_ctrl"]}" \
+et il est prévu {ROUND_QUANTITY} rounds.')
     print(tournament_dict["description"])
 
 
@@ -78,17 +82,17 @@ def tournament_results(tournament_id: int, result_type):
         for match in matchs:
             player1 = match["player_1"]
             space1 = ""
-            for i in range(20 - len(player1["name"])):
+            for i in range(PLAYER_NAME_LENGTH - len(player1["name"])):
                 space1 += " "
             space2 = ""
-            for i in range(20 - len(player1["surname"])):
+            for i in range(PLAYER_SURNAME_LENGTH - len(player1["surname"])):
                 space2 += " "
             player2 = match["player_2"]
             space3 = ""
-            for i in range(20 - len(player2["name"])):
+            for i in range(PLAYER_NAME_LENGTH - len(player2["name"])):
                 space3 += " "
             space4 = ""
-            for i in range(20 - len(player2["surname"])):
+            for i in range(PLAYER_SURNAME_LENGTH - len(player2["surname"])):
                 space4 += " "
             tab = "\t" if result_type == 1 else ""
             print(f'{tab}\
