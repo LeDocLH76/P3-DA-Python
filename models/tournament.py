@@ -239,7 +239,7 @@ class Tournament:
         self.save_players()
 
     def save_players(self) -> None:
-        """Save players dict in database
+        """Save players dict in database by tournament name and date
 
         """
         tournament_db = Db_manager_tournament()
@@ -340,7 +340,7 @@ value = points in this tournament
         Return:
             str: Tournament
         """
-        return f"Le tournois: {self._name} en date du {self._date}\n\
+        return f"Le tournoi: {self._name} en date du {self._date}\n\
 s'est déroulé à: {self._place} \
 et à réuni {len(self._players)} participants.\n\
 Le time control est {self._time_ctrl} la description est {self._description}."

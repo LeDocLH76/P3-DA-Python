@@ -26,15 +26,18 @@ def bye_screen():
     input()
 
 
-def players_list(sort_type):
+def players_list(sort_type) -> list:
     db_player = Db_manager_player()
     players_document = db_player.get_all()
     players = []
+    players_id = []
     for player_document in players_document:
         player = views_utility.build_players_dict(player_document)
         players.append(player)
+        players_id.append(player["id"])
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
+    return players_id
 
 
 def print_players(sorted_players):
@@ -59,10 +62,11 @@ def new_player():
 
 
 def player_not_exist():
-    print("Si le joueur n'est pas enregistré, vous pouvez l'ajouter?")
+    print("Le joueur à ajouter n'est pas dans la liste! \
+Voulez-vous l'ajouter? ", end="")
 
 
-def tournament_list():
+def tournament_list() -> int:
     tournament_bd = Db_manager_tournament()
     tournaments_list = tournament_bd.get_all()
     views_utility.clear_screen()
@@ -127,9 +131,15 @@ def tournament_players(tournament_id: int, sort_type: int):
     print_players(sorted_players)
 
 
+def tournament_players_quantity(players_quantity):
+    print(
+        f'\nVous avez actuellement {players_quantity} \
+{"joueurs ajoutés" if players_quantity > 1 else "joueur ajouté"} au tournoi.')
+
+
 def tournament_verify_before():
     print("Veuillez vérifier que le tournoi n'existe pas dèja")
-    print("Céer un nouveau ?")
+    print("Créer un nouveau ?")
 
 
 def tournament_exist(tournament_id):

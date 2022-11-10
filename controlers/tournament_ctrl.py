@@ -30,46 +30,59 @@ def tournament_controler(tournament_id):
 
     ...
     if tournament_id is False:
-        # initialiser un tournoi
+        # tournament init and save on database if not exist
         tournament_obj = create_tournament()
 
     else:
         print("Le tournoi doit être régénéré depuis la database.")
-        views_input.wait_for_enter()
-        return
+        tournament_length = views_output.tournament_list()
+        tournament_to_rebuild = views_input.tournament_choice(
+            tournament_length)
+        tournament_obj = rebuild_tournament(tournament_to_rebuild)
 
     if tournament_obj is False:
+        print("Big problème")
         # impossible
         return
 
     if not isinstance(tournament_obj, Tournament):
+        # If tournament exist, go to previous menu
         views_output.tournament_exist(tournament_obj)
         views_input.wait_for_enter
         return
 
-    # print(tournament_obj)
-    # save it on db >- No Add players before
+    # if no round in progress it's possible to add player
+    if len(tournament_obj.get_rounds) == 0:
+        new_player = True
+        while new_player is not False:
+            views_utility.clear_screen
+            players_id_list = views_output.players_list(ORDER_ALPHA)
+            views_utility.crlf()
+            views_output.tournament_players(tournament_obj.get_id, ORDER_ALPHA)
+            players_quantity = len(tournament_obj.get_players)
+            views_output.tournament_players_quantity(players_quantity)
+            # Is player in list ?
+            # Ask for create one
+            views_output.player_not_exist()
+            response = views_input.y_or_n()
+            if response is True:
+                # create player on database
+                players_controler()
+            else:
+                views_output.new_player()
+                new_player = views_input.player_choice()
+                # Exit ?
+                if new_player is not False:
+                    # Check if player_id exist on db
+                    if new_player in players_id_list:
+                        # Add player on tournament and save players list on db
+                        tournament_obj.add_player(new_player)
+                    else:
+                        views_output.input_error()
+    print(tournament_obj)
 
-    new_player = True
-    while new_player is not False:
-        views_utility.clear_screen
-        views_output.players_list(ORDER_ALPHA)
-        views_output.tournament_players(tournament_obj.get_id, ORDER_ALPHA)
-        # Joueur pas dans la liste ?
-        views_output.new_player()
-        views_output.player_not_exist()
-        response = views_input.y_or_n()
-        if response is True:
-            # create_player()
-            players_controler()
-        else:
-            new_player = views_input.player_choice()
-            if new_player is not False:
-                print("Nouveau joueur_id: ", new_player)
-                views_input.wait_for_enter()
-
-        # verifier si déja ajouté
-        # verifier si valide sur database
+    # verifier si déja ajouté
+    # verifier si valide sur database
     # init
     # afficher le tournoi et sont status
     # nom date timeControl
@@ -118,6 +131,13 @@ def tournament_controler(tournament_id):
     # le tournois est-il terminé ?
 
 
+def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:
+    tournament_obj = Tournament.add_tournament_from_db_2(tournament_to_rebuild)
+    # print("Tournament after rebuild : ", tournament_obj)
+    # views_input.wait_for_enter()
+    return tournament_obj
+
+
 def create_tournament() -> Tournament | int:
     # afficher les tournois existants
     views_output.tournament_list()
@@ -145,7 +165,7 @@ def create_tournament() -> Tournament | int:
         )
         if new_round_quantity != ROUND_QUANTITY:
             tournament_obj.set_round(new_round_quantity)
-        # controler sur la database
+        # controler sur la database et ajouter si n'existe pas
         tournament_manager_obj = Db_manager_tournament()
         tournament_exist = tournament_manager_obj.add_one(tournament_obj)
         # verifier si déja existant

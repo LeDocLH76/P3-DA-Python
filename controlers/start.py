@@ -38,6 +38,7 @@ def begin():
             players_controler()
         # Reprendre un tournoi en cours
         if res_root_menu == 6:
+            tournament_controler(True)
             print("Choix 6")
 
             views_input.wait_for_enter()

@@ -11,6 +11,10 @@ def clear_screen():
     # print("\033[H\033[3J", end="")
 
 
+def crlf():
+    print("\n")
+
+
 def input_filter(response: str):
     if response != "":
         response = response[0].capitalize()
