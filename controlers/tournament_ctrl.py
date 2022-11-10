@@ -1,4 +1,6 @@
 
+from typing import List
+from models.match import Match
 from utils.constant import ORDER_ALPHA, PLAYER_QUANTITY_MIN, ROUND_QUANTITY
 from views import views_input, views_menu, views_output, views_utility
 from models.tournament import Tournament
@@ -90,11 +92,13 @@ def tournament_controler(tournament_id):
                     if new_player in players_id_list:
                         # Add player on tournament and save players list on db
                         tournament_obj.add_player(new_player)
+                        # Check if all players have a classification
                     else:
                         views_output.input_error()
         response = views_menu.tournament_begin()
         if response == 1:
             if players_quantity >= PLAYER_QUANTITY_MIN:
+
                 # Build round1
                 print("Création du round1")
                 create_round1(tournament_obj)
@@ -136,15 +140,51 @@ def tournament_controler(tournament_id):
 
 
 def create_round1(tournament_obj: Tournament):
+    from models.player import Player
     player_manager_obj = Db_manager_player()
     # create players_obj
     tournament_players_id_list = tournament_obj.get_players
-    player_obj_list = []
+    players_obj_list: list[Player] = []
     for player_id in tournament_players_id_list:
         player_dict = player_manager_obj.get_by_id(player_id)
-        player_obj = create_player_obj(player_dict)
-        player_obj_list.append(player_obj)
-    print(player_obj_list)
+        player_obj: Player = create_player_obj(player_dict)
+        players_obj_list.append(player_obj)
+    print(players_obj_list)
+
+    # Trie la liste de Player par leur classification, ascendant
+    players_obj_list.sort(key=lambda x: x.get_player["classification"])
+    # Sépare la liste en 2 listes
+    list_1_length = len(players_obj_list)//2
+    list_1 = players_obj_list[:list_1_length]
+    list_2 = players_obj_list[list_1_length:]
+    # Si le nombre de joueurs est impair,
+    # le dernier ne peut-être apparié et reçois 1/2 point pour ne pas jouer
+    if len(list_2) > len(list_1):
+        tournament_obj.update_player_point(list_2[-1].get_id, 0.5)
+
+    # Association des joueurs pour le round-1
+    matches_list: List[tuple[Player, Player]] = []
+    for i in range(len(list_1)):
+        matches_list.append((list_1[i], list_2[i]))
+
+    # Création de la listes des instances de Match pour le round_1
+    round_x_matches_list: List[Match] = []
+
+    print()
+    print("Les match du premier tour sont:")
+
+    for player_1, player_2 in matches_list:
+
+        print(f"{player_1}\ncontre\n{player_2}\n")
+
+        match = Match(player_1, player_2)
+        round_x_matches_list.append(match)
+
+    # Ajoute les Match dans le round_1
+    # for match in round_x_matches_list:
+    #     round_1.add_match(match)
+
+    # Fin du round
 
 
 def create_player_obj(player_dict):
