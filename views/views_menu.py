@@ -63,6 +63,21 @@ def players_action_choice():
             return 5
 
 
+def tournament_begin():
+    while True:
+        views_utility.clear_screen()
+        print("1. Débuter le tournoi")
+        print("2. Retour au menu principal")
+        print("Entrer votre choix")
+
+        response = input()
+        response = views_utility.input_filter(response)
+        if response == "1":
+            return 1
+        if response == "2":
+            return 2
+
+
 def sort_choice():
     views_utility.clear_screen()
     print("Type de tri")

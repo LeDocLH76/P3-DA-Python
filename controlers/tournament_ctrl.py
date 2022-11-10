@@ -1,21 +1,21 @@
 
-from utils.constant import ORDER_ALPHA, ROUND_QUANTITY
-from views import views_input, views_output, views_utility
+from utils.constant import ORDER_ALPHA, PLAYER_QUANTITY_MIN, ROUND_QUANTITY
+from views import views_input, views_menu, views_output, views_utility
 from models.tournament import Tournament
 from models.db_manager_tournaments import Db_manager_tournament
-# from controlers.player_utils import create_player
+from models.db_manager_players import Db_manager_player
 from controlers.players_controler import players_controler
+from utils import transform_date
 
 
 def tournament_controler(tournament_id):
-    # tournoi en cours   status = False
-    #   le nombre de round à jouer n'est pas atteint
-    #   un round n'est pas cloturés
+    # tournoi non commencé   status = False
+    #   le nombre de rounds est 0
     # tournoi cloturé    status = True
     #   le nombre de round à jouer est atteint
     #   tous les rounds sont cloturés
 
-    # rounds en cours    valeur = 1 à max
+    # rounds en cours    valeur = 0 à max
 
     # round en cours     status = False
     #   la liste de matchs n'est pas cloturée
@@ -28,13 +28,13 @@ def tournament_controler(tournament_id):
     #   les matchs sont tous renseignés
     #   l'utilisateur a validé la cloture
 
-    ...
+    # tournament_id is False if choice = 7 > create tournament
     if tournament_id is False:
         # tournament init and save on database if not exist
         tournament_obj = create_tournament()
 
+    # tournament_id is True if choice = 6 > rebuild tournament
     else:
-        print("Le tournoi doit être régénéré depuis la database.")
         tournament_length = views_output.tournament_list()
         tournament_to_rebuild = views_input.tournament_choice(
             tournament_length)
@@ -45,14 +45,27 @@ def tournament_controler(tournament_id):
         # impossible
         return
 
+    # If tournament_obj = tournament_id on db
     if not isinstance(tournament_obj, Tournament):
-        # If tournament exist, go to previous menu
+        # tournament exist, go to previous menu
         views_output.tournament_exist(tournament_obj)
         views_input.wait_for_enter
         return
 
-    # if no round in progress it's possible to add player
+    # If no round in progress
+    # It's possible to change round quantity and/or add player
     if len(tournament_obj.get_rounds) == 0:
+        views_utility.clear_screen()
+        views_output.tournament_data(tournament_obj)
+        # Ask for changin number of rounds ?
+        views_output.adjust_round_quantity()
+        response = views_input.y_or_n()
+        new_round_quantity = ROUND_QUANTITY
+        if response is True:
+            new_round_quantity = views_input.change_round_quantity()
+        if new_round_quantity != ROUND_QUANTITY:
+            tournament_obj.set_round(new_round_quantity)
+
         new_player = True
         while new_player is not False:
             views_utility.clear_screen
@@ -79,26 +92,17 @@ def tournament_controler(tournament_id):
                         tournament_obj.add_player(new_player)
                     else:
                         views_output.input_error()
+        response = views_menu.tournament_begin()
+        if response == 1:
+            if players_quantity >= PLAYER_QUANTITY_MIN:
+                # Build round1
+                print("Création du round1")
+                create_round1(tournament_obj)
+                views_input.wait_for_enter()
+            else:
+                views_output.players_quantity_error(players_quantity)
+                views_input.wait_for_enter()
     print(tournament_obj)
-
-    # verifier si déja ajouté
-    # verifier si valide sur database
-    # init
-    # afficher le tournoi et sont status
-    # nom date timeControl
-    # roundsTerminés/nbrDeRounds
-    # roundEnCours matchsRenseignés/matchsDuRound
-
-    # ajouter des joueurs ! déja ajouté ?
-    # afficher la liste des joueurs
-    # demander quel joueur ajouter
-    # afficher le menu input
-    # le joueur est dans la liste -> le selectionner
-    # le joueur n'est pas dans la liste -> le créer
-    # afficher la liste des joueurs
-    # tout les joueurs ont-il été ajoutés ?
-    # verifier la quantité de joueurs et cloturer la création !!! irreverssible
-    # mettre à jour le status du tournoi
 
     # initialiser un round ! quel round?
     # verifier le status du tournoi
@@ -131,6 +135,31 @@ def tournament_controler(tournament_id):
     # le tournois est-il terminé ?
 
 
+def create_round1(tournament_obj: Tournament):
+    player_manager_obj = Db_manager_player()
+    # create players_obj
+    tournament_players_id_list = tournament_obj.get_players
+    player_obj_list = []
+    for player_id in tournament_players_id_list:
+        player_dict = player_manager_obj.get_by_id(player_id)
+        player_obj = create_player_obj(player_dict)
+        player_obj_list.append(player_obj)
+    print(player_obj_list)
+
+
+def create_player_obj(player_dict):
+    from models.player import Player
+    date = transform_date.date_iso2fr(player_dict["birth_date"])
+    player_obj = Player(
+        player_dict["name"],
+        player_dict["surname"],
+        date,
+        player_dict["gender"],
+        player_dict["classification"]
+    )
+    return player_obj
+
+
 def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:
     tournament_obj = Tournament.add_tournament_from_db_2(tournament_to_rebuild)
     # print("Tournament after rebuild : ", tournament_obj)
@@ -139,6 +168,8 @@ def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:
 
 
 def create_tournament() -> Tournament | int:
+    tournament_manager_obj = Db_manager_tournament()
+
     # afficher les tournois existants
     views_output.tournament_list()
     # input créer un tournoi ou quitter
@@ -147,14 +178,14 @@ def create_tournament() -> Tournament | int:
     if response is True:
         # input les datas pour la création
         tournament_dict = views_input.new_tournament()
-        views_utility.clear_screen()
-        views_output.tournament_data(tournament_dict)
-        # changer le nombre de rounds ?
-        views_output.adjust_round_quantity()
-        response = views_input.y_or_n()
-        new_round_quantity = ROUND_QUANTITY
-        if response is True:
-            new_round_quantity = views_input.change_round_quantity()
+        # views_utility.clear_screen()
+        # views_output.tournament_data(tournament_dict)
+        # # changer le nombre de rounds ?
+        # views_output.adjust_round_quantity()
+        # response = views_input.y_or_n()
+        # new_round_quantity = ROUND_QUANTITY
+        # if response is True:
+        #     new_round_quantity = views_input.change_round_quantity()
         # créer le tournoi
         tournament_obj = Tournament(
             tournament_dict["name"],
@@ -163,10 +194,9 @@ def create_tournament() -> Tournament | int:
             tournament_dict["time_ctrl"],
             tournament_dict["description"],
         )
-        if new_round_quantity != ROUND_QUANTITY:
-            tournament_obj.set_round(new_round_quantity)
+        # if new_round_quantity != ROUND_QUANTITY:
+        #     tournament_obj.set_round(new_round_quantity)
         # controler sur la database et ajouter si n'existe pas
-        tournament_manager_obj = Db_manager_tournament()
         tournament_exist = tournament_manager_obj.add_one(tournament_obj)
         # verifier si déja existant
         if tournament_exist is not True:

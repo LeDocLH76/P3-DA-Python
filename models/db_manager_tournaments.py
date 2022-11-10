@@ -14,6 +14,7 @@ class Db_manager_tournament:
             tournament["name"] = document["name"]
             tournament["date"] = document["date"]
             tournament["description"] = document["description"]
+            tournament["status"] = document["status"]
             tournaments_list.append(tournament)
         return tournaments_list
 
@@ -41,6 +42,7 @@ class Db_manager_tournament:
         tournament["description"] = tournament_db["description"]
         tournament["players"] = tournament_db["players"]
         tournament["round"] = tournament_db["round"]
+        tournament["status"] = tournament_db["status"]
         return tournament
 
     def get_rounds_by_id(self, tournament_id: int):

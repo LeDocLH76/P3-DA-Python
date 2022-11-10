@@ -5,6 +5,7 @@ from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
 from utils.constant import (
     PLAYER_NAME_LENGTH,
+    PLAYER_QUANTITY_MIN,
     PLAYER_SURNAME_LENGTH,
     ROUND_QUANTITY)
 
@@ -76,7 +77,10 @@ def tournament_list() -> int:
     return len(tournaments_list)
 
 
-def tournament_data(tournament_dict):
+def tournament_data(tournament_obj):
+    from models.tournament import Tournament
+    tournament_obj: Tournament = tournament_obj
+    tournament_dict = tournament_obj.get_tournament
     print(
         f'Le tournoi "{tournament_dict["name"]}" se déroule le \
 {tournament_dict["date"]} à {tournament_dict["place"]}.')
@@ -148,6 +152,11 @@ def tournament_exist(tournament_id):
 
 def adjust_round_quantity():
     print("Souhaitez-vous changer le nombre de round?")
+
+
+def players_quantity_error(players_quantity):
+    print(f"Vous avez entré {players_quantity} joueurs pour le tournoi")
+    print(f"La quantité minimum est {PLAYER_QUANTITY_MIN}")
 
 
 def input_error():

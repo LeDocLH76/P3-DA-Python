@@ -91,6 +91,7 @@ class Tournament:
         tournament._players = tournament_db["players"]
         tournament._id = tournament_id
         tournament._round = tournament_db["round"]
+        tournament._status = tournament_db["status"]
 
         # Create tournament's players
         manager_player_obj = Db_manager_player()
@@ -259,6 +260,7 @@ class Tournament:
                     rounds (list): List of Round object
                     players (dict): Key = player's id on database, \
 value = player's points for this tournament
+                    status (bool): Tournament's status
         """
         tournament_db = Db_manager_tournament()
         return tournament_db.add_one(self)
