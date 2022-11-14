@@ -7,11 +7,36 @@ class Db_manager_player:
         self.players_table = db.table("players")
 
     def get_all(self):
+        from models.player import Player
         self.players_table.clear_cache()
-        return self.players_table.all()
+        players_document_list = self.players_table.all()
+        player_obj_list: list[Player] = []
+        for player_document in players_document_list:
+            player = Player.add_player_from_db(
+                player_document['name'],
+                player_document["surname"],
+                player_document["birth_date"],
+                player_document["gender"],
+                player_document["classification"],
+                player_document.doc_id
+            )
+            player_obj_list.append(player)
+        return player_obj_list
 
     def get_by_id(self, player_id: int):
-        return self.players_table.get(doc_id=player_id)
+        from models.player import Player
+        player_document = self.players_table.get(doc_id=player_id)
+        if player_document is not None:
+            player_obj = Player.add_player_from_db(
+                player_document['name'],
+                player_document["surname"],
+                player_document["birth_date"],
+                player_document["gender"],
+                player_document["classification"],
+                player_document.doc_id
+            )
+            return player_obj
+        return None
 
     def add_one(self, player_obj, player_id: int | None = None) -> bool | int:
         from models.player import Player

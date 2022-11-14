@@ -1,7 +1,10 @@
 # import os
 from operator import itemgetter
-from utils import transform_date
+from typing import Literal
+
 from utils.constant import ORDER_ALPHA
+from models.player import Player
+from models.tournament import Tournament
 
 
 def clear_screen():
@@ -21,22 +24,14 @@ def input_filter(response: str):
     return response
 
 
-def sort_players_by_type(sort_type, players):
+def sort_players_by_type(
+        sort_type: Literal[1, 2],
+        player_dict_list: list[dict]) -> list[dict]:
+
     if sort_type == ORDER_ALPHA:
-        sorted_players = sorted(players, key=itemgetter('name', 'surname'))
+        sorted_player_dict_list = sorted(
+            player_dict_list, key=itemgetter('name', 'surname'))
     else:
-        sorted_players = sorted(players, key=itemgetter(
+        sorted_player_dict_list = sorted(player_dict_list, key=itemgetter(
             'classification', 'name', 'surname'))
-    return sorted_players
-
-
-def build_players_dict(player_document):
-    player = {}
-    player["id"] = player_document.doc_id
-    player["name"] = player_document["name"]
-    player["surname"] = player_document["surname"]
-    player["gender"] = player_document["gender"]
-    player["birth_date"] = transform_date.date_iso2fr(
-        player_document["birth_date"])
-    player["classification"] = player_document["classification"]
-    return player
+    return sorted_player_dict_list

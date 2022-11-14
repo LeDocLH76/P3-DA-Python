@@ -1,3 +1,4 @@
+from typing import Literal
 import pyfiglet
 
 from views import views_utility
@@ -27,16 +28,17 @@ def bye_screen():
     input()
 
 
-def players_list(sort_type) -> list:
-    db_player = Db_manager_player()
-    players_document = db_player.get_all()
-    players = []
-    players_id = []
-    for player_document in players_document:
-        player = views_utility.build_players_dict(player_document)
-        players.append(player)
-        players_id.append(player["id"])
-    sorted_players = views_utility.sort_players_by_type(sort_type, players)
+def players_list(sort_type: Literal[1, 2]) -> list:
+    manager_player_obj = Db_manager_player()
+    players_obj_list = manager_player_obj.get_all()
+    player_dict_list: list[dict] = []
+    players_id: list[int] = []
+    for player_obj in players_obj_list:
+        player_dict = player_obj.get_player
+        player_dict_list.append(player_dict)
+        players_id.append(player_dict["id"])
+    sorted_players = views_utility.sort_players_by_type(
+        sort_type, player_dict_list)
     print_players(sorted_players)
     return players_id
 
@@ -48,10 +50,13 @@ def print_players(sorted_players):
 {sorted_player['birth_date']} classé: {sorted_player['classification']}")
 
 
-def print_player(player):
-    print(f"{player.doc_id} {player['name']} \
-{player['surname']} {player['gender']} né le: \
-{player['birth_date']}")
+def print_player(player_obj):
+    from models.player import Player
+    player_obj: Player = player_obj
+    player_dict = player_obj.get_player
+    print(f"{player_dict['id']} {player_dict['name']} \
+{player_dict['surname']} {player_dict['gender']} né le: \
+{player_dict['birth_date']}")
 
 
 def player_exist(player_id):
@@ -69,12 +74,13 @@ Voulez-vous l'ajouter? ", end="")
 
 def tournament_list() -> int:
     tournament_bd = Db_manager_tournament()
-    tournaments_list = tournament_bd.get_all()
+    tournaments_obj_list = tournament_bd.get_all()
     views_utility.clear_screen()
-    for tournament in tournaments_list:
-        print(tournament["id"], tournament["name"],
-              tournament["date"], tournament["description"])
-    return len(tournaments_list)
+    for tournament_obj in tournaments_obj_list:
+        tournament_dict = tournament_obj.get_tournament
+        print(tournament_dict["id"], tournament_dict["name"],
+              tournament_dict["date"], tournament_dict["description"])
+    return len(tournaments_obj_list)
 
 
 def tournament_data(tournament_obj):
@@ -122,15 +128,15 @@ score: {match["score_player_1"]} / {match["score_player_2"]}')
             print()
 
 
-def tournament_players(tournament_id: int, sort_type: int):
-    db_player = Db_manager_player()
-    db_tournament = Db_manager_tournament()
-    tournament_players = db_tournament.get_players_by_id(tournament_id)
-    players = []
-    for tournament_player in tournament_players:
-        player_document = db_player.get_by_id(int(tournament_player))
-        player = views_utility.build_players_dict(player_document)
-        players.append(player)
+def tournament_players(tournament_id: int, sort_type):
+    manager_player = Db_manager_player()
+    manager_tournament = Db_manager_tournament()
+    tournament_players_id = manager_tournament.get_players_by_id(tournament_id)
+    players: list[dict] = []
+    for tournament_player_id in tournament_players_id:
+        player_obj = manager_player.get_by_id(tournament_player_id)
+        player_dict = player_obj.get_player
+        players.append(player_dict)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print_players(sorted_players)
 

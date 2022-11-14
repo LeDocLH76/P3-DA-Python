@@ -6,44 +6,44 @@ class Db_manager_tournament:
         db = TinyDB('chess_tournament')
         self.tournaments_table = db.table("tournaments")
 
-    def get_all(self) -> list[dict]:
-        tournaments_list: list[dict] = []
+    def get_all(self):
+        from models.tournament import Tournament
+        tournaments_obj_list: list[Tournament] = []
         for document in self.tournaments_table:
-            tournament = {}
-            tournament["id"] = document.doc_id
-            tournament["name"] = document["name"]
-            tournament["date"] = document["date"]
-            tournament["description"] = document["description"]
-            tournament["status"] = document["status"]
-            tournaments_list.append(tournament)
-        return tournaments_list
+            tournament_id = document.doc_id
+            tournament_obj = self.get_one(tournament_id)
+            tournaments_obj_list.append(tournament_obj)
+        return tournaments_obj_list
 
-    def get_players_by_id(self, tournament_id: int) -> list[int]:
+    def get_players_by_id(self, tournament_id: int) -> dict:
         tournament = self.tournaments_table.get(doc_id=tournament_id)
-        player_list: list[int] = tournament.get('players')
-        return player_list
+        player_dict: dict = tournament.get('players')
+        return player_dict
 
-    def get_players_all(self) -> list[int]:
-        tournaments_list = self.get_all()
-        players_set = set()
-        for tournament in tournaments_list:
-            players = self.get_one(tournament["id"])["players"]
-            players_set.update(players)
-            players_set = {int(item) for item in players_set}
+    def get_players_all(self) -> set[int]:
+        tournaments_obj_list = self.get_all()
+        players_set: set[int] = set()
+        for tournament_obj in tournaments_obj_list:
+            players_dict = self.get_players_by_id(tournament_obj.get_id)
+            players_set.update(players_dict)
         return players_set
 
     def get_one(self, tournament_id):
-        tournament_db = self.tournaments_table.get(doc_id=tournament_id)
-        tournament = {}
-        tournament["name"] = tournament_db["name"]
-        tournament["place"] = tournament_db["place"]
-        tournament["date"] = tournament_db["date"]
-        tournament["time_ctrl"] = tournament_db["time_ctrl"]
-        tournament["description"] = tournament_db["description"]
-        tournament["players"] = tournament_db["players"]
-        tournament["round"] = tournament_db["round"]
-        tournament["status"] = tournament_db["status"]
-        return tournament
+        from models.tournament import Tournament
+        document = self.tournaments_table.get(doc_id=tournament_id)
+        tournament_obj = Tournament(
+            document["name"],
+            document["place"],
+            document["date"],
+            document["time_ctrl"],
+            document["description"],
+            document["round"]
+        )
+        tournament_obj.set_id(document.doc_id)
+        tournament_obj.set_status(document["status"])
+        tournament_obj.set_players_from_db(document["players"])
+        tournament_obj.set_rounds_from_db(document["rounds"])
+        return tournament_obj
 
     def get_rounds_by_id(self, tournament_id: int):
         tournament = self.tournaments_table.get(doc_id=tournament_id)

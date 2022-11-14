@@ -31,9 +31,11 @@ def players_controler():
             if player_to_update is False:
                 continue
             manager_player_obj = Db_manager_player()
-            player_db = manager_player_obj.get_by_id(player_to_update)
+            response: Player | None = manager_player_obj.get_by_id(
+                player_to_update)
             # player exist on db ?
-            if player_db is not None:
+            if response is not None:
+                player_db_obj = response
                 manager_tournament_obj = Db_manager_tournament()
                 players_set = manager_tournament_obj.get_players_all()
                 # If player is in a tournament
@@ -43,19 +45,16 @@ def players_controler():
                     views_input.wait_for_enter()
                     continue
                 views_utility.clear_screen()
-                views_output.print_player(player_db)
+                views_output.print_player(player_db_obj)
                 player_dict = views_input.new_player()
-                player_obj = Player(
+                new_player_obj = Player(
                     player_dict["name"],
                     player_dict["surname"],
                     player_dict["birth_date"],
                     player_dict["gender"],
                     player_dict["classification"])
-                response = manager_player_obj.add_one(
-                    player_obj, player_to_update)
-                if response is not True:
-                    views_output.player_exist(response)
-                    views_input.wait_for_enter()
+                # Update player in database
+                manager_player_obj.add_one(new_player_obj, player_to_update)
             else:
                 # Not in database
                 views_output.input_error()
@@ -68,8 +67,10 @@ def players_controler():
             if player_to_delete is False:
                 continue
             manager_player_obj = Db_manager_player()
-            player_db = manager_player_obj.get_by_id(player_to_delete)
-            if player_db is not None:
+            response: Player | None = manager_player_obj.get_by_id(
+                player_to_delete)
+            if response is not None:
+                player_db_obj = response
                 manager_tournament_obj = Db_manager_tournament()
                 players_set = manager_tournament_obj.get_players_all()
                 # If player is in a tournament
@@ -81,21 +82,20 @@ def players_controler():
                 # Confirm ?
                 views_utility.clear_screen()
                 views_output.confirm_delete()
-                views_output.print_player(player_db)
+                views_output.print_player(player_db_obj)
                 response = views_input.y_or_n()
                 if response is False:
                     continue
                 else:
                     manager_player_obj = Db_manager_player()
-                    manager_player_obj.delete_one(player_db.doc_id)
+                    manager_player_obj.delete_one(player_to_delete)
             else:
                 # Not in database
                 views_output.input_error()
                 views_input.wait_for_enter()
 
         if action == 4:
-            # View players in database order is alpha (1)
-            views_output.players_list(1)
+            views_output.players_list(ORDER_ALPHA)
             views_input.wait_for_enter()
         if action == 5:
             break

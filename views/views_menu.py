@@ -1,4 +1,5 @@
 
+from typing import Literal
 from utils.constant import ORDER_ALPHA, ORDER_CLASSIFICATION
 from views import views_utility
 
@@ -78,7 +79,7 @@ def tournament_begin():
             return 2
 
 
-def sort_choice():
+def sort_choice() -> Literal[1, 2]:
     views_utility.clear_screen()
     print("Type de tri")
     print("1. Alphabetique")
