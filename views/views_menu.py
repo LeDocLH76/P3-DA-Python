@@ -4,7 +4,13 @@ from utils.constant import ORDER_ALPHA, ORDER_CLASSIFICATION
 from views import views_utility
 
 
-def root_menu():
+def root_menu() -> int:
+    """Print root menu
+
+    Return:
+        int: user choice from 1 to 8
+
+    """
     while True:
         views_utility.clear_screen()
         print("Menu principal")
@@ -38,6 +44,12 @@ def root_menu():
 
 
 def players_action_choice():
+    """Print submenu player
+
+    Return:
+        int: User choice from 1 to 5
+
+    """
     while True:
         views_utility.clear_screen()
         print("Menu joueurs")
@@ -65,6 +77,12 @@ def players_action_choice():
 
 
 def tournament_begin():
+    """Print submenu tournament
+
+    Return:
+        int: User choice from 1 to xxx work in progress
+
+    """
     while True:
         views_utility.clear_screen()
         print("1. Débuter le tournoi")
@@ -80,6 +98,11 @@ def tournament_begin():
 
 
 def sort_choice() -> Literal[1, 2]:
+    """Print submenu sort choice
+
+    Return:
+        Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
+    """
     views_utility.clear_screen()
     print("Type de tri")
     print("1. Alphabetique")
@@ -94,7 +117,13 @@ def sort_choice() -> Literal[1, 2]:
             return ORDER_CLASSIFICATION
 
 
-def result_type():
+def result_type() -> Literal[1, 2]:
+    """Print submenu result choice
+
+    Return
+        int: tournament's rounds = 1, tournament's matchs = 2
+
+    """
     views_utility.clear_screen()
     print("Type de liste")
     print("1. Les rounds du tournoi")

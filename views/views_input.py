@@ -1,6 +1,8 @@
 
 import re
-from utils import filters, transform_date
+
+from utils.filters import classification_regex, date_regex, player_id_regex
+from utils.transform_date import date_add_0
 from utils.constant import (
     PLAYER_NAME_LENGTH,
     PLAYER_SURNAME_LENGTH,
@@ -12,7 +14,18 @@ from utils.constant import (
 from views import views_utility
 
 
-def new_player():
+def new_player() -> dict:
+    """ Get player's infos from the user
+
+    Return:
+        dict: {
+            "name": str,
+            "surname": str,
+            "birt_date": str dd/mm/yyyy,
+            "gender": str,
+            "classification": int|None
+            }
+    """
     print("Entrer les informations du joueur")
     name = input("Nom ").upper()
     if len(name) > PLAYER_NAME_LENGTH:
@@ -25,8 +38,8 @@ def new_player():
     birth_date = None
     while birth_date is None:
         birth_date = input("Date de naissance > jj/mm/aaaa ")
-        birth_date = filters.date_regex(birth_date)
-    birth_date = transform_date.date_add_0(birth_date.group())
+        birth_date = date_regex(birth_date)
+    birth_date = date_add_0(birth_date.group())
 
     gender_list = ["M", "F"]
     gender = ""
@@ -39,7 +52,7 @@ def new_player():
         if classification == "":
             classification = None
             break
-        classification = filters.classification_regex(classification)
+        classification = classification_regex(classification)
     if classification is not None:
         classification = int(classification.group())
 
@@ -53,18 +66,32 @@ def new_player():
     return player
 
 
-def player_choice():
+def player_choice() -> int | bool:
+    """Ask user for player_id choice
+
+    Return:
+        int | bool: player_id or False for no choice
+
+    """
     player_id = None
     while player_id is None:
         response = input(
             "Veuillez choisir un numéro de la liste, ou Q pour annuler --> ")
         if response[0].upper() == "Q":
             return False
-        player_id = filters.player_id_regex(response)
+        player_id = player_id_regex(response)
     return int(player_id.group())
 
 
-def tournament_choice(tournament_quantity):
+def tournament_choice(tournament_quantity) -> int:
+    """Ask user for tournament_id choice
+    Args:
+        int: tournament quantity
+
+    Return:
+        int: tournament_id
+
+    """
     while True:
         response = re.findall(
             '[0-9]', views_utility.input_filter(
@@ -75,7 +102,19 @@ def tournament_choice(tournament_quantity):
             return int(response[0])
 
 
-def new_tournament():
+def new_tournament() -> dict[str, str]:
+    """ Get tournament's infos from the user
+
+    Return:
+        dict: {
+            name": tournament's name
+            "place": tournament's place
+            "date": tournament's date
+            "time_ctrl": tournament's time_ctrl
+            "description": tournament's description
+            }
+    """
+
     print("Entrer les information du nouveau tournoi")
     name = input(
         f"Nom du tournoi {TOURNAMENT_NAME_LENGTH}car max ").capitalize()
@@ -89,8 +128,8 @@ def new_tournament():
     date = None
     while date is None:
         date = input("Date du tournoi -> jj/mm/aaaa ")
-        date = filters.date_regex(date)
-    date = transform_date.date_add_0(date.group())
+        date = date_regex(date)
+    date = date_add_0(date.group())
 
     time_ctrl_list = ["1", "2", "3"]
     time_ctrl_choice = ""
@@ -118,6 +157,12 @@ def new_tournament():
 
 
 def change_round_quantity() -> int:
+    """Ask user for new round quantity
+
+    Return:
+        int: new quantity between ROUND_QUANTITY_MIN and ROUND_QUANTITY_MAX
+
+    """
     response = 0
     while (response < ROUND_QUANTITY_MIN) | (response > ROUND_QUANTITY_MAX):
         response = input(f"Entrer le nombre de round {ROUND_QUANTITY_MIN} \
@@ -129,6 +174,12 @@ def change_round_quantity() -> int:
 
 
 def y_or_n() -> bool:
+    """Ask user for yes or no
+
+    Return:
+        bool: Yes = True, no = False
+
+    """
     response_list = ["O", "N"]
     response = ""
     while response not in response_list:
@@ -137,4 +188,5 @@ def y_or_n() -> bool:
 
 
 def wait_for_enter():
+    """Wait for user input"""
     input("Entrer pour continuer")

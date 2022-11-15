@@ -5,12 +5,17 @@ from views import views_input, views_menu, views_output, views_utility
 
 
 def players_controler():
+    """ Controler for the player submenu
+
+    """
     from models.player import Player
+    manager_player_obj = Db_manager_player()
+    manager_tournament_obj = Db_manager_tournament()
+
     while True:
         action = views_menu.players_action_choice()
         if action == 1:
-            # Add a player in database
-            manager_player_obj = Db_manager_player()
+            # Get player's infos from the user and save them in in database
             views_utility.clear_screen()
             player_dict = views_input.new_player()
             player_obj = Player(
@@ -30,13 +35,11 @@ def players_controler():
             player_to_update = views_input.player_choice()
             if player_to_update is False:
                 continue
-            manager_player_obj = Db_manager_player()
             response: Player | None = manager_player_obj.get_by_id(
                 player_to_update)
             # player exist on db ?
             if response is not None:
                 player_db_obj = response
-                manager_tournament_obj = Db_manager_tournament()
                 players_set = manager_tournament_obj.get_players_all()
                 # If player is in a tournament
                 if player_to_update in players_set:
@@ -66,12 +69,10 @@ def players_controler():
             player_to_delete = views_input.player_choice()
             if player_to_delete is False:
                 continue
-            manager_player_obj = Db_manager_player()
             response: Player | None = manager_player_obj.get_by_id(
                 player_to_delete)
             if response is not None:
                 player_db_obj = response
-                manager_tournament_obj = Db_manager_tournament()
                 players_set = manager_tournament_obj.get_players_all()
                 # If player is in a tournament
                 if player_to_delete in players_set:

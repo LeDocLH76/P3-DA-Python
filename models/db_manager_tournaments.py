@@ -49,35 +49,30 @@ class Db_manager_tournament:
         return tournament_obj
 
     def get_one_from_db(self, tournament_id: int):
-        from models.player import Player
-        manager_player_obj = Db_manager_player()
         tournament_obj = self.get_one(tournament_id)
-        # Create Players
-        players_obj_list: list[Player] = []
         document_tournament = self.tournaments_table.get(doc_id=tournament_id)
+        # Create Players list
+        self.create_players_obj_list(tournament_id)
         tournament_players_dict = document_tournament["players"]
         # Extract players_id from key
         players_id: list[int] = [key for key in tournament_players_dict]
+        # Extract player_ point with key
         players_points: list[int] = [
             tournament_players_dict[key] for key in tournament_players_dict
         ]
         for player_id, player_points in zip(players_id, players_points):
-            # Find data of one player
-            player_obj = manager_player_obj.get_by_id(player_id)
-            player_dict = player_obj.get_player
-            # Create one player
-            player_obj_to_add: Player = Player.add_player_from_db(
-                player_dict["name"],
-                player_dict["surname"],
-                player_dict["birth_date"],
-                player_dict["gender"],
-                player_dict["classification"],
-                player_id)
-            # Add Player to Players for this tournament
-            players_obj_list.append(player_obj_to_add)
             tournament_obj.add_player_from_db(player_id, player_points)
         # Create rounds and matchs
+        round_obj_list = self.get_rounds_by_id(tournament_id)
+        for round_obj in round_obj_list:
+            tournament_obj.add_round_from_db(round_obj)
+        return tournament_obj
+
+    def get_rounds_by_id(self, tournament_id: int):
+        document_tournament = self.tournaments_table.get(doc_id=tournament_id)
         rounds_db_list = document_tournament["rounds"]
+        players_obj_list = self.create_players_obj_list(tournament_id)
+        round_obj_list = []
         for round_item in rounds_db_list:
             # Create one round
             # Round is close ?
@@ -130,17 +125,18 @@ class Db_manager_tournament:
                                   score_player_2
                                   )
                 round_obj.add_match(match_obj)
-            tournament_obj.add_round_from_db(round_obj)
-        return tournament_obj
-
-    def get_rounds_by_id(self, tournament_id: int):
-        tournament = self.tournaments_table.get(doc_id=tournament_id)
-        rounds_list = tournament.get('rounds')
-        return rounds_list
+            round_obj_list.append(round_obj)
+        return round_obj_list
 
     def update_players_by_name_and_date(
             self, tournament_name, tournament_date, players_data_list):
         self.tournaments_table.update({"players": players_data_list},
+                                      (where("name") == tournament_name)
+                                      & (where("date") == tournament_date))
+
+    def update_round_by_name_and_date(
+            self, tournament_name, tournament_date, round_quantity):
+        self.tournaments_table.update({"round": round_quantity},
                                       (where("name") == tournament_name)
                                       & (where("date") == tournament_date))
 
@@ -195,3 +191,28 @@ class Db_manager_tournament:
             (where("name") == tournament_name)
             & (where("date") == tournament_date)
         )
+
+    def create_players_obj_list(self, tournament_id):
+        from models.player import Player
+        manager_player_obj = Db_manager_player()
+        players_obj_list: list[Player] = []
+        document_tournament = self.tournaments_table.get(doc_id=tournament_id)
+        tournament_players_dict = document_tournament["players"]
+        # Extract players_id from key
+        players_id: list[int] = [key for key in tournament_players_dict]
+
+        for player_id in players_id:
+            # Find data of one player
+            player_obj = manager_player_obj.get_by_id(player_id)
+            player_dict = player_obj.get_player
+            # Create one player
+            player_obj_to_add: Player = Player.add_player_from_db(
+                player_dict["name"],
+                player_dict["surname"],
+                player_dict["birth_date"],
+                player_dict["gender"],
+                player_dict["classification"],
+                player_id)
+            # Add Player to Players for this tournament
+            players_obj_list.append(player_obj_to_add)
+        return players_obj_list

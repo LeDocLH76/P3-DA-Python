@@ -27,6 +27,16 @@ def input_filter(response: str):
 def sort_players_by_type(
         sort_type: Literal[1, 2],
         player_dict_list: list[dict]) -> list[dict]:
+    """Sort player by sort_type
+
+    Args:
+        Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
+        list[dict]: list of players dict to sort
+
+    Return:
+        list[dict]: list of players dict sorted
+
+    """
 
     if sort_type == ORDER_ALPHA:
         sorted_player_dict_list = sorted(

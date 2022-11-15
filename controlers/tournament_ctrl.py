@@ -7,7 +7,6 @@ from models.tournament import Tournament
 from models.db_manager_tournaments import Db_manager_tournament
 from models.db_manager_players import Db_manager_player
 from controlers.players_controler import players_controler
-from utils import transform_date
 
 
 def tournament_controler(tournament_id):
@@ -187,19 +186,6 @@ def create_round1(tournament_obj: Tournament):
     #     round_1.add_match(match)
 
     # Fin du round
-
-
-# def create_player_obj(player_dict):
-#     from models.player import Player
-#     date = transform_date.date_iso2fr(player_dict["birth_date"])
-#     player_obj = Player(
-#         player_dict["name"],
-#         player_dict["surname"],
-#         date,
-#         player_dict["gender"],
-#         player_dict["classification"]
-#     )
-#     return player_obj
 
 
 def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:

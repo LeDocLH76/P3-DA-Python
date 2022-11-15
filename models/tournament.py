@@ -61,6 +61,7 @@ class Tournament:
 
     def set_round(self, new_round_quantity) -> None:
         self._round = new_round_quantity
+        self.save_round()
 
     def set_id(self, tournament_id) -> None:
         self._id = tournament_id
@@ -112,6 +113,14 @@ class Tournament:
         tournament_db = Db_manager_tournament()
         tournament_db.update_players_by_name_and_date(
             self._name, self._date, self._players)
+
+    def save_round(self) -> None:
+        """Save round quantity in database by tournament name and date
+
+        """
+        tournament_db = Db_manager_tournament()
+        tournament_db.update_round_by_name_and_date(
+            self._name, self._date, self._round)
 
     def save_db(self) -> bool | int:
         """Save tournament in database and get is id
