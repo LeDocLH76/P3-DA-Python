@@ -56,8 +56,9 @@ def create_players(players_quantity):
     # Création des joueurs
     players_obj: List[Player] = []
     for i in range(players_quantity):
+        classification = random.randrange(1, 100)
         genre = "F" if prenom[i] in prenom_f else "M"
-        player = Player(nom[i], prenom[i], date[i], genre, i+1)
+        player = Player(nom[i], prenom[i], date[i], genre, classification)
         reponse = manager_player.add_one(player)
         if reponse is not True:
             print("Le joueur existe déja")
@@ -76,9 +77,9 @@ db = TinyDB('chess_tournament')
 # Création du tournoi
 tournament = Tournament("Tournoi privé",
                         "Le Havre",
-                        "03/11/2022",
+                        "04/11/2022",
                         "rapid",
-                        "Mon troisième tournoi d'échecs")
+                        "Mon quatrième tournoi d'échecs")
 
 reponse = tournament.save_db()
 if reponse is not True:
@@ -87,7 +88,9 @@ if reponse is not True:
 
 players_obj = create_players(8)
 
-# Ajout des joueurs
+# Ajout des id de joueurs dans le dictionnaire du tournoi
+# cle = "id" valeur = points = 0
+# et sauve sur la bd
 for player in players_obj:
     tournament.add_player(player.get_id)
 
@@ -140,7 +143,7 @@ round_1.set_end(time.time())
 print(round_1)
 print()
 
-# Ajoute le Round au tournoi
+# Ajoute le Round au tournoi et sauve sur bd
 tournament.update_round(round_1)
 
 # ******************************
@@ -165,7 +168,7 @@ for match in round_x_matches_list:
     print(f"{player_2}\nNombre de points: \
 {tournament.get_points(player_2.get_id)}")
     print()
-
+# Met à jour sur bd
 tournament.update_round()
 # ******************************
 # Début du/des autres rounds

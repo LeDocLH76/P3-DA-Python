@@ -8,7 +8,7 @@ player_2 = Player("Joueur 2", "Prénom 2", "15/01/1986", "M", 1)
 # print(player_2.get_player)
 
 db = TinyDB('chess_tournament')
-db.drop_tables()
+# db.drop_tables()
 players_table = db.table("players")
 
 # insert un après l'autre

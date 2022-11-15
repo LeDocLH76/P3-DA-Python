@@ -44,4 +44,4 @@ if result is True:
     tournament.update_round(round1)
     print(tournament)
 else:
-    print("Erreur le tournoi existe dèja")
+    print(f"Erreur le tournoi existe dèja, son id est: {result}")

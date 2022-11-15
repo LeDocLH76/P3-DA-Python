@@ -146,8 +146,10 @@ def create_round1(tournament_obj: Tournament):
     tournament_players_id_list = tournament_obj.get_players
     players_obj_list: list[Player] = []
     for player_id in tournament_players_id_list:
-        player_dict = player_manager_obj.get_by_id(player_id)
-        player_obj: Player = create_player_obj(player_dict)
+        player_obj = player_manager_obj.get_by_id(player_id)
+
+        # player_obj: Player = create_player_obj(player_dict)
+
         players_obj_list.append(player_obj)
     print(players_obj_list)
 
@@ -187,17 +189,17 @@ def create_round1(tournament_obj: Tournament):
     # Fin du round
 
 
-def create_player_obj(player_dict):
-    from models.player import Player
-    date = transform_date.date_iso2fr(player_dict["birth_date"])
-    player_obj = Player(
-        player_dict["name"],
-        player_dict["surname"],
-        date,
-        player_dict["gender"],
-        player_dict["classification"]
-    )
-    return player_obj
+# def create_player_obj(player_dict):
+#     from models.player import Player
+#     date = transform_date.date_iso2fr(player_dict["birth_date"])
+#     player_obj = Player(
+#         player_dict["name"],
+#         player_dict["surname"],
+#         date,
+#         player_dict["gender"],
+#         player_dict["classification"]
+#     )
+#     return player_obj
 
 
 def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:

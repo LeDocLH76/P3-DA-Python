@@ -5,10 +5,11 @@ from models.tournament import Tournament
 tournament_to_rebuild = 1
 tournament = Tournament.add_tournament_from_db_2(tournament_to_rebuild)
 
-print(tournament)
+# print(tournament.get_rounds)
 print()
 print("Voici les infos du tournoi:")
 for round_item in tournament.get_rounds:
+    print(type(round_item))
     print(f"Le round {round_item.get_name}")
     print(f"Début :{round_item.get_begin}")
     print(f"fin :{round_item.get_end}")

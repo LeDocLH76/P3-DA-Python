@@ -77,8 +77,9 @@ class Player:
 
         """
         self._classification = classification
-        player_bd = Db_manager_player()
-        player_bd.update_classification_by_id(self._id, classification)
+        if self._id is not None:
+            player_bd = Db_manager_player()
+            player_bd.update_classification_by_id(self._id, classification)
 
     def set_id(self, player_id) -> None:
         """Set Player's id

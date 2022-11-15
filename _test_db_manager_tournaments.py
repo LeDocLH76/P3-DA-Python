@@ -1,9 +1,10 @@
 from tinydb import TinyDB
 
+TOURNAMENT_ID = 1
 
 db = TinyDB('chess_tournament')
 tournaments_table = db.table("tournaments")
-tournament = tournaments_table.get(doc_id=1)
+tournament = tournaments_table.get(doc_id=TOURNAMENT_ID)
 rounds_list = tournament.get('rounds')
 
 for round in rounds_list:
