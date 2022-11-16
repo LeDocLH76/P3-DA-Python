@@ -7,7 +7,14 @@ from utils.constant import ROUND_QUANTITY
 
 
 class Tournament:
-    def __init__(self, name, place, date, time_ctrl, description, round=ROUND_QUANTITY):
+    def __init__(self,
+                 name,
+                 place,
+                 date,
+                 time_ctrl,
+                 description,
+                 round=ROUND_QUANTITY
+                 ):
         """Tournament definition
 
         Attributes:

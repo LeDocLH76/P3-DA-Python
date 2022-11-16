@@ -18,14 +18,14 @@ class Match:
     def __init__(self,
                  player1: Player,
                  player2: Player,
-                 score_player1: int | None = None,
-                 score_player2: int | None = None):
+                 score_player1: float | None = None,
+                 score_player2: float | None = None):
         self._player1 = player1
         self._player2 = player2
         self._score_player1 = score_player1
         self._score_player2 = score_player2
 
-    def set_score(self, score_player1: int, score_player2: int) -> None:
+    def set_score(self, score_player1: float, score_player2: float) -> None:
         """Set score for 2 players
 
         Args:
@@ -37,12 +37,12 @@ class Match:
         self._score_player2 = score_player2
 
     @property
-    def get_match(self) -> tuple[list[Player | int], list[Player | int]]:
+    def get_match(self) -> tuple[list[Player | float], list[Player | float]]:
         """Property match's datas
 
         Return:
             tuple: ([player1, score_player1],[player2, score_player2])"""
-        match: tuple[list[Player | int], list[Player | int]] = (
+        match: tuple[list[Player | float], list[Player | float]] = (
             [self._player1, self._score_player1],
             [self._player2, self._score_player2])
         return match
@@ -59,7 +59,7 @@ class Match:
         return players
 
     @property
-    def get_scores(self) -> List[int | None]:
+    def get_scores(self) -> List[float | None]:
         """Property match's scores
 
         Return:

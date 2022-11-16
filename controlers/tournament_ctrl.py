@@ -1,5 +1,6 @@
 
 from typing import List
+
 from models.match import Match
 from utils.constant import ORDER_ALPHA, PLAYER_QUANTITY_MIN, ROUND_QUANTITY
 from views import views_input, views_menu, views_output, views_utility
@@ -97,15 +98,11 @@ def tournament_controler(tournament_id):
         response = views_menu.tournament_begin()
         if response == 1:
             if players_quantity >= PLAYER_QUANTITY_MIN:
-
-                # Build round1
-                print("Création du round1")
-                create_round1(tournament_obj)
-                views_input.wait_for_enter()
+                play_tournament(tournament_obj)
             else:
                 views_output.players_quantity_error(players_quantity)
                 views_input.wait_for_enter()
-    print(tournament_obj)
+    print("Fin provisoire")
 
     # initialiser un round ! quel round?
     # verifier le status du tournoi
@@ -138,10 +135,50 @@ def tournament_controler(tournament_id):
     # le tournois est-il terminé ?
 
 
+def play_tournament(tournament_obj: Tournament):
+
+    # le round 1 existe ?
+    if len(tournament_obj.get_rounds) == 0:
+        round_1 = create_round1(tournament_obj)
+    else:
+        round_1 = tournament_obj.get_rounds[0]
+
+    # le round 1 est cloturé ?
+    if not round_1.get_end:
+        response = input_matchs_results(round_1)
+        print("La reponse est: ", response)
+    views_input.wait_for_enter()
+
+
+def input_matchs_results(round):
+    from models.round import Round
+    round: Round = round
+    response = ""
+    while (response != "Q") and (response != "C"):
+        match_obj_list = round.get_matchs
+        views_utility.clear_screen()
+        views_output.match_list(2, match_obj_list)
+        response = views_input.match_choice()
+        if (response != "Q") and (response != "C"):
+            match_obj = match_obj_list[int(response)-1]
+            views_utility.crlf()
+            views_output.print_one_match(response, 2, match_obj)
+            score_player_1 = views_input.match_results()
+            score_player_2 = 1-score_player_1
+            match_obj.set_score(score_player_1, score_player_2)
+    return response
+
+
 def create_round1(tournament_obj: Tournament):
     """Create round 1"""
     from models.player import Player
+    from models.round import Round
+    round_1 = Round("Round 1")
     player_manager_obj = Db_manager_player()
+    # Build round1
+    print("Création du round1")
+    views_input.wait_for_enter()
+
     # create players_obj
     tournament_players_id_list = tournament_obj.get_players
     players_obj_list: list[Player] = []
@@ -183,10 +220,9 @@ def create_round1(tournament_obj: Tournament):
         round_x_matches_list.append(match)
 
     # Ajoute les Match dans le round_1
-    # for match in round_x_matches_list:
-    #     round_1.add_match(match)
-
-    # Fin du round
+    for match in round_x_matches_list:
+        round_1.add_match(match)
+    return round_1
 
 
 def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:

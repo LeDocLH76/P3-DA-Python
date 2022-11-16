@@ -83,6 +83,36 @@ def player_choice() -> int | bool:
     return int(player_id.group())
 
 
+def match_choice() -> int | str:
+    """Ask user for match index choice
+
+    Return:
+        int | str: match index or Q to exit or C to close round
+
+    """
+    response = ""
+    while (response != "Q") and (response != "C"):
+        print("Choisir le numero du match pour renseigner le score.")
+        response = input("Q pour quitter ou C pour cloturer le round ")
+        response = views_utility.input_filter(response)
+        if response == "C":
+            return "C"
+        if response == "Q":
+            return "Q"
+        match_index = player_id_regex(response)
+        if match_index is not None:
+            return int(match_index.group())
+
+
+def match_results():
+    list_scores = ["0", ".5", "0.5", "1"]
+    score_str = ""
+    while score_str not in list_scores:
+        score_str = input(
+            "Entrer le score du premier joueur du match 0, 0.5 ou 1 ")
+    return float(score_str)
+
+
 def tournament_choice(tournament_quantity) -> int:
     """Ask user for tournament_id choice
     Args:

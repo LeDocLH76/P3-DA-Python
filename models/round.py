@@ -10,8 +10,6 @@ class Round:
 
     Attributes:
         name (str): round's name
-        matchs (list): round's matchs
-        date_begin(str): round's begin date and time like iso format
 
     """
 
@@ -19,6 +17,7 @@ class Round:
         self._name = name
         self._matchs: List[Match] = []
         self.set_begin()
+        self._date_end = None
 
     @classmethod
     def add_round_from_db(cls, name, date_begin, date_end=None):
@@ -70,7 +69,7 @@ class Round:
         self._date_end = datetime. fromtimestamp(ts).isoformat()
 
     @property
-    def get_matchs(self) -> List[Match]:
+    def get_matchs(self) -> List[Match | None]:
         """Property round's matchs list
 
         Return:
@@ -98,14 +97,17 @@ class Round:
         return self._date_begin
 
     @property
-    def get_end(self) -> str:
+    def get_end(self) -> str | bool:
         """Property round's end
 
         Return:
-            date_end (str): Round's end date and time like iso format
+            date_end (str | bool): Round's end date and time like iso format \
+                if round is close, False if not
 
         """
-        return self._date_end
+        if self._date_end is not None:
+            return self._date_end
+        return False
 
     def __str__(self) -> str:
         """Human readable Round for dev only

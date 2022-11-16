@@ -2,6 +2,7 @@ from typing import Literal
 import pyfiglet
 
 from views import views_utility
+from models.match import Match
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
 from utils.constant import (
@@ -148,40 +149,58 @@ def tournament_results(tournament_id: int, result_type):
     for round_obj in rounds_obj_list:
         if result_type == 1:
             print(round_obj.get_name)
-
         match_obj_list = round_obj.get_matchs
-        for match_obj in match_obj_list:
-            match_dict = {
-                "player_1": match_obj.get_match[0][0],
-                "player_2": match_obj.get_match[1][0],
-                "score_player_1": match_obj.get_match[0][1],
-                "score_player_2": match_obj.get_match[1][1]
-            }
-            player1 = match_dict["player_1"]
-            player1_name = player1.get_player["name"]
-            player1_surname = player1.get_player["surname"]
-            space1 = ""
-            for i in range(PLAYER_NAME_LENGTH - len(player1_name)):
-                space1 += " "
-            space2 = ""
-            for i in range(PLAYER_SURNAME_LENGTH - len(player1_surname)):
-                space2 += " "
-            player2 = match_dict["player_2"]
-            player2_name = player2.get_player["name"]
-            player2_surname = player2.get_player["surname"]
-            space3 = ""
-            for i in range(PLAYER_NAME_LENGTH - len(player2_name)):
-                space3 += " "
-            space4 = ""
-            for i in range(PLAYER_SURNAME_LENGTH - len(player2_surname)):
-                space4 += " "
-            tab = "\t" if result_type == 1 else ""
-            print(f'{tab}\
+        match_list(result_type, match_obj_list)
+
+
+def match_list(result_type, match_obj_list):
+    for index, match_obj in enumerate(match_obj_list, 1):
+        print_one_match(index, result_type, match_obj)
+
+
+def print_one_match(index: int, result_type, match_obj):
+    match_dict = make_match_dict(match_obj)
+    player1_name = match_dict["player_1_name"]
+    player1_surname = match_dict["player_1_surname"]
+    space1 = ""
+    for i in range(PLAYER_NAME_LENGTH - len(player1_name)):
+        space1 += " "
+    space2 = ""
+    for i in range(PLAYER_SURNAME_LENGTH - len(player1_surname)):
+        space2 += " "
+
+    player2_name = match_dict["player_2_name"]
+    player2_surname = match_dict["player_2_surname"]
+    space3 = ""
+    for i in range(PLAYER_NAME_LENGTH - len(player2_name)):
+        space3 += " "
+    space4 = ""
+    for i in range(PLAYER_SURNAME_LENGTH - len(player2_surname)):
+        space4 += " "
+
+    tab = "\t" if result_type == 1 else ""
+    index_str = "  " + str(index)
+    match_number = f"{index_str[-3:]}: " if result_type == 2 else ""
+    print(f'{tab}{match_number}\
 {player1_name}{space1} {player1_surname}{space2}\
 contre   {player2_name}{space3} {player2_surname}{space4} \
 score: {match_dict["score_player_1"]} / {match_dict["score_player_2"]}')
-        if result_type == 1:
-            print()
+    if result_type == 1:
+        print()
+
+
+def make_match_dict(match_obj: Match):
+    player1 = match_obj.get_match[0][0]
+    player2 = match_obj.get_match[1][0]
+    match_dict = {
+        "player_1_name": player1.get_player["name"],
+        "player_1_surname": player1.get_player["surname"],
+        "player_2_name": player2.get_player["name"],
+        "player_2_surname": player2.get_player["surname"],
+        "score_player_1": match_obj.get_match[0][1],
+        "score_player_2": match_obj.get_match[1][1]
+    }
+    return match_dict
 
 
 def tournament_players(tournament_id: int, sort_type):
