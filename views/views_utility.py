@@ -3,8 +3,6 @@ from operator import itemgetter
 from typing import Literal
 
 from utils.constant import ORDER_ALPHA
-from models.player import Player
-from models.tournament import Tournament
 
 
 def clear_screen():
@@ -15,10 +13,20 @@ def clear_screen():
 
 
 def crlf():
+    """Line feed"""
     print("\n")
 
 
-def input_filter(response: str):
+def input_filter(response: str) -> str:
+    """Capitalize
+
+    Args:
+        str: string to capitalize
+
+    Return:
+        str: first letter capitalized
+
+    """
     if response != "":
         response = response[0].capitalize()
     return response

@@ -7,11 +7,19 @@ from utils.transform_date import date_iso2fr
 
 
 class Db_manager_tournament:
+    """Manager for tournament table on database"""
+
     def __init__(self):
         db = TinyDB('chess_tournament')
         self.tournaments_table = db.table("tournaments")
 
     def get_all(self):
+        """Get all tournament on db only base info
+
+        Return:
+            list[Tournament]: list of tournament obj
+
+        """
         from models.tournament import Tournament
         tournaments_obj_list: list[Tournament] = []
         for document in self.tournaments_table:
@@ -20,20 +28,17 @@ class Db_manager_tournament:
             tournaments_obj_list.append(tournament_obj)
         return tournaments_obj_list
 
-    def get_players_by_id(self, tournament_id: int) -> dict:
-        tournament = self.tournaments_table.get(doc_id=tournament_id)
-        player_dict: dict = tournament.get('players')
-        return player_dict
-
-    def get_players_all(self) -> set[int]:
-        tournaments_obj_list = self.get_all()
-        players_set: set[int] = set()
-        for tournament_obj in tournaments_obj_list:
-            players_dict = self.get_players_by_id(tournament_obj.get_id)
-            players_set.update(players_dict)
-        return players_set
-
     def get_one(self, tournament_id):
+        """Get one tournament on db only base info
+
+        Args:
+            int: tournament id
+
+        Return:
+            Tournament: tournament obj
+
+        """
+
         from models.tournament import Tournament
         document = self.tournaments_table.get(doc_id=tournament_id)
         tournament_obj = Tournament(
@@ -48,7 +53,44 @@ class Db_manager_tournament:
         tournament_obj.set_status(document["status"])
         return tournament_obj
 
+    def get_players_by_id(self, tournament_id: int) -> dict:
+        """Get players of one tournament
+
+        Args:
+            int: tournament id
+
+        Return:
+            dict: key = id of player, value = points of the player
+
+        """
+        tournament = self.tournaments_table.get(doc_id=tournament_id)
+        player_dict: dict = tournament.get('players')
+        return player_dict
+
+    def get_players_all(self) -> set[int]:
+        """Get players of all tournaments
+
+        Return:
+            set[int]: id of players
+
+        """
+
+        tournaments_obj_list = self.get_all()
+        players_set: set[int] = set()
+        for tournament_obj in tournaments_obj_list:
+            players_dict = self.get_players_by_id(tournament_obj.get_id)
+            players_set.update(players_dict)
+        return players_set
+
     def get_one_from_db(self, tournament_id: int):
+        """Get complete obj tournament from db
+
+        Args:
+            int: tournament id
+
+        Return:
+            Tournament: base info + players + rounds + matchs
+        """
         tournament_obj = self.get_one(tournament_id)
         document_tournament = self.tournaments_table.get(doc_id=tournament_id)
         # Create Players list
@@ -68,11 +110,20 @@ class Db_manager_tournament:
             tournament_obj.add_round_from_db(round_obj)
         return tournament_obj
 
-    def get_rounds_by_id(self, tournament_id: int):
+    def get_rounds_by_id(self, tournament_id: int) -> list[Round]:
+        """Get rounds of a tournament
+
+        Args:
+            int: tournament id
+
+        Return:
+            list[Round]: list of round obj with matchs
+
+        """
         document_tournament = self.tournaments_table.get(doc_id=tournament_id)
         rounds_db_list = document_tournament["rounds"]
         players_obj_list = self.create_players_obj_list(tournament_id)
-        round_obj_list = []
+        round_obj_list: list[Round] = []
         for round_item in rounds_db_list:
             # Create one round
             # Round is close ?
@@ -129,18 +180,44 @@ class Db_manager_tournament:
         return round_obj_list
 
     def update_players_by_name_and_date(
-            self, tournament_name, tournament_date, players_data_list):
-        self.tournaments_table.update({"players": players_data_list},
+            self, tournament_name, tournament_date, players_dict):
+        """Update players dict of one tournament on db
+
+        Args:
+            str: name of tournament
+            str: date of tournament
+            dict: key = id of player, value = points of the player
+
+        """
+        self.tournaments_table.update({"players": players_dict},
                                       (where("name") == tournament_name)
                                       & (where("date") == tournament_date))
 
     def update_round_by_name_and_date(
             self, tournament_name, tournament_date, round_quantity):
+        """Update round quantity for a tournament
+
+        Args:
+            str: name of tournament
+            str: date of tournament
+            int: new round quantity
+
+        """
         self.tournaments_table.update({"round": round_quantity},
                                       (where("name") == tournament_name)
                                       & (where("date") == tournament_date))
 
     def add_one(self, tournament_obj) -> bool | int:
+        """Add a tournament base info on db
+
+        Args:
+            Tournament: tournament obj
+
+        Return:
+            bool | int: True if succes, tournament id if already exist
+
+        """
+
         from models.tournament import Tournament
         tournament_obj: Tournament = tournament_obj
         tournament_dict = tournament_obj.get_tournament
@@ -167,6 +244,15 @@ class Db_manager_tournament:
         tournament_date,
         rounds_obj_list: list[Round]
     ):
+        """Update rounds of one tournament on db
+
+        Args:
+            str: name of tournament
+            str: date of tournament
+            list[Round]: list of round obj to update
+
+        """
+
         # Build rounds infos
         rounds_list = []
         for round in rounds_obj_list:
@@ -193,6 +279,15 @@ class Db_manager_tournament:
         )
 
     def create_players_obj_list(self, tournament_id):
+        """Create a list of player obj of a tournament
+
+        Args:
+            int: tournament id
+
+        Return:
+            list[Player]: list of player obj
+
+        """
         from models.player import Player
         manager_player_obj = Db_manager_player()
         players_obj_list: list[Player] = []
@@ -200,7 +295,6 @@ class Db_manager_tournament:
         tournament_players_dict = document_tournament["players"]
         # Extract players_id from key
         players_id: list[int] = [key for key in tournament_players_dict]
-
         for player_id in players_id:
             # Find data of one player
             player_obj = manager_player_obj.get_by_id(player_id)

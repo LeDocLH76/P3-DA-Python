@@ -5,6 +5,7 @@ from views import views_input, views_menu, views_output
 
 
 def begin():
+    """Controler for root menu"""
     # Chess tournament splash screen
     views_output.splash_screen()
     while True:

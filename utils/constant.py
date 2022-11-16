@@ -1,3 +1,5 @@
+"""Define somme constants"""
+
 ROUND_QUANTITY = 4
 ROUND_QUANTITY_MIN = 3
 ROUND_QUANTITY_MAX = 6

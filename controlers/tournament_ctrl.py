@@ -10,6 +10,7 @@ from controlers.players_controler import players_controler
 
 
 def tournament_controler(tournament_id):
+    """Controler for submenu tournament"""
     # tournoi non commencé   status = False
     #   le nombre de rounds est 0
     # tournoi cloturé    status = True
@@ -139,6 +140,7 @@ def tournament_controler(tournament_id):
 
 
 def create_round1(tournament_obj: Tournament):
+    """Create round 1"""
     from models.player import Player
     player_manager_obj = Db_manager_player()
     # create players_obj
@@ -189,32 +191,35 @@ def create_round1(tournament_obj: Tournament):
 
 
 def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:
-    tournament_obj = Tournament.add_tournament_from_db_2(tournament_to_rebuild)
+    """Rebuild tournament from database"""
+    tournament_obj = Tournament.add_tournament_from_db(tournament_to_rebuild)
     # print("Tournament after rebuild : ", tournament_obj)
     # views_input.wait_for_enter()
     return tournament_obj
 
 
-def create_tournament() -> Tournament | int:
-    tournament_manager_obj = Db_manager_tournament()
+def create_tournament() -> Tournament | int | bool:
+    """Create a new tournament
 
-    # afficher les tournois existants
+    Return:
+        Tournament | int | bool: tournament obj if succes, \
+            tournament id if already exist, False if exit by user
+
+    """
+    tournament_manager_obj = Db_manager_tournament()
     views_output.tournament_list()
-    # input créer un tournoi ou quitter
+    # Ask for creating a new one
     views_output.tournament_verify_before()
     response = views_input.y_or_n()
     if response is True:
-        # input les datas pour la création
         tournament_dict = views_input.new_tournament()
-        # views_utility.clear_screen()
-        # views_output.tournament_data(tournament_dict)
-        # # changer le nombre de rounds ?
-        # views_output.adjust_round_quantity()
-        # response = views_input.y_or_n()
-        # new_round_quantity = ROUND_QUANTITY
-        # if response is True:
-        #     new_round_quantity = views_input.change_round_quantity()
-        # créer le tournoi
+        views_utility.clear_screen()
+        views_output.tournament_data(tournament_dict)
+        views_output.adjust_round_quantity()
+        response = views_input.y_or_n()
+        new_round_quantity = ROUND_QUANTITY
+        if response is True:
+            new_round_quantity = views_input.change_round_quantity()
         tournament_obj = Tournament(
             tournament_dict["name"],
             tournament_dict["place"],
@@ -222,11 +227,9 @@ def create_tournament() -> Tournament | int:
             tournament_dict["time_ctrl"],
             tournament_dict["description"],
         )
-        # if new_round_quantity != ROUND_QUANTITY:
-        #     tournament_obj.set_round(new_round_quantity)
-        # controler sur la database et ajouter si n'existe pas
+        if new_round_quantity != ROUND_QUANTITY:
+            tournament_obj.set_round(new_round_quantity)
         tournament_exist = tournament_manager_obj.add_one(tournament_obj)
-        # verifier si déja existant
         if tournament_exist is not True:
             # return tournament_id
             return tournament_exist

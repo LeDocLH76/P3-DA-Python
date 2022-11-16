@@ -3,17 +3,19 @@ from typing import List
 from models.match import Match
 from models.round import Round
 from models.db_manager_tournaments import Db_manager_tournament
+from utils.constant import ROUND_QUANTITY
 
 
 class Tournament:
-    def __init__(self, name, place, date, time_ctrl, description, round=4):
+    def __init__(self, name, place, date, time_ctrl, description, round=ROUND_QUANTITY):
         """Tournament definition
 
         Attributes:
             name (str): Tournament's name
             place (srt): Tournament's place
             date (str): Tournament's date
-            round (int): Number of round for the tournament
+            round (int): Number of round for the tournament \
+            by default ROUND_QUANTITY
             time_ctrl (str): Bullet, blitz, rapid, only one of them
             description (str): General description
             rounds (list): List of Round object
@@ -34,7 +36,7 @@ class Tournament:
         self._id = None
 
     @classmethod
-    def add_tournament_from_db_2(cls, tournament_id: int):
+    def add_tournament_from_db(cls, tournament_id: int):
         """Alternative __init__ to create Tournament from database
 
         Args:
@@ -134,7 +136,7 @@ class Tournament:
                     description (str): General description
                     rounds (list): List of Round object
                     players (dict): Key = player's id on database, \
-value = player's points for this tournament
+                    value = player's points for this tournament
                     status (bool): Tournament's status
         """
         manager_tournament_obj = Db_manager_tournament()
@@ -158,6 +160,20 @@ value = player's points for this tournament
 
     @property
     def get_tournament(self) -> dict:
+        """Get tournament base info
+
+        Return:
+            dict:"name": tournament's name,
+                "place": tournament's place,
+                "date": tournament's date,
+                "round": tournament's round,
+                "time_ctrl": tournament's time_ctrl,
+                "description": tournament's description,
+                "rounds": [tournament's rounds],
+                "players": {tournament's players},
+                "status": tournament's status
+
+        """
         tournament_dict = {
             "name": self._name,
             "place": self._place,
