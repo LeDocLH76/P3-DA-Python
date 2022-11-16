@@ -43,8 +43,7 @@ def tournament_controler(tournament_id):
         tournament_obj = rebuild_tournament(tournament_to_rebuild)
 
     if tournament_obj is False:
-        print("Big problème")
-        # impossible
+        # exit by user
         return
 
     # If tournament_obj = tournament_id on db
@@ -214,12 +213,6 @@ def create_tournament() -> Tournament | int | bool:
     if response is True:
         tournament_dict = views_input.new_tournament()
         views_utility.clear_screen()
-        views_output.tournament_data(tournament_dict)
-        views_output.adjust_round_quantity()
-        response = views_input.y_or_n()
-        new_round_quantity = ROUND_QUANTITY
-        if response is True:
-            new_round_quantity = views_input.change_round_quantity()
         tournament_obj = Tournament(
             tournament_dict["name"],
             tournament_dict["place"],
@@ -227,6 +220,12 @@ def create_tournament() -> Tournament | int | bool:
             tournament_dict["time_ctrl"],
             tournament_dict["description"],
         )
+        views_output.tournament_data(tournament_obj)
+        views_output.adjust_round_quantity()
+        response = views_input.y_or_n()
+        new_round_quantity = ROUND_QUANTITY
+        if response is True:
+            new_round_quantity = views_input.change_round_quantity()
         if new_round_quantity != ROUND_QUANTITY:
             tournament_obj.set_round(new_round_quantity)
         tournament_exist = tournament_manager_obj.add_one(tournament_obj)
@@ -234,4 +233,4 @@ def create_tournament() -> Tournament | int | bool:
             # return tournament_id
             return tournament_exist
         return tournament_obj
-    return False
+    return response

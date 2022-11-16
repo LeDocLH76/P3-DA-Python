@@ -31,13 +31,13 @@ def bye_screen():
 
 def players_list(sort_type: Literal[1, 2]) -> list[int]:
     """Build player list sorted by sort_type and call print_player()
-    
+
     Args:
         Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
 
     Return:
         list[int]: players's id
-    
+
     """
     manager_player_obj = Db_manager_player()
     players_obj_list = manager_player_obj.get_all()
@@ -53,12 +53,12 @@ def players_list(sort_type: Literal[1, 2]) -> list[int]:
     return players_id
 
 
-def print_players(sorted_players:list[dict]):
+def print_players(sorted_players: list[dict]):
     """Print sorted list of player
-    
+
     Args:
         list[dict]: list sorted of player's dict
-    
+
     """
     for sorted_player in sorted_players:
         print(f"{sorted_player['id']} {sorted_player['name']} \
@@ -68,10 +68,10 @@ def print_players(sorted_players:list[dict]):
 
 def print_player(player_obj):
     """Print a player
-    
+
     Args:
         Player: player obj to print
-        
+
     """
     from models.player import Player
     player_obj: Player = player_obj
@@ -99,10 +99,11 @@ Voulez-vous l'ajouter? ", end="")
 
 def tournament_list() -> int:
     """Print tournament list from db
-    
+
     Return:
-        int: length of the list > 
-            must be change in futur by a list of tournaments_id 
+        int: length of the list >
+            must be change in futur by a list of tournaments_id
+
     """
     tournament_bd = Db_manager_tournament()
     tournaments_obj_list = tournament_bd.get_all()
@@ -116,7 +117,7 @@ def tournament_list() -> int:
 
 def tournament_data(tournament_obj):
     """Print a tournament
-    
+
     Args:
         Tournament: tournament_obj
 
@@ -135,46 +136,57 @@ et il est prévu {ROUND_QUANTITY} rounds.')
 
 def tournament_results(tournament_id: int, result_type):
     """Print tournament's results by result_type
-    
+
     Args:
         int: tournament's id
         Literal[1, 2]: tournament's rounds = 1, tournament's matchs = 2
 
     """
     tournament_db = Db_manager_tournament()
-    rounds = tournament_db.get_rounds_by_id(tournament_id)
+    rounds_obj_list = tournament_db.get_rounds_by_id(tournament_id)
     # print(rounds)
-    for round in rounds:
+    for round_obj in rounds_obj_list:
         if result_type == 1:
-            print(round["name"])
-        matchs = round["matchs"]
-        for match in matchs:
-            player1 = match["player_1"]
+            print(round_obj.get_name)
+
+        match_obj_list = round_obj.get_matchs
+        for match_obj in match_obj_list:
+            match_dict = {
+                "player_1": match_obj.get_match[0][0],
+                "player_2": match_obj.get_match[1][0],
+                "score_player_1": match_obj.get_match[0][1],
+                "score_player_2": match_obj.get_match[1][1]
+            }
+            player1 = match_dict["player_1"]
+            player1_name = player1.get_player["name"]
+            player1_surname = player1.get_player["surname"]
             space1 = ""
-            for i in range(PLAYER_NAME_LENGTH - len(player1["name"])):
+            for i in range(PLAYER_NAME_LENGTH - len(player1_name)):
                 space1 += " "
             space2 = ""
-            for i in range(PLAYER_SURNAME_LENGTH - len(player1["surname"])):
+            for i in range(PLAYER_SURNAME_LENGTH - len(player1_surname)):
                 space2 += " "
-            player2 = match["player_2"]
+            player2 = match_dict["player_2"]
+            player2_name = player2.get_player["name"]
+            player2_surname = player2.get_player["surname"]
             space3 = ""
-            for i in range(PLAYER_NAME_LENGTH - len(player2["name"])):
+            for i in range(PLAYER_NAME_LENGTH - len(player2_name)):
                 space3 += " "
             space4 = ""
-            for i in range(PLAYER_SURNAME_LENGTH - len(player2["surname"])):
+            for i in range(PLAYER_SURNAME_LENGTH - len(player2_surname)):
                 space4 += " "
             tab = "\t" if result_type == 1 else ""
             print(f'{tab}\
-{player1["name"]}{space1} {player1["surname"]}{space2}\
-contre   {player2["name"]}{space3} {player2["surname"]}{space4} \
-score: {match["score_player_1"]} / {match["score_player_2"]}')
+{player1_name}{space1} {player1_surname}{space2}\
+contre   {player2_name}{space3} {player2_surname}{space4} \
+score: {match_dict["score_player_1"]} / {match_dict["score_player_2"]}')
         if result_type == 1:
             print()
 
 
 def tournament_players(tournament_id: int, sort_type):
     """Build player list sorted by sort_type and call print_player()
-    
+
     Args:
         Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
 
@@ -194,7 +206,7 @@ def tournament_players(tournament_id: int, sort_type):
 
 def tournament_players_quantity(players_quantity):
     """Print info number of player
-    
+
     Args:
         int: player quantity
     """
@@ -221,7 +233,7 @@ def adjust_round_quantity():
 
 def players_quantity_error(players_quantity):
     """Print info PLAYER_QUANTITY_MIN
-    
+
     Args:
         int: players quantity in tournament
 
