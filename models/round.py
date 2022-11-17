@@ -118,6 +118,7 @@ class Round:
         """
         begin_obj = datetime.fromisoformat(self._date_begin)
         end_obj = datetime.fromisoformat(self._date_end)
+        # Prendre en compte que end peut être None !!
         return f"{self._name} \
 Début: {begin_obj.day}/{begin_obj.month}/{begin_obj.year} \
 {begin_obj.hour}:{begin_obj.minute}:{begin_obj.second} \

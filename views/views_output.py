@@ -9,7 +9,10 @@ from utils.constant import (
     PLAYER_NAME_LENGTH,
     PLAYER_QUANTITY_MIN,
     PLAYER_SURNAME_LENGTH,
-    ROUND_QUANTITY)
+    RESULT_MATCH,
+    RESULT_ROUND,
+    ROUND_QUANTITY
+)
 
 
 def splash_screen():
@@ -147,7 +150,7 @@ def tournament_results(tournament_id: int, result_type):
     rounds_obj_list = tournament_db.get_rounds_by_id(tournament_id)
     # print(rounds)
     for round_obj in rounds_obj_list:
-        if result_type == 1:
+        if result_type == RESULT_ROUND:
             print(round_obj.get_name)
         match_obj_list = round_obj.get_matchs
         match_list(result_type, match_obj_list)
@@ -178,14 +181,19 @@ def print_one_match(index: int, result_type, match_obj):
     for i in range(PLAYER_SURNAME_LENGTH - len(player2_surname)):
         space4 += " "
 
-    tab = "\t" if result_type == 1 else ""
+    tab = "\t" if result_type == RESULT_ROUND else ""
     index_str = "  " + str(index)
-    match_number = f"{index_str[-3:]}: " if result_type == 2 else ""
+    match_number = f"{index_str[-3:]}: " if result_type == RESULT_MATCH else ""
+    score_player_1 = ("" if match_dict["score_player_1"]
+                      is None else match_dict["score_player_1"])
+    score_player_2 = ("" if match_dict["score_player_2"]
+                      is None else match_dict["score_player_2"])
+
     print(f'{tab}{match_number}\
 {player1_name}{space1} {player1_surname}{space2}\
 contre   {player2_name}{space3} {player2_surname}{space4} \
-score: {match_dict["score_player_1"]} / {match_dict["score_player_2"]}')
-    if result_type == 1:
+score: {score_player_1} / {score_player_2}')
+    if result_type == RESULT_ROUND:
         print()
 
 
@@ -245,9 +253,18 @@ def tournament_exist(tournament_id):
     print(f"Ce tournoi est déja enregistré sous le numéro: {tournament_id}")
 
 
+def tournament_close():
+    print("Ce tournoi est clos, il n'est pas possible de le modifier")
+
+
 def adjust_round_quantity():
     """Ask user for changing number of round"""
     print("Souhaitez-vous changer le nombre de round?")
+
+
+def round_not_complete():
+    print("Les scores doivent être entièrement \
+renseignés avant de cloturer le round")
 
 
 def players_quantity_error(players_quantity):

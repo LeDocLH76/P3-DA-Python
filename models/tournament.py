@@ -166,6 +166,10 @@ class Tournament:
         return self._id
 
     @property
+    def get_round(self) -> int:
+        return self._round
+
+    @property
     def get_tournament(self) -> dict:
         """Get tournament base info
 

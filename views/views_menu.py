@@ -1,7 +1,12 @@
 
-from typing import Literal
-from utils.constant import ORDER_ALPHA, ORDER_CLASSIFICATION
 from views import views_utility
+from typing import Literal
+from utils.constant import (
+    ORDER_ALPHA,
+    ORDER_CLASSIFICATION,
+    RESULT_MATCH,
+    RESULT_ROUND
+)
 
 
 def root_menu() -> int:
@@ -133,6 +138,6 @@ def result_type() -> Literal[1, 2]:
         response = input()
         response = views_utility.input_filter(response)
         if response == "1":
-            return 1
+            return RESULT_ROUND
         if response == "2":
-            return 2
+            return RESULT_MATCH
