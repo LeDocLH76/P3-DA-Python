@@ -40,7 +40,7 @@ def players_controler():
             # player exist on db ?
             if response is not None:
                 player_db_obj = response
-                players_set = manager_tournament_obj.get_players_all()
+                players_set = manager_tournament_obj.get_players_all_tournaments()
                 # If player is in a tournament
                 if player_to_update in players_set:
                     # Do NOT update
@@ -73,7 +73,7 @@ def players_controler():
                 player_to_delete)
             if response is not None:
                 player_db_obj = response
-                players_set = manager_tournament_obj.get_players_all()
+                players_set = manager_tournament_obj.get_players_all_tournaments()
                 # If player is in a tournament
                 if player_to_delete in players_set:
                     # Do NOT delete

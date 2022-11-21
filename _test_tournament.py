@@ -18,7 +18,7 @@ def save_player(player_obj):
 
 tournament = Tournament("T1", "Ici", "10/10/2022",
                         "Rapid", "Mon premier tournois")
-result = tournament.save_db()
+result = tournament.save_on_db()
 
 if result is True:
     player01 = Player("QUIROUL", "Pierre", "05/12/1980", "M")

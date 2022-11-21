@@ -70,7 +70,7 @@ class Tournament:
 
     def set_round(self, new_round_quantity) -> None:
         self._round = new_round_quantity
-        self.save_round()
+        self.save_round_quantity()
 
     def set_id(self, tournament_id) -> None:
         self._id = tournament_id
@@ -85,8 +85,7 @@ class Tournament:
         if round is not None:
             self._rounds.append(round)
         manager_tournament_obj = Db_manager_tournament()
-        manager_tournament_obj.update_rounds_by_name_and_date(
-            self._name, self._date, self._rounds)
+        manager_tournament_obj.update_rounds_by_tournament_id(self)
 
     def add_round_from_db(self, round: Round) -> None:
         self._rounds.append(round)
@@ -119,19 +118,18 @@ class Tournament:
         """Save players dict in database by tournament name and date
 
         """
-        tournament_db = Db_manager_tournament()
-        tournament_db.update_players_by_name_and_date(
-            self._name, self._date, self._players)
+        manager_tournament_obj = Db_manager_tournament()
+        manager_tournament_obj.update_players_by_tournament_id(
+            self)
 
-    def save_round(self) -> None:
-        """Save round quantity in database by tournament name and date
+    def save_round_quantity(self) -> None:
+        """Save round quantity in database by tournament id
 
         """
         tournament_db = Db_manager_tournament()
-        tournament_db.update_round_by_name_and_date(
-            self._name, self._date, self._round)
+        tournament_db.update_round_quantity_by_tournament_id(self)
 
-    def save_db(self) -> bool | int:
+    def save_on_db(self) -> bool | int:
         """Save tournament in database and get is id
 
         Args:

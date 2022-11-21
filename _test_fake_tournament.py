@@ -77,11 +77,11 @@ db = TinyDB('chess_tournament')
 # Création du tournoi
 tournament = Tournament("Tournoi privé",
                         "Le Havre",
-                        "03/11/2022",
+                        "04/11/2022",
                         "rapid",
-                        "Mon troisième tournoi d'échecs")
+                        "Mon quatrième tournoi d'échecs")
 
-reponse = tournament.save_db()
+reponse = tournament.save_on_db()
 if reponse is not True:
     print("Le tournoi existe déja")
     tournament.set_id(reponse)

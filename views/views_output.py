@@ -90,17 +90,6 @@ def player_exist(player_id):
     print(f"Ce joueur est déja enregistré sous le numéro: {player_id}")
 
 
-def new_player():
-    """Print CTA <enter player id>"""
-    print("Entrer le numéro du joueur à ajouter au tournoi.")
-
-
-def player_not_exist():
-    """Print CTA <add a new player if not in list>"""
-    print("Le joueur à ajouter n'est pas dans la liste! \
-Voulez-vous l'ajouter? ", end="")
-
-
 def tournament_list() -> int:
     """Print tournament list from db
 
@@ -147,7 +136,7 @@ def tournament_results(tournament_id: int, result_type):
 
     """
     tournament_db = Db_manager_tournament()
-    rounds_obj_list = tournament_db.get_rounds_by_id(tournament_id)
+    rounds_obj_list = tournament_db.get_rounds_by_tournament_id(tournament_id)
     # print(rounds)
     for round_obj in rounds_obj_list:
         if result_type == RESULT_ROUND:
@@ -211,17 +200,19 @@ def make_match_dict(match_obj: Match):
     return match_dict
 
 
-def tournament_players(tournament_id: int, sort_type):
+def tournament_players(tournament, sort_type):
+    from models.tournament import Tournament
+    tournament: Tournament = tournament
     """Build player list sorted by sort_type and call print_player()
 
     Args:
+        tournament(Tournament): current tournament
         Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
 
     """
 
     manager_player = Db_manager_player()
-    manager_tournament = Db_manager_tournament()
-    tournament_players_id = manager_tournament.get_players_by_id(tournament_id)
+    tournament_players_id = tournament.get_players
     players: list[dict] = []
     for tournament_player_id in tournament_players_id:
         player_obj = manager_player.get_by_id(tournament_player_id)

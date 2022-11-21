@@ -2,9 +2,11 @@
 from controlers.players_controler import players_controler
 from controlers.tournament_ctrl import tournament_controler
 from views import views_input, views_menu, views_output
+from models.db_manager_tournaments import Db_manager_tournament
 
 
 def begin():
+    manager_tournament_obj = Db_manager_tournament()
     """Controler for root menu"""
     # Chess tournament splash screen
     views_output.splash_screen()
@@ -32,7 +34,8 @@ def begin():
             tournament_quantity = views_output.tournament_list()
             tournament_id = views_input.tournament_choice(tournament_quantity)
             sort_type = views_menu.sort_choice()
-            views_output.tournament_players(tournament_id, sort_type)
+            tournament = manager_tournament_obj.get_one_from_db(tournament_id)
+            views_output.tournament_players(tournament, sort_type)
             views_input.wait_for_enter()
         # Gestion des joueurs
         if res_root_menu == 5:

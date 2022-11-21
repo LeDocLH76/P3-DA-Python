@@ -73,41 +73,37 @@ def tournament_controler(tournament_id):
         # Ask for changin number of rounds ?
         views_output.adjust_round_quantity()
         response = views_input.y_or_n()
-        round_quantity = tournament_obj.get_round
         if response is True:
             new_round_quantity = views_input.change_round_quantity()
-        if new_round_quantity != round_quantity:
-            tournament_obj.set_round(new_round_quantity)
+            if new_round_quantity != tournament_obj.get_round:
+                tournament_obj.set_round(new_round_quantity)
+                views_output.adjust_round_quantity()
 
         new_player = True
         while new_player is not False:
             views_utility.clear_screen
             players_id_list = views_output.players_list(ORDER_ALPHA)
             views_utility.crlf()
-            views_output.tournament_players(tournament_obj.get_id, ORDER_ALPHA)
+            views_output.tournament_players(tournament_obj, ORDER_ALPHA)
             players_quantity = len(tournament_obj.get_players)
             views_output.tournament_players_quantity(players_quantity)
             # Is player in list ?
             # Ask for create one
-            views_output.player_not_exist()
-            response = views_input.y_or_n()
-            if response is True:
+            new_player = views_input.add_player_on_tournament_choice()
+            if new_player is True:
                 # create player on database
                 players_controler()
-            else:
-                views_output.new_player()
-                new_player = views_input.player_choice()
+                # Go to while
+                continue
+            if new_player is False:
                 # If new_player is False >>> End of while
-                if new_player is not False:
-                    # Check if player_id exist on db
-                    if new_player in players_id_list:
-                        # Add player on tournament and save players list on db
-                        tournament_obj.add_player(new_player)
-
-                        # Check if all players have a classification
-
-                    else:
-                        views_output.input_error()
+                break
+            # Check if player_id exist on db
+            if new_player in players_id_list:
+                # Add player on tournament and save players list on db
+                tournament_obj.add_player(new_player)
+            else:
+                views_output.input_error()
 
     # Is PLAYER_QUANTITY_MIN Ok
     players_quantity = len(tournament_obj.get_players)
@@ -116,6 +112,9 @@ def tournament_controler(tournament_id):
         views_input.wait_for_enter()
         # If not go to previous menu
         return
+
+    # Check if all players have classification Ok
+    # Ask if tournament ready to begin
 
     # Beguin or continue tournament
     # Round 1 exist ?
@@ -498,13 +497,6 @@ def create_tournament() -> Tournament | int | bool:
             tournament_dict["description"],
         )
         views_output.tournament_data(tournament_obj)
-        views_output.adjust_round_quantity()
-        response = views_input.y_or_n()
-        new_round_quantity = ROUND_QUANTITY
-        if response is True:
-            new_round_quantity = views_input.change_round_quantity()
-        if new_round_quantity != ROUND_QUANTITY:
-            tournament_obj.set_round(new_round_quantity)
         tournament_exist = tournament_manager_obj.add_one(tournament_obj)
         if tournament_exist is not True:
             # return tournament_id

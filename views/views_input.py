@@ -82,6 +82,24 @@ def player_choice() -> int | bool:
         player_id = player_id_regex(response)
     return int(player_id.group())
 
+def add_player_on_tournament_choice() -> int | bool:
+    """Ask user for player_id choice, create or exit
+
+    Return:
+        int | bool: player_id or False for no choice
+
+    """
+    player_id = None
+    while player_id is None:
+        print("Entrer le numéro du joueur à ajouter depuis la liste précendente")
+        response = input("C pour en créer un nouveau ou Q pour annuler --> ")
+        if response[0].upper() == "Q":
+            return False
+        if response[0].upper() == "C":
+            return True
+        player_id = player_id_regex(response)
+    return int(player_id.group())
+
 
 def match_choice() -> int | str:
     """Ask user for match index choice
