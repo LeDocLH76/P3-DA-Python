@@ -1,12 +1,12 @@
 
+import time
 from typing import List
 
 from models.match import Match
 from utils.constant import (
     ORDER_ALPHA,
     PLAYER_QUANTITY_MIN,
-    RESULT_MATCH,
-    ROUND_QUANTITY
+    RESULT_MATCH
 )
 from views import views_input, views_output, views_utility
 from models.tournament import Tournament
@@ -130,22 +130,34 @@ def tournament_controler(tournament_id):
     if not round_1.get_end:
         match_status = input_matchs_results(round_1, tournament_obj)
         if match_status:
-            round_1.set_end
+            round_1.set_end(time.time())
+            tournament_obj.update_round()
             # Info user for changing player classification before
-            create_round_x(tournament_obj)
         if not round_1.get_end:
             # Round is not closed > go to previous menu
             return
 
-    # For the next round not closed
-    round_obj = find_next_round_to_complete(tournament_obj)
-    # Is any round not closed
-    if round_obj:
-        ...
-    else:
-        # Ask for tournament close ?
-        ...
-        return
+    while tournament_obj.get_status is False:
+        # For the next round not closed
+        round_x_obj = find_next_round_to_complete(tournament_obj)
+        # If all rounds closed and tournament_round_quantity = ROUND_QUANTITY
+        if ((round_x_obj is False) and
+                (len(tournament_obj.get_rounds) >= tournament_obj.get_round)):
+            # Close tournament
+            tournament_obj.set_status(True)
+            print("Fin du tournoi")
+            return
+        if round_x_obj is False:
+            round_x_obj = create_round_x(tournament_obj)
+        match_status = input_matchs_results(round_x_obj, tournament_obj)
+        if match_status:
+            round_x_obj.set_end(time.time())
+            tournament_obj.update_round()
+            # Info user for changing player classification before
+        if not round_x_obj.get_end:
+            # Round is not closed > go to previous menu
+            return
+
 
 # verifier le status du tournoi
 # verifier le status des rounds
@@ -185,13 +197,13 @@ def find_next_round_to_complete(tournament_obj: Tournament):
     from models.round import Round
     round_obj_list: list[Round] = tournament_obj.get_rounds
     for round_obj in round_obj_list:
-        if round_obj.get_end:
+        if not round_obj.get_end:
             return round_obj
     return False
 
 
-def input_matchs_results(round, tournament_obj: Tournament) -> bool:
-    """Update match's scores in round
+def input_matchs_results(round_obj, tournament_obj: Tournament) -> bool:
+    """Update match's scores in current round
 
     Arg:
         round (Round): round to update
@@ -202,11 +214,13 @@ def input_matchs_results(round, tournament_obj: Tournament) -> bool:
 
     """
     from models.round import Round
-    round: Round = round
+    round_obj: Round = round_obj
     response = ""
     while (response != "Q") and (response != "C"):
-        match_obj_list = round.get_matchs
+        match_obj_list = round_obj.get_matchs
         views_utility.clear_screen()
+        round_name = round_obj.get_name
+        print(f"Entrer les résultats des match pour le round {round_name}")
         views_output.match_list(RESULT_MATCH, match_obj_list)
         response = views_input.match_choice()
         if (response != "Q") and (response != "C"):
@@ -220,13 +234,13 @@ def input_matchs_results(round, tournament_obj: Tournament) -> bool:
             match_obj.set_score(score_player_1, score_player_2)
             tournament_obj.update_player_point(player_1_id, score_player_1)
             tournament_obj.update_player_point(player_2_id, score_player_2)
-            tournament_obj.update_round(round)
+            tournament_obj.update_round()
 
     round_status = False
     if response == "C":
-        points_total = len(round.get_matchs)
+        points_total = len(round_obj.get_matchs)
         points_result = 0
-        for match in round.get_matchs:
+        for match in round_obj.get_matchs:
             score_player_1 = match.get_scores[0]
             score_player_2 = match.get_scores[1]
             if score_player_1:

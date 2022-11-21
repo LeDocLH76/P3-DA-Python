@@ -21,11 +21,11 @@ class Db_manager_player:
         players_document_list = self.players_table.all()
         player_obj_list: list[Player] = []
         for player_document in players_document_list:
-            player_obj = self.make_player(player_document)
+            player_obj = self._make_player(player_document)
             player_obj_list.append(player_obj)
         return player_obj_list
 
-    def make_player(self, player_document):
+    def _make_player(self, player_document):
         """Make a player obj
 
         Args:
@@ -51,13 +51,13 @@ class Db_manager_player:
         """Get one player on db
 
         Return:
-            Player: player obj
+            Player: player obj if id exist on db, None if not
 
         """
 
         player_document = self.players_table.get(doc_id=player_id)
         if player_document is not None:
-            player_obj = self.make_player(player_document)
+            player_obj = self._make_player(player_document)
             return player_obj
         return None
 
@@ -115,8 +115,8 @@ class Db_manager_player:
         """
         list_to_remove = [player_id]
         list_player_removed = self.players_table.remove(doc_ids=list_to_remove)
-        player_removed = list_player_removed[0]
-        return player_removed
+        player_removed_id = list_player_removed[0]
+        return player_removed_id
 
     def update_classification_by_id(self, player_id, classification):
         """Update classification of one player

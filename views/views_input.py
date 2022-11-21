@@ -23,7 +23,7 @@ def new_player() -> dict:
             "surname": str,
             "birt_date": str dd/mm/yyyy,
             "gender": str,
-            "classification": int|None
+            "classification": int
             }
     """
     print("Entrer les informations du joueur")
@@ -48,9 +48,10 @@ def new_player() -> dict:
 
     classification = None
     while classification is None:
-        classification = input("Classement > Entier positif non nul ou vide ")
+        classification = input(
+            "Classement > Entier positif non nul vide = 999999 ")
         if classification == "":
-            classification = None
+            classification = 999999
             break
         classification = classification_regex(classification)
     if classification is not None:
@@ -82,6 +83,7 @@ def player_choice() -> int | bool:
         player_id = player_id_regex(response)
     return int(player_id.group())
 
+
 def add_player_on_tournament_choice() -> int | bool:
     """Ask user for player_id choice, create or exit
 
@@ -91,7 +93,8 @@ def add_player_on_tournament_choice() -> int | bool:
     """
     player_id = None
     while player_id is None:
-        print("Entrer le numéro du joueur à ajouter depuis la liste précendente")
+        print("Entrer le numéro du joueur à ajouter \
+depuis la liste précendente")
         response = input("C pour en créer un nouveau ou Q pour annuler --> ")
         if response[0].upper() == "Q":
             return False
