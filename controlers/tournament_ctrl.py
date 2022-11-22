@@ -5,6 +5,7 @@ from typing import List
 from models.match import Match
 from utils.constant import (
     ORDER_ALPHA,
+    PLAYER_ALONE_POINT,
     PLAYER_QUANTITY_MIN,
     RESULT_MATCH
 )
@@ -16,25 +17,12 @@ from controlers.players_controler import players_controler
 
 
 def tournament_controler(tournament_id):
-    """Controler for submenu tournament"""
-    # tournoi non commencé   status = False
-    #   le nombre de rounds est 0
-    # tournoi cloturé    status = True
-    #   le nombre de round à jouer est atteint
-    #   tous les rounds sont cloturés
+    """Controler for submenu tournament
 
-    # rounds en cours    valeur = 0 à max
+    Args:
+        tournament_id(int): Tournament's id on database
 
-    # round en cours     status = False
-    #   la liste de matchs n'est pas cloturée
-    # round cloturé      status = True
-    #   la liste de matchs est cloturée
-
-    # matchs en cours    status = False
-    #   les matchs ne sont pas tous renseignés
-    # matchs cloturé     status = True
-    #   les matchs sont tous renseignés
-    #   l'utilisateur a validé la cloture
+    """
 
     # tournament_id is False if choice = 7 > create tournament
     if tournament_id is False:
@@ -80,6 +68,7 @@ def tournament_controler(tournament_id):
                 views_output.adjust_round_quantity()
 
         new_player = True
+        # Chose players for current tournament
         while new_player is not False:
             views_utility.clear_screen
             players_id_list = views_output.players_list(ORDER_ALPHA)
@@ -119,7 +108,7 @@ def tournament_controler(tournament_id):
     # Beguin or continue tournament
     # Round 1 exist ?
     if len(tournament_obj.get_rounds) < 1:
-        # Create if not
+        # Create it if not
         round_1 = create_round1(tournament_obj)
         tournament_obj.update_round(round_1)
     else:
@@ -145,10 +134,13 @@ def tournament_controler(tournament_id):
                 (len(tournament_obj.get_rounds) >= tournament_obj.get_round)):
             # Close tournament
             tournament_obj.set_status(True)
-            print("Fin du tournoi")
+            views_output.tournament_end()
+            views_input.wait_for_enter()
             return
+        # If all rounds closed, create a new one
         if round_x_obj is False:
             round_x_obj = create_round_x(tournament_obj)
+
         match_status = input_matchs_results(round_x_obj, tournament_obj)
         if match_status:
             round_x_obj.set_end(time.time())
@@ -219,9 +211,10 @@ def input_matchs_results(round_obj, tournament_obj: Tournament) -> bool:
     while (response != "Q") and (response != "C"):
         match_obj_list = round_obj.get_matchs
         views_utility.clear_screen()
-        round_name = round_obj.get_name
-        print(f"Entrer les résultats des match pour le round {round_name}")
+        views_output.current_round_matchs(round_obj.get_name)
+        views_utility.crlf()
         views_output.match_list(RESULT_MATCH, match_obj_list)
+        views_utility.crlf()
         response = views_input.match_choice()
         if (response != "Q") and (response != "C"):
             match_obj = match_obj_list[int(response)-1]
@@ -261,45 +254,57 @@ def create_round1(tournament_obj: Tournament):
     from models.round import Round
     round_1 = Round("Round 1")
     # Build round1
-    print("Création du round1")
-    views_input.wait_for_enter()
-
     # create players_obj
     players_obj_list = build_player_obj_list(tournament_obj)
-
-    # Trie la liste de Player par leur classification, ascendant
+    # Sort players by classification smallest first
     players_obj_list.sort(key=lambda x: x.get_player["classification"])
-    # Sépare la liste en 2 listes
+    # Cut in half
     list_1_length = len(players_obj_list)//2
     list_1 = players_obj_list[:list_1_length]
     list_2 = players_obj_list[list_1_length:]
-    # Si le nombre de joueurs est impair,
-    # le dernier ne peut-être apparié et reçois 1/2 point pour ne pas jouer
+    # If number of player is odd,
+    # the last one cant make a pair and get 0.5 point
+    player_alone = False
     if len(list_2) > len(list_1):
-        tournament_obj.update_player_point(list_2[-1].get_id, 0.5)
-
-    # Association des joueurs pour le round-1
+        player_alone = list_2[-1]
+        tournament_obj.update_player_point(
+            player_alone.get_id, PLAYER_ALONE_POINT)
+    # Make pairs for round-1
     matches_list: List[tuple[Player, Player]] = []
     for i in range(len(list_1)):
         matches_list.append((list_1[i], list_2[i]))
-
-    # Création de la listes des instances de Match pour le round_1
-    round_x_matches_list: List[Match] = []
-
-    print()
-    print("Affichage provisoire!!!\nLes match du premier tour sont:")
-
+    # Build Matchs and add them to round
     for player_1, player_2 in matches_list:
-
-        print(f"{player_1}\ncontre\n{player_2}\n")
-
         match = Match(player_1, player_2)
-        round_x_matches_list.append(match)
-
-    # Ajoute les Match dans le round_1
-    for match in round_x_matches_list:
         round_1.add_match(match)
+
+    # Display match list to play
+    display_matchs_to_play(round_1, player_alone)
+
     return round_1
+
+
+def display_matchs_to_play(round_obj, player_alone):
+    """Display matchs to play in current round
+
+    args:
+        round_obj(Round): Current round
+        player_alone(Player | bool): Player if number \
+            of player in tournament is odd, or False
+
+    """
+    from models.round import Round
+    round_obj: Round = round_obj
+    round_name = round_obj.get_name
+    views_utility.clear_screen()
+    views_output.current_round_matchs(round_name)
+    views_utility.crlf()
+    views_output.match_list(RESULT_MATCH, round_obj.get_matchs)
+    if player_alone:
+        views_utility.crlf()
+        views_output.player_alone(player_alone)
+        views_utility.crlf()
+    views_input.wait_for_enter()
 
 
 def build_player_obj_list(tournament_obj: Tournament):
@@ -329,8 +334,9 @@ def create_round_x(tournament_obj: Tournament):
     from models.round import Round
     round_x_obj = Round(round_name)
     # Build round x
-    print(f"Création du round {round_name}")
-    views_input.wait_for_enter()
+
+    # print(f"Création du round {round_name}")
+    # views_input.wait_for_enter()
     # create players_obj
     players_obj_list = build_player_obj_list(tournament_obj)
 
@@ -342,13 +348,6 @@ def create_round_x(tournament_obj: Tournament):
                 match.get_players[1])
         forbiden_pairs.append(pair)
 
-    # Create a list of free player to build the pairs
-    # Free = True
-    players_free = []
-    for player_obj in players_obj_list:
-        player_to_add = [player_obj, True]
-        players_free.append(player_to_add)
-
     # Trie les joueurs par points puis par classement si égalité de points
     players_obj_list = sorted(
         players_obj_list,
@@ -358,14 +357,24 @@ def create_round_x(tournament_obj: Tournament):
         key=lambda x: tournament_obj.get_points(x.get_id),
         reverse=True)
 
-    print("Affichage provisoire\nJoueurs triés pour le prochain tour")
+    # Create a list of free player to build the pairs
+    # Free = True
+    players_free = []
     for player_obj in players_obj_list:
-        print(player_obj.get_player["name"],
-              tournament_obj.get_points(player_obj.get_id),
-              player_obj.get_player["classification"])
+        player_to_add = [player_obj, True]
+        players_free.append(player_to_add)
+
+    # print("Affichage provisoire\nJoueurs triés pour le prochain tour")
+    # for player_obj in players_obj_list:
+    #     print(player_obj.get_player["name"],
+    #           player_obj.get_player["surname"],
+    #           tournament_obj.get_points(player_obj.get_id),
+    #           player_obj.get_player["classification"])
+    # views_input.wait_for_enter()
 
     matches_list = []
     rejected_players = []
+    player_alone = False
     loop = 1
 
     while True:
@@ -381,11 +390,9 @@ def create_round_x(tournament_obj: Tournament):
                 # Find player 2 of the pair
                 if player_free is None:
                     # Player 1 is alone, give him 0.5 point
-                    print(
-                        f"Affichage provisoire\nLe joueur {player_1[0]} \
-n'est pas associé, il faut lui donner 0.5 points")
-                    player_obj: Player = player_1[0]
-                    tournament_obj.update_player_point(player_obj.get_id, 0.5)
+                    player_alone: Player = player_1[0]
+                    tournament_obj.update_player_point(
+                        player_alone.get_id, PLAYER_ALONE_POINT)
                     # Exit of while
                     break
                 player_2 = player_free
@@ -394,10 +401,7 @@ n'est pas associé, il faut lui donner 0.5 points")
                 if (((player_1[0], player_2[0]) in forbiden_pairs)
                         or
                         ((player_2[0], player_1[0]) in forbiden_pairs)):
-
-                    print(f"Affichage provisoire\nAlerte association \
-interdite {player_1[0]} {player_2[0]}")
-
+                    # Forbiden pair {player_1[0]} {player_2[0]}
                     rejected_players.append(player_free)
                     free_flag = False
                     # Search for an otherfree player
@@ -409,15 +413,12 @@ interdite {player_1[0]} {player_2[0]}")
                         # Retour au while
                         continue
                     # If no do association any way
-                    print(
-                        "Affichage provisoire\n\
-Association contrainte *************************")
                     # Remove player_2 from rejected_players
                     rejected_players = [
                         rejected_player for rejected_player
                         in rejected_players
                         if rejected_player != player_2]
-                # If succes, build match and add it to the list
+                # If successful, build match and add it to the list
                 match = (player_1[0], player_2[0])
                 matches_list.append(match)
                 # In case of rejected player
@@ -435,24 +436,13 @@ Association contrainte *************************")
     # Add created pairs to list of forbiden pairs
     forbiden_pairs.extend(matches_list)
 
-    print()
-    print(f"Affichage provisoire\n\
-Les match du tour {round_x_obj.get_name} sont:")
-    print()
-
     # Create Matchs and add them to the round x
     for player_1, player_2 in matches_list:
-
-        print(f"Affichage provisoire\n{player_1}\ncontre\n{player_2}\n")
-
         match = Match(player_1, player_2)
         round_x_obj.add_match(match)
-
-    # print(round_x_obj)
-    # print()
-
     # Add round x to current tournament
     tournament_obj.update_round(round_x_obj)
+    display_matchs_to_play(round_x_obj, player_alone)
     return round_x_obj
 
 

@@ -8,13 +8,13 @@ def date_regex(input_date: str):
     return date_patern.match(input_date)
 
 
-def classification_regex(input_classification: str):
+def number_6_digits_regex(input_classification: str):
     """Regex for number from 1 to 999999"""
     classification_patern = re.compile(r"^[1-9]\d{0,5}$")
     return classification_patern.match(input_classification)
 
 
-def player_id_regex(input_player_id: str):
+def number_3_digits_regex(input_player_id: str):
     """Regex for number from 1 to 999"""
     player_id_patern = re.compile(r"^[1-9]\d{0,2}$")
     return player_id_patern.match(input_player_id)

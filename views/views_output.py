@@ -6,12 +6,15 @@ from models.match import Match
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
 from utils.constant import (
+    PLAYER_ALONE_POINT,
     PLAYER_NAME_LENGTH,
     PLAYER_QUANTITY_MIN,
     PLAYER_SURNAME_LENGTH,
     RESULT_MATCH,
     RESULT_ROUND,
-    ROUND_QUANTITY
+    ROUND_QUANTITY,
+    TOURNAMENT_DESCRIPTION_LENGTH,
+    TOURNAMENT_NAME_LENGTH
 )
 
 
@@ -65,9 +68,28 @@ def print_players(sorted_players: list[dict]):
 
     """
     for sorted_player in sorted_players:
-        print(f"{sorted_player['id']} {sorted_player['name']} \
-{sorted_player['surname']} {sorted_player['gender']} né le: \
-{sorted_player['birth_date']} classé: {sorted_player['classification']}")
+        id = sorted_player['id']
+        name = sorted_player['name']
+        surname = sorted_player['surname']
+        gender = sorted_player['gender']
+        birth_date = sorted_player['birth_date']
+        classification = sorted_player['classification']
+
+        print('{0:>3}  {1:{name_length}}  {2:{surname_length}}  \
+{3:{gender_length}}  né le:{4:{Date_length}}  classé:{5:>{class_length}}'
+              .format(
+                  id,
+                  name,
+                  surname,
+                  gender,
+                  birth_date,
+                  classification,
+                  name_length=PLAYER_NAME_LENGTH,
+                  surname_length=PLAYER_SURNAME_LENGTH,
+                  gender_length=1,
+                  Date_length=10,
+                  class_length=6
+              ))
 
 
 def print_player(player_obj):
@@ -80,9 +102,29 @@ def print_player(player_obj):
     from models.player import Player
     player_obj: Player = player_obj
     player_dict = player_obj.get_player
-    print(f"{player_dict['id']} {player_dict['name']} \
-{player_dict['surname']} {player_dict['gender']} né le: \
-{player_dict['birth_date']}")
+
+    id = player_dict['id']
+    name = player_dict['name']
+    surname = player_dict['surname']
+    gender = player_dict['gender']
+    birth_date = player_dict['birth_date']
+    classification = player_dict['classification']
+
+    print('{0:>3}  {1:{name_length}}  {2:{surname_length}}  \
+{3:{gender_length}}  né le:{4:{Date_length}}  classé:{5:>{class_length}}'
+          .format(
+              id,
+              name,
+              surname,
+              gender,
+              birth_date,
+              classification,
+              name_length=PLAYER_NAME_LENGTH,
+              surname_length=PLAYER_SURNAME_LENGTH,
+              gender_length=1,
+              Date_length=10,
+              class_length=6
+          ))
 
 
 def player_exist(player_id):
@@ -90,21 +132,41 @@ def player_exist(player_id):
     print(f"Ce joueur est déja enregistré sous le numéro: {player_id}")
 
 
+def player_alone(player):
+    from models.player import Player
+    player: Player = player
+    print(f"Le joueur {player.get_player['name']} \
+{player.get_player['surname']} n'as pas trouvé d'adverssaire et \
+reçoit {PLAYER_ALONE_POINT} points")
+
+
 def tournament_list() -> int:
     """Print tournament list from db
 
     Return:
-        int: length of the list >
-            must be change in futur by a list of tournaments_id
-
+        int: length of the list
     """
-    tournament_bd = Db_manager_tournament()
-    tournaments_obj_list = tournament_bd.get_all()
+    tournament_manager_obj = Db_manager_tournament()
+    tournaments_obj_list = tournament_manager_obj.get_all()
     views_utility.clear_screen()
     for tournament_obj in tournaments_obj_list:
         tournament_dict = tournament_obj.get_tournament
-        print(tournament_dict["id"], tournament_dict["name"],
-              tournament_dict["date"], tournament_dict["description"])
+        id = tournament_dict["id"]
+        name = tournament_dict["name"]
+        date = tournament_dict["date"]
+        description = tournament_dict["description"]
+        status = ("En cours" if tournament_dict["status"] is False
+                  else "Cloturé")
+        print('{0:>3} {1:{name_length}}  {2:10}  \
+{3:{description_length}}  {4:8}'.format(
+            id,
+            name,
+            date,
+            description,
+            status,
+            name_length=TOURNAMENT_NAME_LENGTH,
+            description_length=TOURNAMENT_DESCRIPTION_LENGTH
+        ))
     return len(tournaments_obj_list)
 
 
@@ -140,9 +202,15 @@ def tournament_results(tournament_id: int, result_type):
     # print(rounds)
     for round_obj in rounds_obj_list:
         if result_type == RESULT_ROUND:
-            print(round_obj.get_name)
+            round_status = "En cours" if round_obj.get_end is False else "Cloturé"
+            print(round_obj.get_name, round_status)
         match_obj_list = round_obj.get_matchs
         match_list(result_type, match_obj_list)
+        print()
+
+
+def tournament_end():
+    print("Ce tournoi est maintenant terminé.")
 
 
 def match_list(result_type, match_obj_list):
@@ -182,8 +250,8 @@ def print_one_match(index: int, result_type, match_obj):
 {player1_name}{space1} {player1_surname}{space2}\
 contre   {player2_name}{space3} {player2_surname}{space4} \
 score: {score_player_1} / {score_player_2}')
-    if result_type == RESULT_ROUND:
-        print()
+    # if result_type == RESULT_ROUND:
+    #     print()
 
 
 def make_match_dict(match_obj: Match):
@@ -256,6 +324,10 @@ def adjust_round_quantity():
 def round_not_complete():
     print("Les scores doivent être entièrement \
 renseignés avant de cloturer le round")
+
+
+def current_round_matchs(round_name):
+    print(f"Les matchs du {round_name} sont:")
 
 
 def players_quantity_error(players_quantity):

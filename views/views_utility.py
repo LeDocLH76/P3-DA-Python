@@ -14,7 +14,7 @@ def clear_screen():
 
 def crlf():
     """Line feed"""
-    print("\n")
+    print("")
 
 
 def input_filter(response: str) -> str:

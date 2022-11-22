@@ -77,9 +77,9 @@ db = TinyDB('chess_tournament')
 # Création du tournoi
 tournament = Tournament("Tournoi privé",
                         "Le Havre",
-                        "04/11/2022",
+                        "03/11/2022",
                         "rapid",
-                        "Mon quatrième tournoi d'échecs")
+                        "Mon troisième tournoi d'échecs")
 
 reponse = tournament.save_on_db()
 if reponse is not True:
@@ -358,3 +358,4 @@ il faut lui donner 0.5 points")
     tournament.update_round()
 
     # Boucle 3 fois
+tournament.set_status(True)

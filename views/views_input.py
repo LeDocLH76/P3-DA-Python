@@ -1,7 +1,8 @@
 
-import re
-
-from utils.filters import classification_regex, date_regex, player_id_regex
+from utils.filters import (
+    number_6_digits_regex,
+    date_regex,
+    number_3_digits_regex)
 from utils.transform_date import date_add_0
 from utils.constant import (
     PLAYER_NAME_LENGTH,
@@ -53,8 +54,8 @@ def new_player() -> dict:
         if classification == "":
             classification = 999999
             break
-        classification = classification_regex(classification)
-    if classification is not None:
+        classification = number_6_digits_regex(classification)
+    if classification != 999999:
         classification = int(classification.group())
 
     player = {
@@ -80,7 +81,7 @@ def player_choice() -> int | bool:
             "Veuillez choisir un numéro de la liste, ou Q pour annuler --> ")
         if response[0].upper() == "Q":
             return False
-        player_id = player_id_regex(response)
+        player_id = number_3_digits_regex(response)
     return int(player_id.group())
 
 
@@ -100,7 +101,7 @@ depuis la liste précendente")
             return False
         if response[0].upper() == "C":
             return True
-        player_id = player_id_regex(response)
+        player_id = number_3_digits_regex(response)
     return int(player_id.group())
 
 
@@ -120,7 +121,7 @@ def match_choice() -> int | str:
             return "C"
         if response == "Q":
             return "Q"
-        match_index = player_id_regex(response)
+        match_index = number_3_digits_regex(response)
         if match_index is not None:
             return int(match_index.group())
 
@@ -135,7 +136,9 @@ def match_results():
 
 
 def tournament_choice(tournament_quantity) -> int:
-    """Ask user for tournament_id choice
+    """Ask user for tournament_id, choice from 1 \
+        to 999 and <= tournament_quantity
+
     Args:
         int: tournament quantity
 
@@ -143,14 +146,14 @@ def tournament_choice(tournament_quantity) -> int:
         int: tournament_id
 
     """
+
     while True:
-        response = re.findall(
-            '[0-9]', views_utility.input_filter(
-                input("Veuillez choisir un numéro de la liste --> ")))
-        if (len(response) > 0
-            and int(response[0]) <= tournament_quantity
-                and int(response[0]) > 0):
-            return int(response[0])
+        response = input("Veuillez choisir un numéro de la liste --> ")
+        match_regex = number_3_digits_regex(response)
+        if match_regex is not None:
+            tournament_id = int(match_regex.group())
+            if tournament_id <= tournament_quantity:
+                return tournament_id
 
 
 def new_tournament() -> dict[str, str]:

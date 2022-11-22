@@ -67,6 +67,7 @@ class Tournament:
 
     def set_status(self, new_status: bool) -> None:
         self._status = new_status
+        self.save_status()
 
     def set_round(self, new_round_quantity) -> None:
         self._round = new_round_quantity
@@ -126,8 +127,12 @@ class Tournament:
         """Save round quantity in database by tournament id
 
         """
-        tournament_db = Db_manager_tournament()
-        tournament_db.update_round_quantity_by_tournament_id(self)
+        manager_tournament_obj = Db_manager_tournament()
+        manager_tournament_obj.update_round_quantity_by_tournament_id(self)
+
+    def save_status(self):
+        manager_tournament_obj = Db_manager_tournament()
+        manager_tournament_obj.update_status_by_tournament_id(self)
 
     def save_on_db(self) -> bool | int:
         """Save tournament in database and get is id

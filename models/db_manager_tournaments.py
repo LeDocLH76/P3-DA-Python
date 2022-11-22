@@ -211,6 +211,20 @@ class Db_manager_tournament:
         self.tournaments_table.update(
             {"round": tournament_round_quantity}, doc_ids=[tournament_id])
 
+    def update_status_by_tournament_id(self, tournament_obj):
+        """Update tournament status  by tournament id
+
+        Args:
+            tournament_obj(Tournament): Current tournament
+
+        """
+        from models.tournament import Tournament
+        tournament_obj: Tournament = tournament_obj
+        tournament_id = tournament_obj.get_id
+        tournament_status = tournament_obj.get_status
+        self.tournaments_table.update(
+            {"status": tournament_status}, doc_ids=[tournament_id])
+
     def add_one(self, tournament_obj) -> bool | int:
         """Add a tournament base info on db
 
