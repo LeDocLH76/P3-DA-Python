@@ -105,6 +105,24 @@ depuis la liste précendente")
     return int(player_id.group())
 
 
+def new_classification() -> int | bool:
+    """Input new classification
+
+    Return:
+        new_classification(int)
+
+    """
+    new_classification = None
+    while new_classification is None:
+        response = input(
+            "Veuillez entrer un classement pour ce joueur, \
+ou Q pour annuler --> ")
+        if response[0].upper() == "Q":
+            return False
+        new_classification = number_6_digits_regex(response)
+    return int(new_classification.group())
+
+
 def match_choice() -> int | str:
     """Ask user for match index choice
 
@@ -126,7 +144,13 @@ def match_choice() -> int | str:
             return int(match_index.group())
 
 
-def match_results():
+def match_results() -> float:
+    """Input score from list["0", ".5", "0.5", "1"]
+
+    Return:
+        float: Score could be 0.0, 0.5 or 1.0
+
+    """
     list_scores = ["0", ".5", "0.5", "1"]
     score_str = ""
     while score_str not in list_scores:

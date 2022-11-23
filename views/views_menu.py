@@ -5,6 +5,7 @@ from utils.constant import (
     ORDER_ALPHA,
     ORDER_CLASSIFICATION,
     RESULT_MATCH,
+    RESULT_PLAYER_SCORE,
     RESULT_ROUND
 )
 
@@ -62,7 +63,8 @@ def players_action_choice():
         print("2. Modifier un joueur")
         print("3. Supprimer un joueur")
         print("4. Voir les joueurs")
-        print("5. Retour au menu précédent")
+        print("5. Changer le classement d'un joueur")
+        print("6. Retour au menu précédent")
         print("Entrer votre choix")
         response = input()
         response = views_utility.input_filter(response)
@@ -79,6 +81,8 @@ def players_action_choice():
             return 4
         if response == "5":
             return 5
+        if response == "6":
+            return 6
 
 
 def tournament_begin():
@@ -108,7 +112,6 @@ def sort_choice() -> Literal[1, 2]:
     Return:
         Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
     """
-    views_utility.clear_screen()
     print("Type de tri")
     print("1. Alphabetique")
     print("2. Par classement")
@@ -122,7 +125,7 @@ def sort_choice() -> Literal[1, 2]:
             return ORDER_CLASSIFICATION
 
 
-def result_type() -> Literal[1, 2]:
+def result_type() -> Literal[1, 2, 3]:
     """Print submenu result choice
 
     Return
@@ -133,6 +136,7 @@ def result_type() -> Literal[1, 2]:
     print("Type de liste")
     print("1. Les rounds du tournoi")
     print("2. Les matchs du tournoi")
+    print("3. Le classement des joueurs")
     while True:
         print("Entrer votre choix")
         response = input()
@@ -141,3 +145,5 @@ def result_type() -> Literal[1, 2]:
             return RESULT_ROUND
         if response == "2":
             return RESULT_MATCH
+        if response == "3":
+            return RESULT_PLAYER_SCORE

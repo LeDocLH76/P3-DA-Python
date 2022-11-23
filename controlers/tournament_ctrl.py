@@ -5,6 +5,7 @@ from typing import List
 from models.match import Match
 from utils.constant import (
     ORDER_ALPHA,
+    ORDER_CLASSIFICATION,
     PLAYER_ALONE_POINT,
     PLAYER_QUANTITY_MIN,
     RESULT_MATCH
@@ -24,6 +25,10 @@ def tournament_controler(tournament_id):
 
     """
 
+    # -----------------------------
+    # Create or continue tournament
+    # -----------------------------
+
     # tournament_id is False if choice = 7 > create tournament
     if tournament_id is False:
         # tournament init and save on database if not exist
@@ -36,19 +41,19 @@ def tournament_controler(tournament_id):
             tournament_length)
         tournament_obj = rebuild_tournament(tournament_to_rebuild)
 
+    # exit by user
     if tournament_obj is False:
-        # exit by user
         return
 
-    # If tournament_obj = tournament_id on db
+    # If tournament_obj == tournament_id on db
     if not isinstance(tournament_obj, Tournament):
         # tournament exist, go to previous menu
         views_output.tournament_exist(tournament_obj)
         views_input.wait_for_enter
         return
 
+    # if tournament is closed > Go to previous menu
     if tournament_obj.get_status:
-        # tournament is closed > Go to previous menu
         views_output.tournament_close()
         views_input.wait_for_enter()
         return
@@ -71,13 +76,14 @@ def tournament_controler(tournament_id):
         # Chose players for current tournament
         while new_player is not False:
             views_utility.clear_screen
+            # players_id_list of player on database
             players_id_list = views_output.players_list(ORDER_ALPHA)
             views_utility.crlf()
             views_output.tournament_players(tournament_obj, ORDER_ALPHA)
             players_quantity = len(tournament_obj.get_players)
             views_output.tournament_players_quantity(players_quantity)
-            # Is player in list ?
-            # Ask for create one
+            # Add a player:
+            # int for player_id, True to create one, False to exit
             new_player = views_input.add_player_on_tournament_choice()
             if new_player is True:
                 # create player on database
@@ -89,12 +95,25 @@ def tournament_controler(tournament_id):
                 break
             # Check if player_id exist on db
             if new_player in players_id_list:
-                # Add player on tournament and save players list on db
+                # Add player on tournament and save it on db
                 tournament_obj.add_player(new_player)
             else:
                 views_output.input_error()
+        # Info user for:
+        # add player
+        # change round quantity
+        # Ask to continue or not
+        views_utility.clear_screen()
+        views_output.tournament_data(tournament_obj)
+        views_output.tournament_players(tournament_obj, ORDER_ALPHA)
+        views_output.tournament_begin()
+        response = views_input.y_or_n()
+        # Begin tournament ?
+        if not response:
+            # Go to previous menu
+            return
 
-    # Is PLAYER_QUANTITY_MIN Ok
+    # Is PLAYER_QUANTITY_MIN Ok ?
     players_quantity = len(tournament_obj.get_players)
     if players_quantity < PLAYER_QUANTITY_MIN:
         views_output.players_quantity_error(players_quantity)
@@ -102,30 +121,30 @@ def tournament_controler(tournament_id):
         # If not go to previous menu
         return
 
-    # Check if all players have classification Ok
-    # Ask if tournament ready to begin
-
+    # -----------------------------
     # Beguin or continue tournament
+    # -----------------------------
+
     # Round 1 exist ?
     if len(tournament_obj.get_rounds) < 1:
         # Create it if not
-        round_1 = create_round1(tournament_obj)
-        tournament_obj.update_round(round_1)
+        round_1_obj = create_round1(tournament_obj)
+        tournament_obj.update_round(round_1_obj)
     else:
         # Get it if yes
-        round_1 = tournament_obj.get_rounds[0]
-
+        round_1_obj = tournament_obj.get_rounds[0]
     # Round 1 is closed ?
-    if not round_1.get_end:
-        match_status = input_matchs_results(round_1, tournament_obj)
-        if match_status:
-            round_1.set_end(time.time())
-            tournament_obj.update_round()
-            # Info user for changing player classification before
-        if not round_1.get_end:
-            # Round is not closed > go to previous menu
+    if not round_1_obj.get_end:
+        match_status = input_matchs_results(round_1_obj, tournament_obj)
+        # if False > Exit
+        if not match_status:
+            # Go to previous menu
             return
+        # if True > close round_1_obj
+        round_1_obj.set_end(time.time())
+        tournament_obj.update_round()
 
+    # if round_1 closed
     while tournament_obj.get_status is False:
         # For the next round not closed
         round_x_obj = find_next_round_to_complete(tournament_obj)
@@ -136,46 +155,41 @@ def tournament_controler(tournament_id):
             tournament_obj.set_status(True)
             views_output.tournament_end()
             views_input.wait_for_enter()
+            # go to previous menu
             return
+
         # If all rounds closed, create a new one
         if round_x_obj is False:
+            # Ask user to change player classification
+            views_utility.clear_screen()
+            views_output.tournament_players(
+                tournament_obj, ORDER_CLASSIFICATION)
+            views_output.player_change_classification()
+            response = views_input.y_or_n()
+            # Change player classification ?
+            if response:
+                # Go to previous menu
+                return
             round_x_obj = create_round_x(tournament_obj)
 
         match_status = input_matchs_results(round_x_obj, tournament_obj)
-        if match_status:
-            round_x_obj.set_end(time.time())
-            tournament_obj.update_round()
-            # Info user for changing player classification before
+        # if False > Exit
+        if not match_status:
+            # Go to previous menu
+            return
+        # if True > close round_x
+        round_x_obj.set_end(time.time())
+        tournament_obj.update_round()
         if not round_x_obj.get_end:
-            # Round is not closed > go to previous menu
+            # Round_x is not closed > go to previous menu
             return
 
-
-# verifier le status du tournoi
-# verifier le status des rounds
-# verifier le nombre de rounds prévus
-# mettre à jour le status du round
-
-# verifier le status des rounds
-# afficher les matchs à jouer
-# mettre à jour le status du round
-
-# entrer le resultat d'un match ! quel round? quel match?
-# afficher les matchs du round en cours
-# input quel match renseigner ?
-# verifier si tous les matchs sont renseignés
-# afficher les matchs du round en cours
-# input demander cloturer le round
-
-# le round est-il terminé ?
-# le round est-il le dernier
-
-# le tournois est-il terminé ?
-
-# le round 1 existe ?
+# --------------------------------
+# Functions used in this controler
+# --------------------------------
 
 
-def find_next_round_to_complete(tournament_obj: Tournament):
+def find_next_round_to_complete(tournament_obj: Tournament) -> object | bool:
     """Find the first not closed round
 
     Args:
@@ -248,8 +262,13 @@ def input_matchs_results(round_obj, tournament_obj: Tournament) -> bool:
     return round_status
 
 
-def create_round1(tournament_obj: Tournament):
-    """Create round 1"""
+def create_round1(tournament_obj: Tournament) -> object:
+    """Create round 1
+
+    Args:
+        tournanment_obj(Tournament): Current tournament
+
+    """
     from models.player import Player
     from models.round import Round
     round_1 = Round("Round 1")
@@ -284,10 +303,10 @@ def create_round1(tournament_obj: Tournament):
     return round_1
 
 
-def display_matchs_to_play(round_obj, player_alone):
+def display_matchs_to_play(round_obj, player_alone) -> None:
     """Display matchs to play in current round
 
-    args:
+    Args:
         round_obj(Round): Current round
         player_alone(Player | bool): Player if number \
             of player in tournament is odd, or False
@@ -307,7 +326,16 @@ def display_matchs_to_play(round_obj, player_alone):
     views_input.wait_for_enter()
 
 
-def build_player_obj_list(tournament_obj: Tournament):
+def build_player_obj_list(tournament_obj: Tournament) -> list:
+    """Build a list of Player
+
+    Args:
+        tournanment_obj(Tournament): Current tournament
+
+    Return:
+        list[Player]
+
+    """
     from models.player import Player
     player_manager_obj = Db_manager_player()
     tournament_players_id_list = tournament_obj.get_players
@@ -318,7 +346,7 @@ def build_player_obj_list(tournament_obj: Tournament):
     return players_obj_list
 
 
-def create_round_x(tournament_obj: Tournament):
+def create_round_x(tournament_obj: Tournament) -> object:
     """Create round x
 
     Args:
@@ -446,7 +474,7 @@ def create_round_x(tournament_obj: Tournament):
     return round_x_obj
 
 
-def find_player_free(players_free):
+def find_player_free(players_free: list) -> list | None:
     """Find a free player
 
     Args:
@@ -454,7 +482,8 @@ def find_player_free(players_free):
         True > player is free to select False if not
 
     Return:
-        Player | None: player free or None if no player is free
+        list | None: list[Player, bool] if bool is True, \
+            or None if no player is free
 
     """
     index = 0
@@ -470,7 +499,12 @@ def find_player_free(players_free):
 
 
 def rebuild_tournament(tournament_to_rebuild: int) -> Tournament:
-    """Rebuild tournament from database"""
+    """Rebuild tournament from database
+
+    Args:
+        tournament_to_rebuild(int): id of the tournament
+
+    """
     tournament_obj = Tournament.add_tournament_from_db(tournament_to_rebuild)
     # print("Tournament after rebuild : ", tournament_obj)
     # views_input.wait_for_enter()

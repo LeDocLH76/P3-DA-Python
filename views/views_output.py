@@ -140,6 +140,99 @@ def player_alone(player):
 reçoit {PLAYER_ALONE_POINT} points")
 
 
+def player_change_classification():
+    print("Vous allez débuter un nouveau round.")
+    print("Souhaitez-vous allez dans le menu joueur pour \
+changer un classement.")
+
+
+def player_sort_type() -> None:
+    print("Pour la liste des joueurs")
+
+
+def player_result(tournament_obj):
+    from models.tournament import Tournament
+    tournament_obj: Tournament = tournament_obj
+    manager_player_obj = Db_manager_player()
+    # Dict with player_id in key and points for the tournament in value
+    tournament_players_dict = tournament_obj.get_players
+    # Make a copy
+    round_player_dict = dict(tournament_players_dict)
+    # And set all points to 0
+    for key in round_player_dict:
+        round_player_dict[key] = 0
+
+    views_utility.clear_screen()
+    # for each round in round list
+    for round in tournament_obj.get_rounds:
+        # if round is closed
+        if round.get_end:
+            # for each match in round
+            for match in round.get_matchs:
+                player_1_id = match.get_players[0].get_id
+                player_2_id = match.get_players[1].get_id
+                player_1_points = match.get_scores[0]
+                player_2_points = match.get_scores[1]
+                round_player_dict[str(player_1_id)] = player_1_points
+                round_player_dict[str(player_2_id)] = player_2_points
+
+            # Begin sorted list
+            sorted_player_obj_list = sort_player_dict(
+                manager_player_obj, round_player_dict)
+            # Display round results
+            print()
+            print(f"Le classement des joueurs pour le {round.get_name} est:")
+            print_sorted_result(sorted_player_obj_list)
+
+    print()
+    print(f'Le classement des joueurs pour le tournoi \
+{tournament_obj.get_tournament["name"]}')
+    sorted_player_obj_list = sort_player_dict(
+        manager_player_obj, tournament_players_dict)
+    print_sorted_result(sorted_player_obj_list)
+
+
+def print_sorted_result(sorted_player_obj_list):
+    for classement, item in enumerate(sorted_player_obj_list, 1):
+        print("{0:>3}: {1:{name_length}} {2:{surname_length}} \
+classé:{3:6}   avec {4:>2} {5:}".format(
+            classement,
+            item[0].get_player["name"],
+            item[0].get_player["surname"],
+            item[0].get_player["classification"],
+            item[1],
+            "point" if item[1] < 2 else "points",
+            name_length=PLAYER_NAME_LENGTH,
+            surname_length=PLAYER_SURNAME_LENGTH
+        ))
+
+
+def sort_player_dict(manager_player_obj, player_dict):
+    tuple_list = []
+    # Build a list of tupple(player_id, points)
+    for key in player_dict.keys():
+        tuple_list.append((int(key), player_dict[key]))
+        # Build a sorted list by player classification
+    sorted_list = sorted(
+        tuple_list,
+        key=lambda key:
+        (manager_player_obj.get_by_id(key[0]).get_classification)
+    )
+    # Sort by points
+    sorted_list = sorted(
+        sorted_list,
+        key=lambda x: x[1],
+        reverse=True
+    )
+    # Build a new list with player_obj in place of player_id
+    sorted_player_obj_list = []
+    for item in sorted_list:
+        sorted_player_obj_list.append(
+            (manager_player_obj.get_by_id(item[0]), item[1]))
+
+    return sorted_player_obj_list
+
+
 def tournament_list() -> int:
     """Print tournament list from db
 
@@ -197,12 +290,14 @@ def tournament_results(tournament_id: int, result_type):
         Literal[1, 2]: tournament's rounds = 1, tournament's matchs = 2
 
     """
-    tournament_db = Db_manager_tournament()
-    rounds_obj_list = tournament_db.get_rounds_by_tournament_id(tournament_id)
+    manager_tournament_obj = Db_manager_tournament()
+    rounds_obj_list = manager_tournament_obj.get_rounds_by_tournament_id(
+        tournament_id)
     # print(rounds)
     for round_obj in rounds_obj_list:
         if result_type == RESULT_ROUND:
-            round_status = "En cours" if round_obj.get_end is False else "Cloturé"
+            round_status = ("En cours" if round_obj.get_end is False
+                            else "Cloturé")
             print(round_obj.get_name, round_status)
         match_obj_list = round_obj.get_matchs
         match_list(result_type, match_obj_list)
@@ -250,8 +345,6 @@ def print_one_match(index: int, result_type, match_obj):
 {player1_name}{space1} {player1_surname}{space2}\
 contre   {player2_name}{space3} {player2_surname}{space4} \
 score: {score_player_1} / {score_player_2}')
-    # if result_type == RESULT_ROUND:
-    #     print()
 
 
 def make_match_dict(match_obj: Match):
@@ -314,6 +407,14 @@ def tournament_exist(tournament_id):
 
 def tournament_close():
     print("Ce tournoi est clos, il n'est pas possible de le modifier")
+
+
+def tournament_begin():
+    print("Une fois le tournoi commencé, il ne sera plus possible de :")
+    print("\t- changer le nombre de round")
+    print("\t- ajouter des joueurs")
+    print()
+    print("Voulez-vous débuter le tournoi ?")
 
 
 def adjust_round_quantity():

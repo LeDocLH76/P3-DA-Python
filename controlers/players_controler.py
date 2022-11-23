@@ -14,6 +14,7 @@ def players_controler():
 
     while True:
         action = views_menu.players_action_choice()
+        # Create new player
         if action == 1:
             # Get player's infos from the user and save them in in database
             views_utility.clear_screen()
@@ -29,8 +30,8 @@ def players_controler():
                 views_output.player_exist(response)
             views_input.wait_for_enter()
 
+        # Update a player in database
         if action == 2:
-            # Update a player in database
             views_output.players_list(ORDER_ALPHA)
             player_to_update = views_input.player_choice()
             if player_to_update is False:
@@ -64,8 +65,8 @@ def players_controler():
                 views_output.input_error()
             views_input.wait_for_enter()
 
+        # Delete a player in database
         if action == 3:
-            # Delete a player in database
             views_output.players_list(ORDER_ALPHA)
             player_to_delete = views_input.player_choice()
             if player_to_delete is False:
@@ -97,8 +98,38 @@ def players_controler():
                 views_output.input_error()
                 views_input.wait_for_enter()
 
+        # Display player list
         if action == 4:
-            views_output.players_list(ORDER_ALPHA)
+            views_utility.clear_screen()
+            views_output.player_sort_type()
+            sort_choice = views_menu.sort_choice()
+            views_output.players_list(sort_choice)
             views_input.wait_for_enter()
+
+        # Change player classification
         if action == 5:
+            views_utility.clear_screen()
+            views_output.player_sort_type()
+            sort_choice = views_menu.sort_choice()
+            views_output.players_list(sort_choice)
+            player_to_update = views_input.player_choice()
+            if player_to_update is False:
+                continue
+            response: Player | None = manager_player_obj.get_by_id(
+                player_to_update)
+            # player exist on db ?
+            if response is not None:
+                views_utility.crlf()
+                views_output.print_player(response)
+                new_classification = views_input.new_classification()
+                if not new_classification:
+                    continue
+                response.set_classification(new_classification)
+            else:
+                # Not in database
+                views_output.input_error()
+                views_input.wait_for_enter()
+
+        # Exit
+        if action == 6:
             break

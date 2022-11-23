@@ -96,6 +96,10 @@ class Player:
         """
         return self._id
 
+    @property
+    def get_classification(self) -> int:
+        return self._classification
+
     @ property
     def get_player(self) -> dict:
         """Property Player's datas
