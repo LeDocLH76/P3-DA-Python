@@ -4,3 +4,4 @@ __*
 chess_*
 !__init__.py
 flake-report
+_test*
