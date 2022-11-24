@@ -1,3 +1,4 @@
+
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
 from utils.constant import ORDER_ALPHA
@@ -18,6 +19,7 @@ def players_controler():
         if action == 1:
             # Get player's infos from the user and save them in in database
             views_utility.clear_screen()
+            views_utility.crlf()
             player_dict = views_input.new_player()
             player_obj = Player(
                 player_dict["name"],
@@ -28,11 +30,15 @@ def players_controler():
             response = manager_player_obj.add_one(player_obj)
             if response is not True:
                 views_output.player_exist(response)
+            views_utility.crlf()
             views_input.wait_for_enter()
 
         # Update a player in database
         if action == 2:
+            views_utility.clear_screen()
+            views_utility.crlf()
             views_output.players_list(ORDER_ALPHA)
+            views_utility.crlf()
             player_to_update = views_input.player_choice()
             if player_to_update is False:
                 continue
@@ -49,7 +55,7 @@ def players_controler():
                     views_output.forbiden_delete()
                     views_input.wait_for_enter()
                     continue
-                views_utility.clear_screen()
+                views_utility.crlf()
                 views_output.print_player(player_db_obj)
                 player_dict = views_input.new_player()
                 new_player_obj = Player(
@@ -67,7 +73,10 @@ def players_controler():
 
         # Delete a player in database
         if action == 3:
+            views_utility.clear_screen()
+            views_utility.crlf()
             views_output.players_list(ORDER_ALPHA)
+            views_utility.crlf()
             player_to_delete = views_input.player_choice()
             if player_to_delete is False:
                 continue
@@ -84,9 +93,10 @@ def players_controler():
                     views_input.wait_for_enter()
                     continue
                 # Confirm ?
-                views_utility.clear_screen()
+                views_utility.crlf()
                 views_output.confirm_delete()
                 views_output.print_player(player_db_obj)
+                views_utility.crlf()
                 response = views_input.y_or_n()
                 if response is False:
                     continue
@@ -101,17 +111,25 @@ def players_controler():
         # Display player list
         if action == 4:
             views_utility.clear_screen()
+            views_utility.crlf()
             views_output.player_sort_type()
             sort_choice = views_menu.sort_choice()
+            views_utility.clear_screen()
+            views_utility.crlf()
             views_output.players_list(sort_choice)
+            views_utility.crlf()
             views_input.wait_for_enter()
 
         # Change player classification
         if action == 5:
             views_utility.clear_screen()
+            views_utility.crlf()
             views_output.player_sort_type()
             sort_choice = views_menu.sort_choice()
+            views_utility.clear_screen()
+            views_utility.crlf()
             views_output.players_list(sort_choice)
+            views_utility.crlf()
             player_to_update = views_input.player_choice()
             if player_to_update is False:
                 continue
@@ -121,6 +139,7 @@ def players_controler():
             if response is not None:
                 views_utility.crlf()
                 views_output.print_player(response)
+                views_utility.crlf()
                 new_classification = views_input.new_classification()
                 if not new_classification:
                     continue

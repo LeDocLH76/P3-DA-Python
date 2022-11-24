@@ -56,12 +56,14 @@ def players_list(sort_type: Literal[1, 2]) -> list[int]:
         players_id.append(player_dict["id"])
     sorted_players = views_utility.sort_players_by_type(
         sort_type, player_dict_list)
+    print("Liste des joueurs sur la base de données")
+    print()
     print_players(sorted_players)
     return players_id
 
 
 def print_players(sorted_players: list[dict]):
-    """Print sorted list of player
+    """Print sorted list of players
 
     Args:
         list[dict]: list sorted of player's dict
@@ -76,7 +78,7 @@ def print_players(sorted_players: list[dict]):
         classification = sorted_player['classification']
 
         print('{0:>3}  {1:{name_length}}  {2:{surname_length}}  \
-{3:{gender_length}}  né le:{4:{Date_length}}  classé:{5:>{class_length}}'
+{3:{gender_length}}  né le: {4:{Date_length}}  classé:{5:>{class_length}}'
               .format(
                   id,
                   name,
@@ -241,22 +243,28 @@ def tournament_list() -> int:
     """
     tournament_manager_obj = Db_manager_tournament()
     tournaments_obj_list = tournament_manager_obj.get_all()
-    views_utility.clear_screen()
+    print("Liste des tournois sur la base de données")
+    print()
     for tournament_obj in tournaments_obj_list:
         tournament_dict = tournament_obj.get_tournament
         id = tournament_dict["id"]
         name = tournament_dict["name"]
         date = tournament_dict["date"]
         description = tournament_dict["description"]
+        time_ctrl = tournament_dict["time_ctrl"]
+        tournament_big_obj = tournament_manager_obj.get_one_from_db(id)
+        player_quantity = len(tournament_big_obj.get_players)
         status = ("En cours" if tournament_dict["status"] is False
                   else "Cloturé")
         print('{0:>3} {1:{name_length}}  {2:10}  \
-{3:{description_length}}  {4:8}'.format(
+{3:{description_length}}  {4:8}  {5:6}  {6:>3} joueurs'.format(
             id,
             name,
             date,
             description,
             status,
+            time_ctrl,
+            player_quantity,
             name_length=TOURNAMENT_NAME_LENGTH,
             description_length=TOURNAMENT_DESCRIPTION_LENGTH
         ))
@@ -293,15 +301,17 @@ def tournament_results(tournament_id: int, result_type):
     manager_tournament_obj = Db_manager_tournament()
     rounds_obj_list = manager_tournament_obj.get_rounds_by_tournament_id(
         tournament_id)
-    # print(rounds)
+    round_txt = "Les rounds du tournoi"
+    match_txt = "Les matchs du tournoi"
+    print(f'{ round_txt if result_type == RESULT_ROUND else match_txt}')
     for round_obj in rounds_obj_list:
+        print()
         if result_type == RESULT_ROUND:
             round_status = ("En cours" if round_obj.get_end is False
                             else "Cloturé")
             print(round_obj.get_name, round_status)
         match_obj_list = round_obj.get_matchs
         match_list(result_type, match_obj_list)
-        print()
 
 
 def tournament_end():
@@ -380,6 +390,8 @@ def tournament_players(tournament, sort_type):
         player_dict = player_obj.get_player
         players.append(player_dict)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
+    print("Liste des joueurs du tournoi")
+    print()
     print_players(sorted_players)
 
 

@@ -36,7 +36,10 @@ def tournament_controler(tournament_id):
 
     # tournament_id is True if choice = 6 > rebuild tournament
     else:
+        views_utility.clear_screen()
+        views_utility.crlf()
         tournament_length = views_output.tournament_list()
+        views_utility.crlf()
         tournament_to_rebuild = views_input.tournament_choice(
             tournament_length)
         tournament_obj = rebuild_tournament(tournament_to_rebuild)
@@ -62,11 +65,15 @@ def tournament_controler(tournament_id):
     # It's possible to change round quantity and/or add player
     if len(tournament_obj.get_rounds) == 0:
         views_utility.clear_screen()
+        views_utility.crlf()
         views_output.tournament_data(tournament_obj)
         # Ask for changin number of rounds ?
+        views_utility.crlf()
         views_output.adjust_round_quantity()
+        views_utility.crlf()
         response = views_input.y_or_n()
         if response is True:
+            views_utility.crlf()
             new_round_quantity = views_input.change_round_quantity()
             if new_round_quantity != tournament_obj.get_round:
                 tournament_obj.set_round(new_round_quantity)
@@ -163,9 +170,12 @@ def tournament_controler(tournament_id):
         if round_x_obj is False:
             # Ask user to change player classification
             views_utility.clear_screen()
+            views_utility.crlf()
             views_output.tournament_players(
                 tournament_obj, ORDER_CLASSIFICATION)
+            views_utility.crlf()
             views_output.player_change_classification()
+            views_utility.crlf()
             response = views_input.y_or_n()
             # Change player classification ?
             if response:
@@ -226,6 +236,7 @@ def input_matchs_results(round_obj, tournament_obj: Tournament) -> bool:
     while (response != "Q") and (response != "C"):
         match_obj_list = round_obj.get_matchs
         views_utility.clear_screen()
+        views_utility.crlf()
         views_output.current_round_matchs(round_obj.get_name)
         views_utility.crlf()
         views_output.match_list(RESULT_MATCH, match_obj_list)
@@ -317,6 +328,7 @@ def display_matchs_to_play(round_obj, player_alone) -> None:
     round_obj: Round = round_obj
     round_name = round_obj.get_name
     views_utility.clear_screen()
+    views_utility.crlf()
     views_output.current_round_matchs(round_name)
     views_utility.crlf()
     views_output.match_list(RESULT_MATCH, round_obj.get_matchs)
@@ -392,14 +404,6 @@ def create_round_x(tournament_obj: Tournament) -> object:
     for player_obj in players_obj_list:
         player_to_add = [player_obj, True]
         players_free.append(player_to_add)
-
-    # print("Affichage provisoire\nJoueurs triés pour le prochain tour")
-    # for player_obj in players_obj_list:
-    #     print(player_obj.get_player["name"],
-    #           player_obj.get_player["surname"],
-    #           tournament_obj.get_points(player_obj.get_id),
-    #           player_obj.get_player["classification"])
-    # views_input.wait_for_enter()
 
     matches_list = []
     rejected_players = []

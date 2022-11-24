@@ -1,6 +1,7 @@
 
-from views import views_utility
 from typing import Literal
+
+from views import views_utility
 from utils.constant import (
     ORDER_ALPHA,
     ORDER_CLASSIFICATION,
@@ -10,7 +11,7 @@ from utils.constant import (
 )
 
 
-def root_menu() -> int:
+def root_menu() -> Literal[1, 2, 3, 4, 5, 6, 7, 8]:
     """Print root menu
 
     Return:
@@ -18,8 +19,8 @@ def root_menu() -> int:
 
     """
     while True:
-        views_utility.clear_screen()
         print("Menu principal")
+        print()
         print("1. Voir les tournois enregistrés")
         print("2. Voir tous les joueurs enregistrés")
         print("3. Voir les résultats d'un tournoi")
@@ -28,6 +29,7 @@ def root_menu() -> int:
         print("6. Reprendre un tournoi en cours")
         print("7. Débuter un nouveau tournoi")
         print("8. Quitter le programme")
+        print()
         print("Entrer votre choix")
         response = input()
         response = views_utility.input_filter(response)
@@ -47,63 +49,43 @@ def root_menu() -> int:
             return 7
         if response == "8":
             return 8
+        break
 
 
-def players_action_choice():
+def players_action_choice() -> Literal[1, 2, 3, 4, 5, 6]:
     """Print submenu player
 
     Return:
-        int: User choice from 1 to 5
+        int: User choice from 1 to 6
 
     """
     while True:
         views_utility.clear_screen()
+        print()
         print("Menu joueurs")
+        print()
         print("1. Entrer un nouveau joueur")
         print("2. Modifier un joueur")
         print("3. Supprimer un joueur")
         print("4. Voir les joueurs")
         print("5. Changer le classement d'un joueur")
         print("6. Retour au menu précédent")
+        print()
         print("Entrer votre choix")
         response = input()
         response = views_utility.input_filter(response)
         if response == "1":
             return 1
         if response == "2":
-            print("action 2")
             return 2
         if response == "3":
-            print("action 3")
             return 3
         if response == "4":
-            print("action 4")
             return 4
         if response == "5":
             return 5
         if response == "6":
             return 6
-
-
-def tournament_begin():
-    """Print submenu tournament
-
-    Return:
-        int: User choice from 1 to xxx work in progress
-
-    """
-    while True:
-        views_utility.clear_screen()
-        print("1. Débuter le tournoi")
-        print("2. Retour au menu principal")
-        print("Entrer votre choix")
-
-        response = input()
-        response = views_utility.input_filter(response)
-        if response == "1":
-            return 1
-        if response == "2":
-            return 2
 
 
 def sort_choice() -> Literal[1, 2]:
@@ -113,8 +95,10 @@ def sort_choice() -> Literal[1, 2]:
         Literal[1, 2]: ORDER_ALPHA, ORDER_CLASSIFICATION
     """
     print("Type de tri")
+    print()
     print("1. Alphabetique")
     print("2. Par classement")
+    print()
     while True:
         print("Entrer votre choix")
         response = input()
@@ -132,11 +116,12 @@ def result_type() -> Literal[1, 2, 3]:
         int: tournament's rounds = 1, tournament's matchs = 2
 
     """
-    views_utility.clear_screen()
     print("Type de liste")
+    print()
     print("1. Les rounds du tournoi")
     print("2. Les matchs du tournoi")
     print("3. Le classement des joueurs")
+    print()
     while True:
         print("Entrer votre choix")
         response = input()

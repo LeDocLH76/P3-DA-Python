@@ -1,23 +1,21 @@
-# import os
+
+import os
 from operator import itemgetter
 from typing import Literal
 
 from utils.constant import ORDER_ALPHA
 
 
-def clear_screen():
-    # os.system('cls' if os.name == 'nt' else 'clear')
-    print("\033c")
-    # print("\033[3J", end="")
-    # print("\033[H\033[3J", end="")
+def clear_screen() -> None:
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def crlf():
+def crlf() -> None:
     """Line feed"""
     print("")
 
 
-def input_filter(response: str) -> str:
+def input_filter(input: str) -> str:
     """Capitalize
 
     Args:
@@ -27,9 +25,10 @@ def input_filter(response: str) -> str:
         str: first letter capitalized
 
     """
-    if response != "":
-        response = response[0].capitalize()
-    return response
+    if input != "":
+        response = input[0].capitalize()
+        return response
+    return input
 
 
 def sort_players_by_type(

@@ -28,6 +28,7 @@ def new_player() -> dict:
             }
     """
     print("Entrer les informations du joueur")
+    print()
     name = input("Nom ").upper()
     if len(name) > PLAYER_NAME_LENGTH:
         name = name[:PLAYER_NAME_LENGTH - 1]
