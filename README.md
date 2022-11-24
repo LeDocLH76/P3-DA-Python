@@ -8,7 +8,7 @@ Installation des dépendances:
 python -m pip install -r requirements.txt
 
 Lancement de l'application:
-main.py
+python -m main
 
 Déactivation de l'environnement:
 deactivate
