@@ -30,11 +30,11 @@ def new_player() -> dict:
     print("Entrer les informations du joueur")
     name = input("Nom ").upper()
     if len(name) > PLAYER_NAME_LENGTH:
-        name = name[:PLAYER_NAME_LENGTH-1]
+        name = name[:PLAYER_NAME_LENGTH - 1]
 
     surname = input("Prénom ").capitalize()
     if len(surname) > PLAYER_SURNAME_LENGTH:
-        surname = surname[:PLAYER_SURNAME_LENGTH-1]
+        surname = surname[:PLAYER_SURNAME_LENGTH - 1]
 
     birth_date = None
     while birth_date is None:
@@ -197,11 +197,11 @@ def new_tournament() -> dict[str, str]:
     name = input(
         f"Nom du tournoi {TOURNAMENT_NAME_LENGTH}car max ").capitalize()
     if len(name) > TOURNAMENT_NAME_LENGTH:
-        name = name[:TOURNAMENT_NAME_LENGTH-1]
+        name = name[:TOURNAMENT_NAME_LENGTH - 1]
 
     place = input(f"Lieu du tournoi {TOURNAMENT_PLACE_LENGTH}car max ")
     if len(place) > TOURNAMENT_PLACE_LENGTH:
-        place = place[:TOURNAMENT_PLACE_LENGTH-1]
+        place = place[:TOURNAMENT_PLACE_LENGTH - 1]
 
     date = None
     while date is None:
@@ -222,7 +222,7 @@ def new_tournament() -> dict[str, str]:
 
     description = input(f"Description {TOURNAMENT_DESCRIPTION_LENGTH}car max ")
     if len(description) > TOURNAMENT_DESCRIPTION_LENGTH:
-        description = description[:TOURNAMENT_DESCRIPTION_LENGTH-1]
+        description = description[:TOURNAMENT_DESCRIPTION_LENGTH - 1]
 
     tournament_dict = {
         "name": name,

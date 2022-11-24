@@ -149,8 +149,9 @@ def tournament_controler(tournament_id):
         # For the next round not closed
         round_x_obj = find_next_round_to_complete(tournament_obj)
         # If all rounds closed and tournament_round_quantity = ROUND_QUANTITY
-        if ((round_x_obj is False) and
-                (len(tournament_obj.get_rounds) >= tournament_obj.get_round)):
+        if ((round_x_obj is False)
+                and (len(tournament_obj.get_rounds)
+                     >= tournament_obj.get_round)):
             # Close tournament
             tournament_obj.set_status(True)
             views_output.tournament_end()
@@ -231,13 +232,13 @@ def input_matchs_results(round_obj, tournament_obj: Tournament) -> bool:
         views_utility.crlf()
         response = views_input.match_choice()
         if (response != "Q") and (response != "C"):
-            match_obj = match_obj_list[int(response)-1]
+            match_obj = match_obj_list[int(response) - 1]
             views_utility.crlf()
             views_output.print_one_match(response, RESULT_MATCH, match_obj)
             player_1_id = match_obj.get_players[0].get_player["id"]
             player_2_id = match_obj.get_players[1].get_player["id"]
             score_player_1 = views_input.match_results()
-            score_player_2 = 1-score_player_1
+            score_player_2 = 1 - score_player_1
             match_obj.set_score(score_player_1, score_player_2)
             tournament_obj.update_player_point(player_1_id, score_player_1)
             tournament_obj.update_player_point(player_2_id, score_player_2)
@@ -278,7 +279,7 @@ def create_round1(tournament_obj: Tournament) -> object:
     # Sort players by classification smallest first
     players_obj_list.sort(key=lambda x: x.get_player["classification"])
     # Cut in half
-    list_1_length = len(players_obj_list)//2
+    list_1_length = len(players_obj_list) // 2
     list_1 = players_obj_list[:list_1_length]
     list_2 = players_obj_list[list_1_length:]
     # If number of player is odd,
@@ -427,8 +428,7 @@ def create_round_x(tournament_obj: Tournament) -> object:
 
                 # Is this pair forbiden ?
                 if (((player_1[0], player_2[0]) in forbiden_pairs)
-                        or
-                        ((player_2[0], player_1[0]) in forbiden_pairs)):
+                        or ((player_2[0], player_1[0]) in forbiden_pairs)):
                     # Forbiden pair {player_1[0]} {player_2[0]}
                     rejected_players.append(player_free)
                     free_flag = False

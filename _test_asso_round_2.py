@@ -68,8 +68,8 @@ il faut lui donner 0.5 points")
 
                     # Paire interdite ???
                     if (((joueur_1[0], joueur_2[0]) in asso_interdites)
-                            or
-                            ((joueur_2[0], joueur_1[0]) in asso_interdites)):
+                            or ((joueur_2[0], joueur_1[0])
+                                in asso_interdites)):
                         print(f"Alerte association interdite \
 {joueur_1[0]} {joueur_2[0]}")
                         joueurs_refuse.append(joueur)

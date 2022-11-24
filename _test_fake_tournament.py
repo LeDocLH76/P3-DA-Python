@@ -107,7 +107,7 @@ round_1 = Round("Round 1")
 # Trie la liste de Player par leur classification, ascendant
 players_obj.sort(key=lambda x: x.get_player["classification"])
 # Sépare la liste en 2 listes
-list_1_length = len(players_obj)//2
+list_1_length = len(players_obj) // 2
 list_1 = players_obj[:list_1_length]
 list_2 = players_obj[list_1_length:]
 # Si le nombre de joueurs est impair,
@@ -263,8 +263,7 @@ il faut lui donner 0.5 points")
 
                 # Paire interdite ???
                 if (((player_1[0], player_2[0]) in forbiden_pairs)
-                        or
-                        ((player_2[0], player_1[0]) in forbiden_pairs)):
+                        or ((player_2[0], player_1[0]) in forbiden_pairs)):
                     print(f"Alerte association interdite \
 {player_1[0]} {player_2[0]}")
                     rejected_players.append(player_free)
