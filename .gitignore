@@ -3,5 +3,4 @@ env
 __*
 chess_*
 !__init__.py
-flake-report
 _test*

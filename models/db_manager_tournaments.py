@@ -251,8 +251,12 @@ class Db_manager_tournament:
         else:
             # Tournament already exist, find is id and return it
             tournament_db = self.tournaments_table.get(
-                (tournament.name == tournament_dict["name"])
-                & (tournament.date == tournament_dict["date"]))
+                (
+                    tournament.name == tournament_dict["name"]
+                ) & (
+                    tournament.date == tournament_dict["date"]
+                )
+            )
             tournament_id = tournament_db.doc_id
         return tournament_id
 
