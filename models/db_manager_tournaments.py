@@ -151,23 +151,41 @@ class Db_manager_tournament:
                 # Find player1 in list
                 player_1 = [
                     player for player in players_obj_list
-                    if (player.get_player["name"]
-                        == match_db["player_1"]["name"])
-                    and (player.get_player["surname"]
-                         == match_db["player_1"]["surname"])
-                    and (player.get_player["birth_date"]
-                         == match_db["player_1"]["birth_date"])]
+                    if ((
+                        player.get_player["name"]
+                    ) == (
+                        match_db["player_1"]["name"]
+                    )
+                    ) and ((
+                        player.get_player["surname"]
+                    ) == (
+                        match_db["player_1"]["surname"]
+                    )
+                    ) and ((
+                        player.get_player["birth_date"]
+                    ) == (
+                        match_db["player_1"]["birth_date"]
+                    ))]
                 score_player_1 = match_db["score_player_1"]
                 player_1 = player_1[0]
                 # Find player2 in list
                 player_2 = [
                     player for player in players_obj_list
-                    if (player.get_player["name"]
-                        == match_db["player_2"]["name"])
-                    and (player.get_player["surname"]
-                         == match_db["player_2"]["surname"])
-                    and (player.get_player["birth_date"]
-                         == match_db["player_2"]["birth_date"])]
+                    if ((
+                        player.get_player["name"]
+                    ) == (
+                        match_db["player_2"]["name"]
+                    )
+                    ) and ((
+                        player.get_player["surname"]
+                    ) == (
+                        match_db["player_2"]["surname"]
+                    )
+                    ) and ((
+                        player.get_player["birth_date"]
+                    ) == (
+                        match_db["player_2"]["birth_date"]
+                    ))]
                 score_player_2 = match_db["score_player_2"]
                 player_2 = player_2[0]
                 # Create one match
@@ -242,8 +260,11 @@ class Db_manager_tournament:
         tournament = Query()
         # tournament exist ?
         if not self.tournaments_table.search(
-            (tournament.name == tournament_dict["name"])
-                & (tournament.date == tournament_dict["date"])):
+                (
+                    tournament.name == tournament_dict["name"]
+                ) & (
+                    tournament.date == tournament_dict["date"]
+                )):
             # Create tournament in db and get id
             tournament_id = self.tournaments_table.insert(tournament_dict)
             tournament_obj.set_id(tournament_id)

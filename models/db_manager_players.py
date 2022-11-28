@@ -86,20 +86,26 @@ class Db_manager_player:
         # add player
         player = Query()
         # player exist ?
-        if not self.players_table.search(
-            (player.name == player_dict["name"])
-            & (player.surname == player_dict["surname"])
-                & (player.birth_date == player_dict["birth_date"])):
+        if not self.players_table.search((
+            player.name == player_dict["name"]
+        ) & (
+            player.surname == player_dict["surname"]
+        ) & (
+            player.birth_date == player_dict["birth_date"]
+        )):
             # Create player in db and get id
             player_id = self.players_table.insert(player_dict)
             player_obj.set_id(player_id)
             return True
         else:
             # Player already exist, find and return is id
-            player_db = self.players_table.get(
-                (player.name == player_dict["name"])
-                & (player.surname == player_dict["surname"])
-                & (player.birth_date == player_dict["birth_date"]))
+            player_db = self.players_table.get((
+                player.name == player_dict["name"]
+            ) & (
+                player.surname == player_dict["surname"]
+            ) & (
+                player.birth_date == player_dict["birth_date"]
+            ))
             player_id = player_db.doc_id
         return player_id
 

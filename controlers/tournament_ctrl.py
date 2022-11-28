@@ -17,7 +17,7 @@ from models.db_manager_players import Db_manager_player
 from controlers.players_controler import players_controler
 
 
-def tournament_controler(tournament_id):
+def tournament_controler(start_menu_choice: bool):
     """Controler for submenu tournament
 
     Args:
@@ -29,22 +29,9 @@ def tournament_controler(tournament_id):
     # Create or continue tournament
     # -----------------------------
 
-    # tournament_id is False if choice = 7 > create tournament
-    if tournament_id is False:
-        # tournament init and save on database if not exist
-        tournament_obj = create_tournament()
+    tournament_obj = create_or_rebuild_tournament(start_menu_choice)
 
-    # tournament_id is True if choice = 6 > rebuild tournament
-    else:
-        views_utility.clear_screen()
-        views_utility.crlf()
-        tournament_length = views_output.tournament_list()
-        views_utility.crlf()
-        tournament_to_rebuild = views_input.tournament_choice(
-            tournament_length)
-        tournament_obj = rebuild_tournament(tournament_to_rebuild)
-
-    # exit by user
+    # Exit by user
     if tournament_obj is False:
         return
 
@@ -64,57 +51,7 @@ def tournament_controler(tournament_id):
     # If no round in progress
     # It's possible to change round quantity and/or add player
     if len(tournament_obj.get_rounds) == 0:
-        views_utility.clear_screen()
-        views_utility.crlf()
-        views_output.tournament_data(tournament_obj)
-        # Ask for changin number of rounds ?
-        views_utility.crlf()
-        views_output.adjust_round_quantity()
-        views_utility.crlf()
-        response = views_input.y_or_n()
-        if response is True:
-            views_utility.crlf()
-            new_round_quantity = views_input.change_round_quantity()
-            if new_round_quantity != tournament_obj.get_round:
-                tournament_obj.set_round(new_round_quantity)
-                views_output.adjust_round_quantity()
-
-        new_player = True
-        # Chose players for current tournament
-        while new_player is not False:
-            views_utility.clear_screen
-            # players_id_list of player on database
-            players_id_list = views_output.players_list(ORDER_ALPHA)
-            views_utility.crlf()
-            views_output.tournament_players(tournament_obj, ORDER_ALPHA)
-            players_quantity = len(tournament_obj.get_players)
-            views_output.tournament_players_quantity(players_quantity)
-            # Add a player:
-            # int for player_id, True to create one, False to exit
-            new_player = views_input.add_player_on_tournament_choice()
-            if new_player is True:
-                # create player on database
-                players_controler()
-                # Go to while
-                continue
-            if new_player is False:
-                # If new_player is False >>> End of while
-                break
-            # Check if player_id exist on db
-            if new_player in players_id_list:
-                # Add player on tournament and save it on db
-                tournament_obj.add_player(new_player)
-            else:
-                views_output.input_error()
-        # Info user for:
-        # add player
-        # change round quantity
-        # Ask to continue or not
-        views_utility.clear_screen()
-        views_output.tournament_data(tournament_obj)
-        views_output.tournament_players(tournament_obj, ORDER_ALPHA)
-        views_output.tournament_begin()
-        response = views_input.y_or_n()
+        response = prepare_tournament(tournament_obj)
         # Begin tournament ?
         if not response:
             # Go to previous menu
@@ -156,9 +93,11 @@ def tournament_controler(tournament_id):
         # For the next round not closed
         round_x_obj = find_next_round_to_complete(tournament_obj)
         # If all rounds closed and tournament_round_quantity = ROUND_QUANTITY
-        if ((round_x_obj is False)
-                and (len(tournament_obj.get_rounds)
-                     >= tournament_obj.get_round)):
+        if ((
+            round_x_obj is False
+        ) and (
+            len(tournament_obj.get_rounds) >= tournament_obj.get_round
+        )):
             # Close tournament
             tournament_obj.set_status(True)
             views_output.tournament_end()
@@ -169,15 +108,7 @@ def tournament_controler(tournament_id):
         # If all rounds closed, create a new one
         if round_x_obj is False:
             # Ask user to change player classification
-            views_utility.clear_screen()
-            views_utility.crlf()
-            views_output.tournament_players(
-                tournament_obj, ORDER_CLASSIFICATION)
-            views_utility.crlf()
-            views_output.player_change_classification()
-            views_utility.crlf()
-            response = views_input.y_or_n()
-            # Change player classification ?
+            response = ask_classification_change(tournament_obj)
             if response:
                 # Go to previous menu
                 return
@@ -195,9 +126,126 @@ def tournament_controler(tournament_id):
             # Round_x is not closed > go to previous menu
             return
 
+
 # --------------------------------
 # Functions used in this controler
 # --------------------------------
+
+
+def ask_classification_change(tournament_obj: Tournament) -> bool:
+    """Ask user for player classification change
+
+    Args:
+        Tournament: Current tournament
+
+    Return:
+        bool: True > User want to change, False if not
+
+    """
+    views_utility.clear_screen()
+    views_utility.crlf()
+    views_output.tournament_players(
+        tournament_obj, ORDER_CLASSIFICATION)
+    views_utility.crlf()
+    views_output.player_change_classification()
+    views_utility.crlf()
+    response = views_input.y_or_n()
+    return response
+
+
+def prepare_tournament(tournament_obj: Tournament):
+    """Prepare tournament before beguin
+
+    Ask user for tournament data and round quantity, add players.
+
+    Args:
+        Tournament: Current tournament
+
+    Return:
+        bool: True > User want to beguin, False if not
+
+    """
+    views_utility.clear_screen()
+    views_utility.crlf()
+    views_output.tournament_data(tournament_obj)
+    # Ask for changin number of rounds ?
+    views_utility.crlf()
+    views_output.adjust_round_quantity()
+    views_utility.crlf()
+    response = views_input.y_or_n()
+    if response is True:
+        views_utility.crlf()
+        new_round_quantity = views_input.change_round_quantity()
+        if new_round_quantity != tournament_obj.get_round:
+            tournament_obj.set_round(new_round_quantity)
+            views_output.adjust_round_quantity()
+
+        # Chose players for current tournament
+    response = add_player_in_tournament(tournament_obj)
+    return response
+
+
+def add_player_in_tournament(tournament_obj: Tournament):
+    new_player = True
+    while new_player is not False:
+        views_utility.clear_screen
+        # players_id_list of player on database
+        players_id_list = views_output.players_list(ORDER_ALPHA)
+        views_utility.crlf()
+        views_output.tournament_players(tournament_obj, ORDER_ALPHA)
+        players_quantity = len(tournament_obj.get_players)
+        views_output.tournament_players_quantity(players_quantity)
+        # Add a player:
+        # int for player_id, True to create one, False to exit
+        new_player = views_input.add_player_on_tournament_choice()
+        if new_player is True:
+            # create player on database
+            players_controler()
+            # Go to while
+            continue
+        if new_player is False:
+            # If new_player is False >>> End of while
+            break
+            # Check if player_id exist on db
+        if new_player in players_id_list:
+            # Add player on tournament and save it on db
+            tournament_obj.add_player(new_player)
+        else:
+            views_output.input_error()
+    views_utility.clear_screen()
+    views_output.tournament_data(tournament_obj)
+    views_output.tournament_players(tournament_obj, ORDER_ALPHA)
+    views_output.tournament_begin()
+    response = views_input.y_or_n()
+    return response
+
+
+def create_or_rebuild_tournament(start_menu_choice: bool):
+    """Create or rebuild tournament_obj
+
+    Args:
+        bool: False > Create, True > Rebuild
+
+    Return:
+        Tournament | int | bool: Tournament_obj if success in create or rebuild,
+        Tournament_id if already exist, False if exit by user.
+
+    """
+    # start_menu_choice is False if choice = 7 > create tournament
+    if start_menu_choice is False:
+        # tournament init and save on database if not exist
+        tournament_obj = create_tournament()
+
+    # start_menu_choice is True if choice = 6 > rebuild tournament
+    else:
+        views_utility.clear_screen()
+        views_utility.crlf()
+        tournament_length = views_output.tournament_list()
+        views_utility.crlf()
+        tournament_to_rebuild = views_input.tournament_choice(
+            tournament_length)
+        tournament_obj = rebuild_tournament(tournament_to_rebuild)
+    return tournament_obj
 
 
 def find_next_round_to_complete(tournament_obj: Tournament) -> object | bool:
@@ -257,11 +305,14 @@ def input_matchs_results(round_obj, tournament_obj: Tournament) -> bool:
 
     round_status = False
     if response == "C":
+        # Check if all match points are fill
+        # With one point per match points_total must be == to points_result
         points_total = len(round_obj.get_matchs)
         points_result = 0
         for match in round_obj.get_matchs:
             score_player_1 = match.get_scores[0]
             score_player_2 = match.get_scores[1]
+            # score could be None, 1.0, 0.5, or 0
             if score_player_1:
                 points_result += score_player_1
             if score_player_2:
@@ -374,22 +425,16 @@ def create_round_x(tournament_obj: Tournament) -> object:
     from models.player import Player
     from models.round import Round
     round_x_obj = Round(round_name)
-    # Build round x
 
-    # print(f"Création du round {round_name}")
-    # views_input.wait_for_enter()
-    # create players_obj
     players_obj_list = build_player_obj_list(tournament_obj)
-
     # Create a list of forbiden pairs of player
     match_already_played = tournament_obj.get_matchs_already_played
     forbiden_pairs: List[tuple[Player, Player]] = []
     for match in match_already_played:
-        pair = (match.get_players[0],
-                match.get_players[1])
+        pair = (match.get_players[0], match.get_players[1])
         forbiden_pairs.append(pair)
 
-    # Trie les joueurs par points puis par classement si égalité de points
+    # Sort players by points and by classification in case of a tie
     players_obj_list = sorted(
         players_obj_list,
         key=lambda x: x.get_player["classification"])
@@ -399,7 +444,7 @@ def create_round_x(tournament_obj: Tournament) -> object:
         reverse=True)
 
     # Create a list of free player to build the pairs
-    # Free = True
+    # True = Free
     players_free = []
     for player_obj in players_obj_list:
         player_to_add = [player_obj, True]
@@ -422,7 +467,7 @@ def create_round_x(tournament_obj: Tournament) -> object:
             else:
                 # Find player 2 of the pair
                 if player_free is None:
-                    # Player 1 is alone, give him 0.5 point
+                    # Player 1 is alone, give him PLAYER_ALONE_POINT point
                     player_alone: Player = player_1[0]
                     tournament_obj.update_player_point(
                         player_alone.get_id, PLAYER_ALONE_POINT)
@@ -431,8 +476,11 @@ def create_round_x(tournament_obj: Tournament) -> object:
                 player_2 = player_free
 
                 # Is this pair forbiden ?
-                if (((player_1[0], player_2[0]) in forbiden_pairs)
-                        or ((player_2[0], player_1[0]) in forbiden_pairs)):
+                if ((
+                    (player_1[0], player_2[0]) in forbiden_pairs
+                ) or (
+                    (player_2[0], player_1[0]) in forbiden_pairs
+                )):
                     # Forbiden pair {player_1[0]} {player_2[0]}
                     rejected_players.append(player_free)
                     free_flag = False
