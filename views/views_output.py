@@ -1,7 +1,7 @@
 from typing import Literal
 import pyfiglet
 
-from views import views_utility
+from views import views_input, views_utility
 from models.match import Match
 from models.db_manager_players import Db_manager_player
 from models.db_manager_tournaments import Db_manager_tournament
@@ -21,19 +21,20 @@ from utils.constant import (
 def splash_screen():
     """Print splash screen"""
     views_utility.clear_screen()
+    views_utility.crlf()
     text = pyfiglet.figlet_format("Bienvenue  au  tournoi  d' echecs")
     print(text)
     print("Entrée pour continuer")
-    input()
+    views_input.wait_for_enter()
 
 
 def bye_screen():
     """Print bye screen"""
     views_utility.clear_screen()
+    views_utility.crlf()
     text = pyfiglet.figlet_format("Au revoir")
     print(text)
-    print("Merci d'avoir utilisé ce programme.\nEntrée pour quitter")
-    input()
+    print("Merci d'avoir utilisé ce programme.")
 
 
 def players_list(sort_type: Literal[1, 2]) -> list[int]:
@@ -165,6 +166,12 @@ def player_result(tournament_obj):
         round_player_dict[key] = 0
 
     views_utility.clear_screen()
+    print()
+    print(f'Classement des joueurs pour {tournament_obj.get_name}')
+    print()
+    sorted_player_obj_list = sort_player_dict(
+        manager_player_obj, tournament_players_dict)
+    print_sorted_result(sorted_player_obj_list)
     # for each round in round list
     for round in tournament_obj.get_rounds:
         # if round is closed
@@ -177,21 +184,14 @@ def player_result(tournament_obj):
                 player_2_points = match.get_scores[1]
                 round_player_dict[str(player_1_id)] = player_1_points
                 round_player_dict[str(player_2_id)] = player_2_points
-
             # Begin sorted list
             sorted_player_obj_list = sort_player_dict(
                 manager_player_obj, round_player_dict)
             # Display round results
             print()
-            print(f"Le classement des joueurs pour le {round.get_name} est:")
+            print(f"Classement des joueurs pour le {round.get_name}")
+            print()
             print_sorted_result(sorted_player_obj_list)
-
-    print()
-    print(f'Le classement des joueurs pour le tournoi \
-{tournament_obj.get_tournament["name"]}')
-    sorted_player_obj_list = sort_player_dict(
-        manager_player_obj, tournament_players_dict)
-    print_sorted_result(sorted_player_obj_list)
 
 
 def print_sorted_result(sorted_player_obj_list):

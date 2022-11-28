@@ -195,6 +195,7 @@ def new_tournament() -> dict[str, str]:
     """
 
     print("Entrer les information du nouveau tournoi")
+    print()
     name = input(
         f"Nom du tournoi {TOURNAMENT_NAME_LENGTH}car max ").capitalize()
     if len(name) > TOURNAMENT_NAME_LENGTH:

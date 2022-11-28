@@ -80,7 +80,8 @@ class Db_manager_tournament:
         for tournament_obj in tournaments_obj_list:
             players_dict = self._get_players_by_tournament_id(
                 tournament_obj.get_id)
-            players_set.update(players_dict)
+            player_id_list = [int(key) for key in players_dict]
+            players_set.update(player_id_list)
         return players_set
 
     def get_one_from_db(self, tournament_id: int):

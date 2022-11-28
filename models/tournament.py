@@ -169,6 +169,10 @@ class Tournament:
         return self._id
 
     @property
+    def get_name(self) -> str:
+        return self._name
+
+    @property
     def get_round(self) -> int:
         return self._round
 

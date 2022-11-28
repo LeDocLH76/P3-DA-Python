@@ -45,11 +45,11 @@ def begin():
             views_utility.crlf()
             result_type = views_menu.result_type()
             if result_type == 3:
-                tournament = manager_tournament_obj.get_one_from_db(
+                tournament_obj = manager_tournament_obj.get_one_from_db(
                     tournament_id)
                 views_utility.clear_screen()
                 views_utility.crlf()
-                views_output.player_result(tournament)
+                views_output.player_result(tournament_obj)
             else:
                 views_utility.clear_screen()
                 views_utility.crlf()

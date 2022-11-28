@@ -179,7 +179,6 @@ def prepare_tournament(tournament_obj: Tournament):
         if new_round_quantity != tournament_obj.get_round:
             tournament_obj.set_round(new_round_quantity)
             views_output.adjust_round_quantity()
-
         # Chose players for current tournament
     response = add_player_in_tournament(tournament_obj)
     return response
@@ -188,7 +187,8 @@ def prepare_tournament(tournament_obj: Tournament):
 def add_player_in_tournament(tournament_obj: Tournament):
     new_player = True
     while new_player is not False:
-        views_utility.clear_screen
+        views_utility.clear_screen()
+        views_utility.crlf()
         # players_id_list of player on database
         players_id_list = views_output.players_list(ORDER_ALPHA)
         views_utility.crlf()
@@ -359,10 +359,8 @@ def create_round1(tournament_obj: Tournament) -> object:
     for player_1, player_2 in matches_list:
         match = Match(player_1, player_2)
         round_1.add_match(match)
-
     # Display match list to play
     display_matchs_to_play(round_1, player_alone)
-
     return round_1
 
 
@@ -572,11 +570,17 @@ def create_tournament() -> Tournament | int | bool:
 
     """
     tournament_manager_obj = Db_manager_tournament()
+    views_utility.clear_screen()
+    views_utility.crlf()
     views_output.tournament_list()
+    views_utility.crlf()
     # Ask for creating a new one
     views_output.tournament_verify_before()
+    views_utility.crlf()
     response = views_input.y_or_n()
     if response is True:
+        views_utility.clear_screen()
+        views_utility.crlf()
         tournament_dict = views_input.new_tournament()
         views_utility.clear_screen()
         tournament_obj = Tournament(
