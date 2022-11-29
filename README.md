@@ -15,15 +15,16 @@ Python 3.10 compris pip
 
 #### Avec Git:
 
-Cloner le repos Git
-`git clone https://github.com/LeDocLH76/P3-DA-Python .`
+-  Cloner le repos Git.
+   `git clone https://github.com/LeDocLH76/P3-DA-Python .`
 
 #### Sans Git:
 
-Se rendre à l'adresse [https://github.com/LeDocLH76/P3-DA-Python]
-Sous l'onglet <> Code
-Download ZIP
-Décompresser l'archive dans le repertoire "mon_repertoire"
+Se rendre à l'adresse [https://github.com/LeDocLH76/P3-DA-Python].
+
+-  Sous l'onglet <> Code
+-  Download ZIP
+-  Décompresser l'archive dans le repertoire "mon_repertoire"
 
 ### Utilisation.
 
@@ -47,10 +48,10 @@ Pour les lancement futur seul 1, 3 et 5 sont necessaires.
 
 #### Après l'utilisation.
 
-Déactivation de l'environnement:
-`deactivate`
-Sortir du terminal
-`exit`
+-  Déactivation de l'environnement.
+   `deactivate`
+-  Sortir du terminal.
+   `exit`
 
 ### Pour l'évaluation du projet.
 
@@ -60,12 +61,13 @@ Sortir du terminal
 
 #### Création du rapport flake8 TXT:
 
-Seule les dernières lignes de ce très gros fichier sont interessantes.
 `flake8 -vv --extend-exclude env --output-file=flake-report\flake8_report.txt`
+
+_Seulement les dernières lignes de ce très gros fichier sont interessantes._
 
 #### Pour un test du programme uniquement:
 
 Pour faciliter l'evaluation, il est souhaitable de créer une base de données remplie en executant le fichier populate.py.
 `python -m populate`
 Si cette option est utilisée, il est nécessaire de supprimer ou renommer le fichier chess_tournament après les tests.
-Attention, **ne jamais utiliser** cette option si le programme à déja été utilisé en condition de tournoi réél, car des données parasites seraient ajoutées sur la base de données.
+Attention, **ne jamais utiliser** cette option si le programme à déja été utilisé en condition de tournoi réel, car des données parasites seraient ajoutées sur la base de données.
