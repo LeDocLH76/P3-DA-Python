@@ -61,7 +61,8 @@ class Player:
         return player
 
     def set_birth_date(self, birth_date: str) -> None:
-        """Transform birth_date from dd/mm/yyyy to iso format yyyy-mm-dd
+        """Transform birth_date from dd/mm/yyyy to iso format yyyy-mm-dd, \
+            before setting _birth_date property
 
         Args:
             birth_date (str): date string like dd/mm/yyyy
@@ -70,7 +71,7 @@ class Player:
         self._birth_date = date_fr2iso(birth_date)
 
     def set_classification(self, classification: int) -> None:
-        """Set Player's classification
+        """Set Player's classification and if _id is not none update on db
 
         Args:
             classification (int): Player's classification to set
@@ -78,11 +79,15 @@ class Player:
         """
         self._classification = classification
         if self._id is not None:
-            player_bd = Db_manager_player()
-            player_bd.update_classification_by_id(self._id, classification)
+            manager_player_obj = Db_manager_player()
+            manager_player_obj.update_classification_by_id(self._id, classification)
 
     def set_id(self, player_id) -> None:
         """Set Player's id
+
+        Args:
+            int: Player id
+
         """
         self._id = player_id
 
@@ -91,13 +96,20 @@ class Player:
         """Property Player's id
 
         Return:
-            int: Player's id on database
+            int: Player's id
 
         """
         return self._id
 
     @property
     def get_classification(self) -> int:
+        """Property Player's classification
+
+        Return:
+            int: Player's classification
+
+        """
+
         return self._classification
 
     @ property

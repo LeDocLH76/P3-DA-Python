@@ -14,9 +14,9 @@ def begin():
         # Main menu
         views_utility.clear_screen()
         views_utility.crlf()
-        res_root_menu = views_menu.root_menu()
+        response_root_menu = views_menu.root_menu()
         # Display all tournaments on database
-        if res_root_menu == 1:
+        if response_root_menu == 1:
             views_utility.clear_screen()
             views_utility.crlf()
             views_output.tournament_list()
@@ -24,7 +24,7 @@ def begin():
             views_input.wait_for_enter()
 
         # Display all players on database
-        if res_root_menu == 2:
+        if response_root_menu == 2:
             views_utility.clear_screen()
             views_utility.crlf()
             sort_type = views_menu.sort_choice()
@@ -35,7 +35,7 @@ def begin():
             views_input.wait_for_enter()
 
         # Display one tournament results
-        if res_root_menu == 3:
+        if response_root_menu == 3:
             views_utility.clear_screen()
             views_utility.crlf()
             tournament_quantity = views_output.tournament_list()
@@ -58,7 +58,7 @@ def begin():
             views_input.wait_for_enter()
 
         # Diplay one tournament players
-        if res_root_menu == 4:
+        if response_root_menu == 4:
             views_utility.clear_screen()
             views_utility.crlf()
             tournament_quantity = views_output.tournament_list()
@@ -75,18 +75,18 @@ def begin():
             views_input.wait_for_enter()
 
         # Displayer player menu
-        if res_root_menu == 5:
+        if response_root_menu == 5:
             players_controler()
 
         # Jump in a non closed tournament
-        if res_root_menu == 6:
+        if response_root_menu == 6:
             tournament_controler(True)
 
         # Begin a new tournament
-        if res_root_menu == 7:
+        if response_root_menu == 7:
             tournament_controler(False)
 
         # Exit
-        if res_root_menu == 8:
+        if response_root_menu == 8:
             views_output.bye_screen()
             break
