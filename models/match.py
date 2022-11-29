@@ -37,14 +37,15 @@ class Match:
         self._score_player2 = score_player2
 
     @property
-    def get_match(self) -> tuple[list[Player | float], list[Player | float]]:
+    def get_match(self) -> tuple[list[Player | float | None], list[Player | float | None]]:
         """Property match's datas
 
         Return:
             tuple: ([player1, score_player1],[player2, score_player2])"""
-        match: tuple[list[Player | float], list[Player | float]] = (
+        match: tuple[list[Player | float | None], list[Player | float | None]] = (
             [self._player1, self._score_player1],
-            [self._player2, self._score_player2])
+            [self._player2, self._score_player2]
+        )
         return match
 
     @property
@@ -66,5 +67,5 @@ class Match:
             list: [score_player1, score_player2]
 
         """
-        scores: List[int | None] = [self._score_player1, self._score_player2]
+        scores: List[float | None] = [self._score_player1, self._score_player2]
         return scores

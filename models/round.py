@@ -69,7 +69,7 @@ class Round:
         self._date_end = datetime. fromtimestamp(ts).isoformat()
 
     @property
-    def get_matchs(self) -> List[Match | None]:
+    def get_matchs(self) -> List[Match]:
         """Property round's matchs list
 
         Return:
@@ -97,17 +97,17 @@ class Round:
         return self._date_begin
 
     @property
-    def get_end(self) -> str | bool:
+    def get_end(self) -> str | None:
         """Property round's end
 
         Return:
             date_end (str | bool): Round's end date and time like iso format \
-                if round is close, False if not
+                if round is close, None if not
 
         """
         if self._date_end is not None:
             return self._date_end
-        return False
+        return None
 
     def __str__(self) -> str:
         """Human readable Round for dev only
@@ -117,11 +117,15 @@ class Round:
 
         """
         begin_obj = datetime.fromisoformat(self._date_begin)
-        end_obj = datetime.fromisoformat(self._date_end)
-        # Prendre en compte que end peut être None !!
+        end_obj = False
+        # In case of self._date_end exist
+        if self._date_end:
+            end_obj = datetime.fromisoformat(self._date_end)
+        date_end_text = f"Fin: {end_obj.day}/{end_obj.month}/{end_obj.year} \
+{end_obj.hour}:{end_obj.minute}:{end_obj.second}" if end_obj else ""
+
         return f"{self._name} \
 Début: {begin_obj.day}/{begin_obj.month}/{begin_obj.year} \
 {begin_obj.hour}:{begin_obj.minute}:{begin_obj.second} \
-Fin: {end_obj.day}/{end_obj.month}/{end_obj.year} \
-{end_obj.hour}:{end_obj.minute}:{end_obj.second} \
+{date_end_text} \
 Match: {len(self._matchs)}"

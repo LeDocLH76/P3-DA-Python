@@ -92,7 +92,7 @@ class Player:
         self._id = player_id
 
     @ property
-    def get_id(self) -> int:
+    def get_id(self) -> int | None:
         """Property Player's id
 
         Return:
@@ -102,7 +102,7 @@ class Player:
         return self._id
 
     @property
-    def get_classification(self) -> int:
+    def get_classification(self) -> int | None:
         """Property Player's classification
 
         Return:

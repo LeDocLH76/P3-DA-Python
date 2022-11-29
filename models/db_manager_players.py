@@ -61,7 +61,7 @@ class Db_manager_player:
             return player_obj
         return None
 
-    def add_one(self, player_obj, player_id: int | None = None) -> bool | int:
+    def add_one(self, player, player_id: int | None = None) -> bool | int:
         """Add or update a player on db
 
         Args:
@@ -75,7 +75,7 @@ class Db_manager_player:
         """
 
         from models.player import Player
-        player_obj: Player = player_obj
+        player_obj: Player = player
         player_dict = player_obj.get_player
         # update player
         if player_id is not None:
@@ -106,8 +106,11 @@ class Db_manager_player:
             ) & (
                 player.birth_date == player_dict["birth_date"]
             ))
-            player_id = player_db.doc_id
-        return player_id
+            if player_db:
+                player_id = player_db.doc_id
+                return player_id
+        # This never append
+        return False
 
     def delete_one(self, player_id):
         """Delete a player on db

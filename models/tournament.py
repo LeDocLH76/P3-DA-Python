@@ -76,7 +76,7 @@ class Tournament:
     def set_id(self, tournament_id) -> None:
         self._id = tournament_id
 
-    def update_round(self, round: Round = None) -> None:
+    def update_round(self, round=None) -> None:
         """Update rounds in database, add round before if not None.
 
         Args:
@@ -84,7 +84,8 @@ class Tournament:
 
         """
         if round is not None:
-            self._rounds.append(round)
+            round_obj: Round = round
+            self._rounds.append(round_obj)
         manager_tournament_obj = Db_manager_tournament()
         manager_tournament_obj.update_rounds_by_tournament_id(self)
 
@@ -165,7 +166,7 @@ class Tournament:
         return self._players[str(player_id)]
 
     @property
-    def get_id(self) -> int:
+    def get_id(self) -> int | None:
         return self._id
 
     @property
@@ -244,7 +245,8 @@ value = points in this tournament
         for round in self._rounds:
             round: Round = round
             for match in round.get_matchs:
-                matchs_played.append(match)
+                if match:
+                    matchs_played.append(match)
         return matchs_played
 
     def __str__(self) -> str:
