@@ -49,7 +49,8 @@ def root_menu() -> Literal[1, 2, 3, 4, 5, 6, 7, 8]:
             return 7
         if response == "8":
             return 8
-        break
+        views_utility.clear_screen()
+        print()
 
 
 def players_action_choice() -> Literal[1, 2, 3, 4, 5, 6]:

@@ -95,7 +95,7 @@ def print_players(sorted_players: list[dict]):
               ))
 
 
-def print_player(player_obj):
+def print_player(player):
     """Print a player
 
     Args:
@@ -103,7 +103,7 @@ def print_player(player_obj):
 
     """
     from models.player import Player
-    player_obj: Player = player_obj
+    player_obj: Player = player
     player_dict = player_obj.get_player
 
     id = player_dict['id']
@@ -137,9 +137,9 @@ def player_exist(player_id):
 
 def player_alone(player):
     from models.player import Player
-    player: Player = player
-    print(f"Le joueur {player.get_player['name']} \
-{player.get_player['surname']} n'as pas trouvé d'adverssaire et \
+    player_obj: Player = player
+    print(f"Le joueur {player_obj.get_player['name']} \
+{player_obj.get_player['surname']} n'as pas trouvé d'adverssaire et \
 reçoit {PLAYER_ALONE_POINT} points")
 
 
@@ -153,9 +153,9 @@ def player_sort_type() -> None:
     print("Pour la liste des joueurs")
 
 
-def player_result(tournament_obj):
+def player_result(tournament):
     from models.tournament import Tournament
-    tournament_obj: Tournament = tournament_obj
+    tournament_obj: Tournament = tournament
     manager_player_obj = Db_manager_player()
     # Dict with player_id in key and points for the tournament in value
     tournament_players_dict = tournament_obj.get_players
@@ -253,9 +253,12 @@ def tournament_list() -> int:
         description = tournament_dict["description"]
         time_ctrl = tournament_dict["time_ctrl"]
         tournament_big_obj = tournament_manager_obj.get_one_from_db(id)
-        player_quantity = len(tournament_big_obj.get_players)
-        status = ("En cours" if tournament_dict["status"] is False
-                  else "Cloturé")
+        status = "Erreur"
+        player_quantity = -1
+        if tournament_big_obj:
+            player_quantity = len(tournament_big_obj.get_players)
+            status = ("En cours" if tournament_dict["status"] is False
+                      else "Cloturé")
         print('{0:>3} {1:{name_length}}  {2:10}  \
 {3:{description_length}}  {4:8}  {5:6}  {6:>3} joueurs'.format(
             id,
@@ -271,7 +274,7 @@ def tournament_list() -> int:
     return len(tournaments_obj_list)
 
 
-def tournament_data(tournament_obj):
+def tournament_data(tournament):
     """Print a tournament
 
     Args:
@@ -279,7 +282,7 @@ def tournament_data(tournament_obj):
 
     """
     from models.tournament import Tournament
-    tournament_obj: Tournament = tournament_obj
+    tournament_obj: Tournament = tournament
     tournament_dict = tournament_obj.get_tournament
     print(
         f'Le tournoi "{tournament_dict["name"]}" se déroule le \
@@ -358,8 +361,8 @@ score: {score_player_1} / {score_player_2}')
 
 
 def make_match_dict(match_obj: Match):
-    player1 = match_obj.get_match[0][0]
-    player2 = match_obj.get_match[1][0]
+    player1 = match_obj.get_players[0]
+    player2 = match_obj.get_players[1]
     match_dict = {
         "player_1_name": player1.get_player["name"],
         "player_1_surname": player1.get_player["surname"],
@@ -373,7 +376,7 @@ def make_match_dict(match_obj: Match):
 
 def tournament_players(tournament, sort_type):
     from models.tournament import Tournament
-    tournament: Tournament = tournament
+    tournament_obj: Tournament = tournament
     """Build player list sorted by sort_type and call print_player()
 
     Args:
@@ -383,12 +386,13 @@ def tournament_players(tournament, sort_type):
     """
 
     manager_player = Db_manager_player()
-    tournament_players_id = tournament.get_players
+    tournament_players_id = tournament_obj.get_players
     players: list[dict] = []
     for tournament_player_id in tournament_players_id:
         player_obj = manager_player.get_by_id(tournament_player_id)
-        player_dict = player_obj.get_player
-        players.append(player_dict)
+        if player_obj:
+            player_dict = player_obj.get_player
+            players.append(player_dict)
     sorted_players = views_utility.sort_players_by_type(sort_type, players)
     print("Liste des joueurs du tournoi")
     print()
