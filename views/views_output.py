@@ -24,7 +24,6 @@ def splash_screen():
     views_utility.crlf()
     text = pyfiglet.figlet_format("Bienvenue  au  tournoi  d' echecs")
     print(text)
-    print("Entrée pour continuer")
     views_input.wait_for_enter()
 
 
@@ -470,4 +469,4 @@ def forbiden_delete():
 
 def confirm_delete():
     """Ask user for player permanent delete"""
-    print("Voulez-vous definitivement supprimer ce joueur ?")
+    print("Voulez-vous définitivement supprimer ce joueur ?")

@@ -65,7 +65,7 @@ def players_action_choice() -> Literal[1, 2, 3, 4, 5, 6]:
         print()
         print("Menu joueurs")
         print()
-        print("1. Entrer un nouveau joueur")
+        print("1. Créer un nouveau joueur")
         print("2. Modifier un joueur")
         print("3. Supprimer un joueur")
         print("4. Voir les joueurs")

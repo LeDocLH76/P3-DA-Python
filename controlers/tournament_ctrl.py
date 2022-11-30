@@ -579,7 +579,6 @@ def create_tournament() -> Tournament | int | bool:
     views_utility.crlf()
     response = views_input.y_or_n()
     if response is True:
-        views_utility.clear_screen()
         views_utility.crlf()
         tournament_dict = views_input.new_tournament()
         views_utility.clear_screen()

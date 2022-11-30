@@ -55,7 +55,7 @@ def players_controler():
             else:
                 # Not in database
                 views_output.input_error()
-            views_input.wait_for_enter()
+                views_input.wait_for_enter()
 
         # Delete a player in database
         if action == 3:
@@ -157,5 +157,5 @@ def new_player(manager_player_obj: Db_manager_player) -> None:
     response = manager_player_obj.add_one(player_obj)
     if response is not True:
         views_output.player_exist(response)
-    views_utility.crlf()
-    views_input.wait_for_enter()
+        views_utility.crlf()
+        views_input.wait_for_enter()
